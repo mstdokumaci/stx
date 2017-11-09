@@ -1,0 +1,53 @@
+{
+  "name": "stx",
+  "version": "0.0.1",
+  "description": "a blazing fast state manager with network sync out of the box",
+  "main": "dist/index.js",
+  "browser": {
+    "./dist/index.js": "./dist/index.browser.js"
+  },
+  "scripts": {
+    "budo": "budo test/index.js",
+    "dev": "nodemon test/index.js",
+    "test": "node test/index.js",
+    "build": "rollup src/index.js --o dist/index.js --f cjs",
+    "watch": "nodemon src/index.js -x 'rollup --o dist/index.js --f cjs'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mstdokumaci/stx"
+  },
+  "author": "Mustafa Dokumacı <mustafa@foraa.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mstdokumaci/stx/issues"
+  },
+  "homepage": "https://github.com/mstdokumaci/stx#readme",
+  "keywords": [
+    "reactive",
+    "state",
+    "observable",
+    "sync",
+    "websocket"
+  ],
+  "contributors": [
+    "Mustafa Dokumacı <mustafa@foraa.com>"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "budo": "^10.0.0",
+    "rollup": "latest",
+    "coveralls": "^3.0.0",
+    "istanbul": "latest",
+    "nodemon": "^1.0.0",
+    "standard": "^10.0.0",
+    "tap-difflet": "latest",
+    "tape": "^4.0.0"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "test/*",
+      "dist/*"
+    ]
+  }
+}

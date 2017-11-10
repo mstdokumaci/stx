@@ -57,12 +57,7 @@ const serialize = (branch, leaf, fn) => {
   const keys = leaf.keys
   const origin = leaf.rT && getFromLeaves(branch, leaf.rT)
   if (origin) {
-    const path = origin.path()
-    val = [ '@' ]
-    let i = path.length
-    while (i--) {
-      val[i + 1] = path[i]
-    }
+    val = [ '@' ].concat(origin.path())
   }
   if (keys) {
     for (let i = 0, len = keys.length; i < len; i++) {

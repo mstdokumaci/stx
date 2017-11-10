@@ -2,6 +2,7 @@ import { getString } from './cache'
 import { root } from './id'
 import { getFromLeaves, getByKey, getApi } from './get'
 import { set } from './manipulate'
+import { create } from './instance'
 import { origin, compute, inspect, serialize } from './fn'
 
 const define = (obj, key, val) => {
@@ -77,6 +78,10 @@ const Struct = function (val, stamp, inherits) {
 }
 
 const struct = Struct.prototype
+
+define(struct, 'create', function (val, stamp) {
+  create(val, stamp, root, this)
+})
 
 define(struct, 'set', function (val, stamp) {
   set(this.leaves[root], val, stamp, root, this)

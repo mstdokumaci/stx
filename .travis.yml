@@ -1,0 +1,14 @@
+# .travis.yml
+language: node_js
+node_js:
+  - '8.9.0'
+script:
+  - npm run travis
+notifications:
+  email: false
+deploy:
+  - provider: npm
+    email: ${NPM_USER}
+    api_key: ${NPM_TOKEN}
+    on:
+      branch: master

@@ -10,7 +10,7 @@ notifications:
   email: false
 deploy:
   - provider: npm
-    email: ${NPM_USER}
+    email: ${NPM_EMAIL}
     api_key: ${NPM_TOKEN}
     on:
       branch: master

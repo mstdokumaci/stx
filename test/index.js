@@ -101,51 +101,61 @@ test('set - get', t => {
   t.end()
 })
 
-const state = new Struct()
+test('key collusion', t => {
+  const state = new Struct()
 
-const arr = {}
+  const arr = {}
 
-const blur = {
-  val: 'blurblurblur'
-}
-let i = 5
-while (i--) {
-  blur['x' + i] = 'blur' + i
-}
-
-i = 1e5
-while (i--) {
-  arr[i] = {
-    val: 'hello' + i,
-    a: 'a' + i,
-    b: 'b' + i,
-    c: 'c' + i,
-    nested: blur
+  const nested = {
+    val: 'nested-value'
   }
-}
+  let i = 5
+  while (i--) {
+    nested['x' + i] = 'nested-' + i
+  }
 
-let d = Date.now()
-state.set(arr)
-console.log('set + create 100k * 10', Date.now() - d, 'ms')
+  i = 1e4
+  while (i--) {
+    arr[i] = {
+      val: 'value-' + i,
+      a: 'a' + i,
+      b: 'b' + i,
+      c: 'c' + i,
+      nested
+    }
+  }
 
-d = Date.now()
-i = 1e5
-let r
-while (i--) {
-  r = state.get(i)
-  state.get([i, 'a'])
-  state.get([i, 'b'])
-  state.get([i, 'c'])
-  r.get('nested')
-  r.get(['nested', 'x0'])
-  r.get(['nested', 'x1'])
-  r.get(['nested', 'x2'])
-  r.get(['nested', 'x3'])
-  r.get(['nested', 'x4'])
-}
-console.log('get 100k * 10', Date.now() - d, 'ms', r)
+  let d = Date.now()
+  state.set(arr)
+  t.ok(
+    Date.now() - d < 300,
+    '1e5 sets under 300 ms'
+  )
 
-console.log(state)
-global.state = state
+  d = Date.now()
+  i = 1e4
+  let r
+  while (i--) {
+    r = state.get(i)
+    state.get([i, 'a'])
+    state.get([i, 'b'])
+    state.get([i, 'c'])
+    r.get('nested')
+    r.get(['nested', 'x0'])
+    r.get(['nested', 'x1'])
+    r.get(['nested', 'x2'])
+    r.get(['nested', 'x3'])
+    r.get(['nested', 'x4'])
+  }
+  t.ok(
+    Date.now() - d < 300,
+    '1e5 gets under 300 ms'
+  )
+  t.equals(
+    Object.keys(state.leaves).length,
+    100001,
+    '100001 leaves in state'
+  )
 
-console.log(Object.keys(state.leaves).length)
+  t.end()
+})

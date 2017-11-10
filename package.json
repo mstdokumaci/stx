@@ -7,10 +7,12 @@
     "./dist/index.js": "./dist/index.browser.js"
   },
   "scripts": {
-    "budo": "budo test/index.js",
-    "dev": "nodemon test/index.js | tap-difflet",
-    "test": "node test/index.js | tap-difflet",
     "build": "rollup src/index.js --o dist/index.js --f cjs",
+    "budo": "budo test/index.js",
+    "cover": "istanbul cover --report none --print detail test",
+    "dev": "nodemon test/index.js | tap-difflet",
+    "test": "node test/index.js | tap-difflet && standard",
+    "travis": "npm run cover -s && istanbul report lcov && ((cat coverage/lcov.info | coveralls) || exit 0) && standard",
     "watch": "nodemon src/index.js -x 'rollup --o dist/index.js --f cjs' --ignore dist"
   },
   "repository": {

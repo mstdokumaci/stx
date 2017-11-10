@@ -28,14 +28,7 @@ const arrayToId = (arr) => {
   return (hash1 >>> 0) * 4096 + (hash2 >>> 0)
 }
 
-const pathToIds = (path, id = root) => {
-  const pL = path.length
-  const ids = new Array(pL)
-  let i = -1
-  while (++i < pL) {
-    ids[i] = id = keyToId(String(path[i]), id)
-  }
-  return ids
-}
+const pathToIds = (path, id = root) =>
+  path.map(key => id = keyToId(key, id))
 
 export { root, keyToId, arrayToId, pathToIds }

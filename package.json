@@ -11,6 +11,7 @@
     "budo": "budo test/index.js",
     "cover": "istanbul cover --report none --print detail test",
     "dev": "nodemon test/index.js | tap-difflet",
+    "pretest": "npm run build",
     "test": "node test/index.js | tap-difflet && standard",
     "travis": "npm run cover -s && istanbul report lcov && (cat coverage/lcov.info | coveralls) && standard",
     "watch": "nodemon src/index.js -x 'rollup --o dist/index.js --f cjs' --ignore dist"

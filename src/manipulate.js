@@ -6,7 +6,7 @@ import { getByPath } from './get'
 const setReferenceByPath = (target, path, stamp, id, branch) =>
   set(target, getByPath(branch, path, root, {}, stamp), stamp, id, branch)
 
-const setReference = (target, val, stamp, id, branch) => {
+const setReference = (target, val, stamp, id) => {
   target.rT = val.id
   if (val.rF) {
     val.rF.push(id)
@@ -45,11 +45,13 @@ const set = (target, val, stamp, id, branch) => {
         // TODO: handle setting array
       }
     } else if (val.isLeaf) {
-      if (branch === val.branch) {
-        setReference(target, val, stamp, id, branch)
-      } else {
-        throw new Error('Reference must be in same branch')
+      while (branch) {
+        if (branch === val.branch) {
+          return setReference(target, val, stamp, id)
+        }
+        branch = branch.inherits
       }
+      throw new Error('Reference must be in same branch')
     } else {
       setKeys(target, val, stamp, id, branch)
     }

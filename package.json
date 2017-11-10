@@ -8,10 +8,10 @@
   },
   "scripts": {
     "budo": "budo test/index.js",
-    "dev": "nodemon test/index.js",
-    "test": "node test/index.js",
+    "dev": "nodemon test/index.js | tap-difflet",
+    "test": "node test/index.js | tap-difflet",
     "build": "rollup src/index.js --o dist/index.js --f cjs",
-    "watch": "nodemon src/index.js -x 'rollup --o dist/index.js --f cjs'"
+    "watch": "nodemon src/index.js -x 'rollup --o dist/index.js --f cjs' --ignore dist"
   },
   "repository": {
     "type": "git",
@@ -43,11 +43,5 @@
     "standard": "^10.0.0",
     "tap-difflet": "latest",
     "tape": "^4.0.0"
-  },
-  "nodemonConfig": {
-    "ignore": [
-      "test/*",
-      "dist/*"
-    ]
   }
 }

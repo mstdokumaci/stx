@@ -13,7 +13,12 @@ const compute = (branch, leaf) => {
   if (leaf) {
     leaf = origin(branch, leaf)
     while (leaf.val === void 0 && branch.inherits) {
-      leaf = getFromLeaves(branch.inherits, leaf.id)
+      const iLeaf = getFromLeaves(branch.inherits, leaf.id)
+      if (iLeaf === leaf) {
+        break
+      } else {
+        leaf = iLeaf
+      }
     }
     return leaf.val
   }

@@ -13,12 +13,10 @@ const compute = (branch, leaf) => {
   if (leaf) {
     leaf = origin(branch, leaf)
     while (leaf.val === void 0 && branch.inherits) {
-      const iLeaf = getFromLeaves(branch.inherits, leaf.id)
-      if (iLeaf === leaf) {
-        break
-      } else {
-        leaf = iLeaf
+      if (branch.inherits.leaves[leaf.id]) {
+        leaf = branch.inherits.leaves[leaf.id]
       }
+      branch = branch.inherits
     }
     return leaf.val
   }
@@ -39,7 +37,7 @@ const inspect = (branch, leaf) => {
         const leaf = getFromLeaves(branch, keyId)
         return getString(leaf.key)
       })
-      keys.push('... ' + (len - 5) + ' more items')
+      keys.push(`... ${len - 5} more items`)
     } else {
       keys = keys.map(keyId => {
         const leaf = getFromLeaves(branch, keyId)

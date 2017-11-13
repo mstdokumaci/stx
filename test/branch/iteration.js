@@ -1,0 +1,86 @@
+const test = require('tape')
+const { Struct } = require('../../')
+
+test('branches - forEach', t => {
+  const master = new Struct({
+    articles: {
+      first: {
+        title: 'First Article'
+      },
+      second: {
+        title: 'Second Article'
+      }
+    }
+  })
+
+  const branch1 = master.create({
+    articles: {
+      third: {
+        title: 'Third Article'
+      }
+    }
+  })
+
+  const branch2 = branch1.create({
+    articles: {
+      first: {
+        favourite: true
+      },
+      third: {
+        favourite: true
+      }
+    }
+  })
+
+  const masterArray = []
+  master.get('articles').forEach((article, id) => {
+    article.forEach((prop, propName) => {
+      masterArray.push([id, propName, prop.compute()])
+    })
+  })
+
+  const branch1Array = []
+  branch1.get('articles').forEach((article, id) => {
+    article.forEach((prop, propName) => {
+      branch1Array.push([id, propName, prop.compute()])
+    })
+  })
+
+  const branch2Array = []
+  branch2.get('articles').forEach((article, id) => {
+    article.forEach((prop, propName) => {
+      branch2Array.push([id, propName, prop.compute()])
+    })
+  })
+
+  t.same(
+    masterArray,
+    [
+      [ 'first', 'title', 'First Article' ],
+      [ 'second', 'title', 'Second Article' ]
+    ],
+    'master has correct keys'
+  )
+  t.same(
+    branch1Array,
+    [
+      [ 'third', 'title', 'Third Article' ],
+      [ 'first', 'title', 'First Article' ],
+      [ 'second', 'title', 'Second Article' ]
+    ],
+    'branch1 has correct keys'
+  )
+  t.same(
+    branch2Array,
+    [
+      [ 'third', 'favourite', true ],
+      [ 'third', 'title', 'Third Article' ],
+      [ 'first', 'favourite', true ],
+      [ 'first', 'title', 'First Article' ],
+      [ 'second', 'title', 'Second Article' ]
+    ],
+    'branch2 has correct keys'
+  )
+
+  t.end()
+})

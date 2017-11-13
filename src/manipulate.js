@@ -1,15 +1,25 @@
 import { Leaf } from './index'
-import { addToStrings } from './cache'
+import { addToStrings, getString } from './cache'
 import { root, keyToId } from './id'
-import { getByPath } from './get'
+import { getFromLeaves, getByPath } from './get'
 
 const setReferenceByPath = (leaf, path, stamp, id, branch) =>
   set(leaf, getByPath(branch, path, root, {}, stamp), stamp, id, branch)
+
+const setVal = (leaf, val, stamp, id, branch) => {
+  if (leaf.kBranch !== branch) {
+    branch.leaves[id] = leaf = new Leaf(val, stamp, id, branch, leaf.p, leaf.key)
+  } else if (val !== void 0) {
+    leaf.val = val
+  }
+  return leaf
+}
 
 const setReference = (leaf, val, stamp, id, branch) => {
   const oBranch = branch
   while (branch) {
     if (branch === val.branch) {
+      leaf = setVal(leaf, void 0, stamp, id, branch)
       leaf.rT = val.id
       if (branch !== oBranch) {
         id = [oBranch, id]
@@ -33,20 +43,21 @@ const setKeys = (leaf, val, stamp, id, branch) => {
       setVal(leaf, val.val, stamp, id, branch)
     } else {
       const leafId = keyToId(key, id)
-      const keyId = keyToId(key)
-      addToStrings(keyId, key)
-      keys.push(leafId)
-      branch.leaves[leafId] = new Leaf(val[key], stamp, leafId, branch, id, keyId)
+      const existing = getFromLeaves(branch, leafId)
+      if (existing) {
+        set(existing, val[key], stamp, leafId, branch)
+      } else {
+        const keyId = keyToId(key)
+        addToStrings(keyId, key)
+        keys.push(leafId)
+        branch.leaves[leafId] = new Leaf(val[key], stamp, leafId, branch, id, keyId)
+      }
     }
-    // TODO: set subStamp and stuff as well
   }
   if (keys.length) {
+    leaf = setVal(leaf, void 0, stamp, id, branch)
     leaf.keys = leaf.keys ? leaf.keys.concat(keys) : keys
   }
-}
-
-const setVal = (leaf, val, stamp, id, branch) => {
-  leaf.val = val
 }
 
 const set = (leaf, val, stamp, id, branch) => {

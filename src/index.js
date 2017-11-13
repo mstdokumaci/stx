@@ -3,6 +3,7 @@ import { root } from './id'
 import { getFromLeaves, getByKey, getApi } from './get'
 import { set } from './manipulate'
 import { origin, compute, inspect, serialize } from './fn'
+import { forEach } from './iteration'
 
 const define = (obj, key, val) => {
   Object.defineProperty(obj, key, { value: val, configurable: true })
@@ -15,6 +16,7 @@ const Leaf = function (val, stamp, id, branch, parent, key) {
   if (key) {
     this.key = key
   }
+  this.kBranch = branch
   if (val !== void 0) {
     set(this, val, stamp, id, branch)
   }
@@ -64,6 +66,10 @@ define(leaf, 'path', function () {
   return path
 })
 
+define(leaf, 'forEach', function (cb) {
+  return forEach(this.branch, this, cb)
+})
+
 define(leaf, 'isLeaf', true)
 
 const Struct = function (val, stamp, inherits) {
@@ -109,6 +115,10 @@ define(struct, 'serialize', function () {
 
 define(struct, 'path', function () {
   return []
+})
+
+define(struct, 'forEach', function (cb) {
+  return forEach(this, this.leaves[root], cb)
 })
 
 export { Leaf, Struct, getByKey, getApi }

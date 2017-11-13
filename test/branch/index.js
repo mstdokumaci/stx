@@ -87,5 +87,48 @@ test('create branch', t => {
     'master.pointers.pointer5 = void 0'
   )
 
+  const branch2 = branch1.create({
+    deep: {
+      real: 'override'
+    }
+  })
+
+  t.equals(
+    master.get(['deep', 'real']).compute(),
+    'thing',
+    'master.deep.real.compute() = thing'
+  )
+  t.equals(
+    branch1.get(['deep', 'real']).compute(),
+    'thing',
+    'branch1.deep.real.compute() = thing'
+  )
+  t.equals(
+    branch2.get(['deep', 'real']).compute(),
+    'override',
+    'branch2.deep.real.compute() = override'
+  )
+  t.equals(
+    branch2.get(['deep', 'real2']).compute(),
+    'thing2',
+    'branch2.deep.real2.compute() = thing2'
+  )
+
+  t.equals(
+    branch2.get(['pointers', 'pointer2']).compute(),
+    'override',
+    'branch2.pointers.pointer2.compute() = override'
+  )
+  t.equals(
+    branch2.get(['pointers', 'pointer3']).compute(),
+    'override',
+    'branch2.pointers.pointer3.compute() = override'
+  )
+  t.equals(
+    branch2.get(['pointers', 'pointer4']).compute(),
+    'thing2',
+    'branch2.pointers.pointer4.compute() = thing2'
+  )
+
   t.end()
 })

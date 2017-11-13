@@ -3,11 +3,12 @@ import { origin } from './fn'
 import { set } from './manipulate'
 
 const getFromLeaves = (branch, id) => {
+  const oBranch = branch
   while (branch) {
     if (branch.leaves[id]) {
       const leaf = branch.leaves[id]
       leaf.id = id
-      leaf.branch = branch
+      leaf.branch = oBranch
       return leaf
     }
     branch = branch.inherits

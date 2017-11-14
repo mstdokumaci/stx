@@ -118,45 +118,65 @@ test('branches - forEach', t => {
   t.end()
 })
 
-test('branches - map', t => {
+test('branches - filter - map', t => {
   const master = new Struct({
-    first: {
-      name: 'first'
-    },
-    second: {
-      name: 'second'
+    articles: {
+      first: {
+        favourite: false,
+        name: 'first'
+      },
+      second: {
+        favourite: false,
+        name: 'second'
+      }
     }
   })
 
-  const branch1 = master.create({
+  const branch1 = master.create()
+  branch1.get('articles').set({
     third: {
-      name: 'third'
+      name: 'third',
+      favourite: true
     }
   })
 
   const branch2 = branch1.create({
-    first: {
-      name: 'first override'
-    },
-    third: {
-      name: 'third override'
+    articles: {
+      first: {
+        favourite: true
+      },
+      second: {
+        favourite: true
+      },
+      third: {
+        favourite: false
+      }
     }
   })
 
   t.same(
-    master.map(item => item.get('name').compute()),
+    master
+      .get('articles')
+      .filter(item => item.get('favourite').compute())
+      .map(item => item.get('name').compute()),
+    [],
+    'master.articles.filter() = []'
+  )
+  t.same(
+    branch1
+      .get('articles')
+      .filter(item => item.get('favourite').compute())
+      .map(item => item.get('name').compute()),
+    [ 'third' ],
+    'branch1.articles.filter() = [ third ]'
+  )
+  t.same(
+    branch2
+      .get('articles')
+      .filter(item => item.get('favourite').compute())
+      .map(item => item.get('name').compute()),
     [ 'first', 'second' ],
-    'master.map() = [ first, second ]'
-  )
-  t.same(
-    branch1.map(item => item.get('name').compute()),
-    [ 'third', 'first', 'second' ],
-    'branch1.map() = [ third, first, second ]'
-  )
-  t.same(
-    branch2.map(item => item.get('name').compute()),
-    [ 'third override', 'first override', 'second' ],
-    'branch2.map() = [ third override, first override, second ]'
+    'branch2.articles.filter() = [ first, second ]'
   )
 
   t.end()

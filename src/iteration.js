@@ -46,4 +46,15 @@ const map = (branch, leaf, cb) => {
   return mapped
 }
 
-export { children, forEach, map }
+const filter = (branch, leaf, cb) => {
+  const filtered = []
+  children(branch, leaf, subLeaf => {
+    subLeaf.branch = branch
+    if (cb(subLeaf, getString(subLeaf.key))) {
+      filtered.push(subLeaf)
+    }
+  })
+  return filtered
+}
+
+export { children, forEach, map, filter }

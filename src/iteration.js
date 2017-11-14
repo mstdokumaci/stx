@@ -15,7 +15,7 @@ const children = (branch, leaf, cb) => {
         exists[leafId] = true
         if (cb) {
           if (cb(leaf.kBranch.leaves[leafId])) {
-            return
+            return void 0
           }
         } else {
           subLeaves.push(leaf.kBranch.leaves[leafId])

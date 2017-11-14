@@ -181,3 +181,50 @@ test('branches - filter - map', t => {
 
   t.end()
 })
+
+test('branches - find', t => {
+  const master = new Struct({
+    first: {
+      name: 'first',
+      favourite: false
+    },
+    second: {
+      name: 'second',
+      favourite: true
+    }
+  })
+
+  const branch1 = master.create({
+    second: {
+      favourite: false
+    },
+    third: {
+      name: 'third',
+      favourite: false
+    }
+  })
+
+  const branch2 = branch1.create({
+    first: {
+      favourite: true
+    }
+  })
+
+  t.equals(
+    master.find(item => item.get('favourite').compute()).get('name').compute(),
+    'second',
+    'master.find() = second'
+  )
+  t.equals(
+    branch1.find(item => item.get('name').compute() === 'third').get('name').compute(),
+    'third',
+    'branch1.find() = third'
+  )
+  t.equals(
+    branch2.find(item => item.get('favourite').compute()).get('name').compute(),
+    'first',
+    'branch2.find() = first'
+  )
+
+  t.end()
+})

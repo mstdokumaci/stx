@@ -8,19 +8,20 @@ const children = (branch, leaf, cb) => {
   const subLeaves = []
   while (branch) {
     if (leaf && leaf.keys) {
-      leaf.keys.forEach(leafId => {
+      const found = leaf.keys.find(leafId => {
         if (exists[leafId]) {
           return
         }
         exists[leafId] = true
         if (cb) {
-          if (cb(leaf.kBranch.leaves[leafId])) {
-            return void 0
-          }
+          return cb(leaf.kBranch.leaves[leafId])
         } else {
           subLeaves.push(leaf.kBranch.leaves[leafId])
         }
       })
+      if (found) {
+        return leaf.kBranch.leaves[found]
+      }
     }
     branch = branch.inherits
     if (branch) {
@@ -57,4 +58,11 @@ const filter = (branch, leaf, cb) => {
   return filtered
 }
 
-export { children, forEach, map, filter }
+const find = (branch, leaf, cb) => {
+  return children(branch, leaf, subLeaf => {
+    subLeaf.branch = branch
+    return cb(subLeaf, getString(subLeaf.key))
+  })
+}
+
+export { children, forEach, map, filter, find }

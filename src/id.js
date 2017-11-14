@@ -29,6 +29,9 @@ const arrayToId = (arr) => {
 }
 
 const pathToIds = (path, id = root) =>
-  path.map(key => id = keyToId(key, id))
+  path.map(key => {
+    id = keyToId(key, id)
+    return id
+  })
 
 export { root, keyToId, arrayToId, pathToIds }

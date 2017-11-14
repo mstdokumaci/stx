@@ -1,5 +1,5 @@
 import { Leaf } from './index'
-import { addToStrings, getString } from './cache'
+import { addToStrings } from './cache'
 import { root, keyToId } from './id'
 import { getFromLeaves, getByPath } from './get'
 

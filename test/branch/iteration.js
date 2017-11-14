@@ -117,3 +117,47 @@ test('branches - forEach', t => {
 
   t.end()
 })
+
+test('branches - map', t => {
+  const master = new Struct({
+    first: {
+      name: 'first'
+    },
+    second: {
+      name: 'second'
+    }
+  })
+
+  const branch1 = master.create({
+    third: {
+      name: 'third'
+    }
+  })
+
+  const branch2 = branch1.create({
+    first: {
+      name: 'first override'
+    },
+    third: {
+      name: 'third override'
+    }
+  })
+
+  t.same(
+    master.map(item => item.get('name').compute()),
+    [ 'first', 'second' ],
+    'master.map() = [ first, second ]'
+  )
+  t.same(
+    branch1.map(item => item.get('name').compute()),
+    [ 'third', 'first', 'second' ],
+    'branch1.map() = [ third, first, second ]'
+  )
+  t.same(
+    branch2.map(item => item.get('name').compute()),
+    [ 'third override', 'first override', 'second' ],
+    'branch2.map() = [ third override, first override, second ]'
+  )
+
+  t.end()
+})

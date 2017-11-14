@@ -37,4 +37,13 @@ const forEach = (branch, leaf, cb) => {
   })
 }
 
-export { children, forEach }
+const map = (branch, leaf, cb) => {
+  const mapped = []
+  children(branch, leaf, subLeaf => {
+    subLeaf.branch = branch
+    mapped.push(cb(subLeaf, getString(subLeaf.key)))
+  })
+  return mapped
+}
+
+export { children, forEach, map }

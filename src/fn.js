@@ -1,5 +1,6 @@
 import { getString } from './cache'
 import { getFromLeaves } from './get'
+import { children } from './iteration'
 
 const origin = (branch, leaf) => {
   let origin = leaf
@@ -24,25 +25,20 @@ const compute = (branch, leaf) => {
 
 const inspect = (branch, leaf) => {
   let val = leaf.val
-  let keys = leaf.keys
+  const subLeaves = children(branch, leaf)
   const start = 'Struct ' + (leaf.key ? getString(leaf.key) + ' ' : '')
   const origin = leaf.rT && getFromLeaves(branch, leaf.rT)
   if (origin) {
     val = inspect(branch, origin)
   }
-  if (keys) {
-    if (keys.length > 10) {
-      const len = keys.length
-      keys = keys.slice(0, 5).map(keyId => {
-        const leaf = getFromLeaves(branch, keyId)
-        return getString(leaf.key)
-      })
+  if (subLeaves.length) {
+    let keys = []
+    if (subLeaves.length > 10) {
+      const len = subLeaves.length
+      keys = subLeaves.slice(0, 5).map(child => getString(child.key))
       keys.push(`... ${len - 5} more items`)
     } else {
-      keys = keys.map(keyId => {
-        const leaf = getFromLeaves(branch, keyId)
-        return getString(leaf.key)
-      })
+      keys = subLeaves.map(child => getString(child.key))
     }
     return val
       ? `${start}{ val: ${val}, ${keys.join(', ')} }`
@@ -54,28 +50,29 @@ const inspect = (branch, leaf) => {
   }
 }
 
-const serialize = (branch, leaf, fn) => {
-  let result = {}
+const serialize = (branch, leaf) => {
   let val = leaf.val
-  const keys = leaf.keys
   const origin = leaf.rT && getFromLeaves(branch, leaf.rT)
   if (origin) {
     val = [ '@' ].concat(origin.path())
   }
-  if (keys) {
-    for (let i = 0, len = keys.length; i < len; i++) {
-      const keyId = keys[i]
-      const subLeaf = getFromLeaves(branch, keyId)
-      let keyResult = serialize(branch, subLeaf, fn)
-      if (keyResult !== void 0) { result[getString(subLeaf.key)] = keyResult }
+  let child = false
+  const result = {}
+  children(branch, leaf, subLeaf => {
+    const keyResult = serialize(branch, subLeaf)
+    if (keyResult !== void 0) {
+      child = true
+      result[getString(subLeaf.key)] = keyResult
     }
+  })
+  if (child) {
     if (val !== void 0) {
       result.val = val
     }
+    return result
   } else if (val !== void 0) {
-    result = val
+    return val
   }
-  return fn ? fn(branch, result) : result
 }
 
 export { origin, compute, inspect, serialize }

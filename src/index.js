@@ -10,6 +10,7 @@ const define = (obj, key, val) => {
 }
 
 const Leaf = function (val, stamp, id, branch, parent, key) {
+  this.id = id
   if (parent) {
     this.p = parent
   }

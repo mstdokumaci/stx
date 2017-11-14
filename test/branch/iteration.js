@@ -32,6 +32,39 @@ test('branches - forEach', t => {
     }
   })
 
+  t.same(
+    master.serialize(),
+    {
+      articles: {
+        first: { title: 'First Article' },
+        second: { title: 'Second Article' }
+      }
+    },
+    'master.serialize() is correct'
+  )
+  t.same(
+    branch1.serialize(),
+    {
+      articles: {
+        first: { title: 'First Article' },
+        second: { title: 'Second Article' },
+        third: { title: 'Third Article' }
+      }
+    },
+    'branch1.serialize() is correct'
+  )
+  t.same(
+    branch2.serialize(),
+    {
+      articles: {
+        first: { favourite: true, title: 'First Article' },
+        second: { title: 'Second Article' },
+        third: { favourite: true, title: 'Third Article' }
+      }
+    },
+    'branch2.serialize() is correct'
+  )
+
   const masterArray = []
   master.get('articles').forEach((article, id) => {
     article.forEach((prop, propName) => {

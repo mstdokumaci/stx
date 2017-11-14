@@ -7,7 +7,6 @@ const getFromLeaves = (branch, id) => {
   while (branch) {
     if (branch.leaves[id]) {
       const leaf = branch.leaves[id]
-      leaf.id = id
       leaf.branch = oBranch
       return leaf
     }

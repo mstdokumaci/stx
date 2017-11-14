@@ -1,6 +1,13 @@
-import { root, keyToId, pathToIds } from './id'
-import { origin } from './fn'
-import { set } from './manipulate'
+import { root, keyToId, pathToIds } from '../id'
+import { set } from './set'
+
+const origin = (branch, leaf) => {
+  let origin = leaf
+  while (origin && origin.rT) {
+    origin = getFromLeaves(branch, origin.rT)
+  }
+  return origin
+}
 
 const getFromLeaves = (branch, id) => {
   const oBranch = branch
@@ -79,4 +86,4 @@ const getApi = (branch, path, id = root, val, stamp) => {
   }
 }
 
-export { getFromLeaves, getByKey, getByPath, getApi }
+export { origin, getFromLeaves, getByKey, getByPath, getApi }

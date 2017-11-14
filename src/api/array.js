@@ -1,4 +1,4 @@
-import { getString } from './cache'
+import { getString } from '../cache'
 import { getFromLeaves } from './get'
 
 const children = (branch, leaf, cb) => {

@@ -1,7 +1,7 @@
 const test = require('tape')
-const { Struct } = require('../../')
+const { Struct } = require('../dist/index')
 
-test('branches - forEach', t => {
+test('array api - forEach', t => {
   const master = new Struct({
     articles: {
       first: {
@@ -118,7 +118,7 @@ test('branches - forEach', t => {
   t.end()
 })
 
-test('branches - filter - map', t => {
+test('array api - map', t => {
   const master = new Struct({
     articles: {
       first: {
@@ -182,7 +182,7 @@ test('branches - filter - map', t => {
   t.end()
 })
 
-test('branches - find', t => {
+test('array api - find', t => {
   const master = new Struct({
     first: {
       name: 'first',

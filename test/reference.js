@@ -1,7 +1,7 @@
 const test = require('tape')
-const { Struct } = require('../../')
+const { Struct } = require('../dist/index')
 
-test('branches with references', t => {
+test('references', t => {
   const master = new Struct()
 
   master.set({

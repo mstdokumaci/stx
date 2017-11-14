@@ -1,6 +1,6 @@
-import { Leaf } from './index'
-import { addToStrings } from './cache'
-import { root, keyToId } from './id'
+import { Leaf } from '../index'
+import { addToStrings } from '../cache'
+import { root, keyToId } from '../id'
 import { getFromLeaves, getByPath } from './get'
 
 const setReferenceByPath = (leaf, path, stamp, id, branch) =>
@@ -63,7 +63,7 @@ const setKeys = (leaf, val, stamp, id, branch) => {
 const set = (leaf, val, stamp, id, branch) => {
   if (typeof val === 'object') {
     if (!val) {
-      // is null
+      // TODO: handle removal
     } else if (Array.isArray(val)) {
       if (val[0] === '@') {
         setReferenceByPath(leaf, val.slice(1), stamp, id, branch)

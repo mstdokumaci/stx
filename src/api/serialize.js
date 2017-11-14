@@ -1,27 +1,6 @@
-import { getString } from './cache'
+import { getString } from '../cache'
 import { getFromLeaves } from './get'
-import { children } from './iteration'
-
-const origin = (branch, leaf) => {
-  let origin = leaf
-  while (origin && origin.rT) {
-    origin = getFromLeaves(branch, origin.rT)
-  }
-  return origin
-}
-
-const compute = (branch, leaf) => {
-  if (leaf) {
-    leaf = origin(branch, leaf)
-    while (leaf.val === void 0 && branch.inherits) {
-      if (branch.inherits.leaves[leaf.id]) {
-        leaf = branch.inherits.leaves[leaf.id]
-      }
-      branch = branch.inherits
-    }
-    return leaf.val
-  }
-}
+import { children } from './array'
 
 const inspect = (branch, leaf) => {
   let val = leaf.val
@@ -75,4 +54,4 @@ const serialize = (branch, leaf) => {
   }
 }
 
-export { origin, compute, inspect, serialize }
+export { inspect, serialize }

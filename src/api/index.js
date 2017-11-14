@@ -4,7 +4,7 @@ import { root } from '../id'
 import { set } from './set'
 import { origin, getFromLeaves, getApi } from './get'
 import { compute } from './compute'
-import { forEach, map, filter, find } from './array'
+import { forEach, map, filter, find, reduce } from './array'
 import { inspect, serialize } from './serialize'
 
 const define = (obj, key, val) => {
@@ -104,6 +104,14 @@ const defineApi = (leaf, struct) => {
   })
   define(struct, 'find', function (cb) {
     return find(this, this.leaves[root], cb)
+  })
+
+  // REDUCE
+  define(leaf, 'reduce', function (cb, accumulator) {
+    return reduce(this.branch, this, cb, accumulator)
+  })
+  define(struct, 'reduce', function (cb, accumulator) {
+    return reduce(this, this.leaves[root], cb, accumulator)
   })
 
   /* ===== LEAF ONLY API ===== */

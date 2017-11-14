@@ -228,3 +228,44 @@ test('array api - find', t => {
 
   t.end()
 })
+
+test('array api - reduce', t => {
+  global.debug = true
+
+  const master = new Struct({
+    payments: {
+      first: 5,
+      second: 10
+    }
+  })
+
+  const branch1 = master.create()
+  branch1.get('payments').set({
+    third: 15
+  })
+
+  const branch2 = branch1.create({
+    payments: {
+      first: 3,
+      third: 7
+    }
+  })
+
+  t.equals(
+    master.get('payments').reduce((sum, amount) => sum + amount.compute(), 0),
+    15,
+    'master.payments.reduce() = 15'
+  )
+  t.equals(
+    branch1.get('payments').reduce((sum, amount) => sum + amount.compute(), 5),
+    35,
+    'branch1.payments.reduce() = 35'
+  )
+  t.equals(
+    branch2.get('payments').reduce((sum, amount) => sum + amount.compute(), 0),
+    20,
+    'branch2.payments.reduce() = 20'
+  )
+
+  t.end()
+})

@@ -59,10 +59,24 @@ const filter = (branch, leaf, cb) => {
 }
 
 const find = (branch, leaf, cb) => {
-  return children(branch, leaf, subLeaf => {
+  return Object.assign(children(branch, leaf, subLeaf => {
     subLeaf.branch = branch
     return cb(subLeaf, getString(subLeaf.key))
-  })
+  }), { branch })
 }
 
-export { children, forEach, map, filter, find }
+const reduce = (branch, leaf, cb, accumulator) => {
+  let skipFirst = accumulator === void 0
+  children(branch, leaf, subLeaf => {
+    subLeaf.branch = branch
+    if (skipFirst) {
+      accumulator = subLeaf
+      skipFirst = false
+    } else {
+      accumulator = cb(accumulator, subLeaf, getString(subLeaf.key))
+    }
+  })
+  return accumulator
+}
+
+export { children, forEach, map, filter, find, reduce }

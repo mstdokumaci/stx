@@ -29,7 +29,7 @@ const setReference = (leaf, val, stamp, id, branch) => {
       } else {
         val.rF = [ id ]
       }
-      return
+      return true
     }
     branch = branch.inherits
   }
@@ -45,7 +45,9 @@ const setKeys = (leaf, val, stamp, id, branch) => {
       const leafId = keyToId(key, id)
       const existing = getFromLeaves(branch, leafId)
       if (existing) {
-        set(existing, val[key], stamp, leafId, branch)
+        if (set(existing, val[key], stamp, leafId, branch)) {
+          keys.push(leafId)
+        }
       } else {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
@@ -66,17 +68,17 @@ const set = (leaf, val, stamp, id, branch) => {
       // TODO: handle removal
     } else if (Array.isArray(val)) {
       if (val[0] === '@') {
-        setReferenceByPath(leaf, val.slice(1), stamp, id, branch)
+        return setReferenceByPath(leaf, val.slice(1), stamp, id, branch)
       } else {
         // TODO: handle setting array
       }
     } else if (val.isLeaf) {
-      setReference(leaf, val, stamp, id, branch)
+      return setReference(leaf, val, stamp, id, branch)
     } else {
       setKeys(leaf, val, stamp, id, branch)
     }
   } else {
-    setVal(leaf, val, stamp, id, branch)
+    return setVal(leaf, val, stamp, id, branch)
   }
 }
 

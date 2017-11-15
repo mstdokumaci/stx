@@ -9,7 +9,7 @@ const Leaf = function (val, stamp, id, branch, parent, key) {
   if (key) {
     this.key = key
   }
-  this.kBranch = branch
+  this.struct = branch
   if (val !== void 0) {
     set(this, val, stamp, id, branch)
   }

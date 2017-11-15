@@ -4,7 +4,7 @@ import { root, keyToId } from '../id'
 import { getFromLeaves, getByPath } from './get'
 
 const setVal = (leaf, val, stamp, id, branch) => {
-  if (leaf.kBranch !== branch) {
+  if (leaf.struct !== branch) {
     branch.leaves[id] = leaf = new Leaf(val, stamp, id, branch, leaf.p, leaf.key)
   } else if (val !== void 0) {
     leaf.val = val
@@ -19,7 +19,7 @@ const setReference = (leaf, val, stamp, id, branch) => {
   const oBranch = branch
   while (branch) {
     if (branch === val.branch) {
-      leaf = setVal(leaf, void 0, stamp, id, branch)
+      leaf = setVal(leaf, void 0, stamp, id, oBranch)
       leaf.rT = val.id
       if (branch !== oBranch) {
         id = [oBranch, id]

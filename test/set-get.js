@@ -1,7 +1,7 @@
 const test = require('tape')
 const { Struct } = require('../')
 
-test('set - get', t => {
+test('set - get references', t => {
   const master = new Struct()
 
   master.set({
@@ -125,6 +125,79 @@ test('set - get', t => {
         pointer4: [ '@', 'pointers', 'pointer2' ],
         pointer5: [ '@', 'pointers', 'pointer1' ],
         pointer6: [ '@', 'pointers', 'pointer5' ]
+      }
+    },
+    'branch1.serialize() = correct'
+  )
+
+  t.end()
+})
+
+test('set - get - arrays', t => {
+  const master = new Struct()
+
+  master.set({
+    deep: {
+      real: [ 1, 2, 3 ]
+    },
+    pointers: {
+      pointer1: ['@', 'deep', 'real'],
+      pointer2: ['@', 'pointers', 'pointer1']
+    }
+  })
+
+  t.same(
+    master.get(['pointers', 'pointer1']).compute(),
+    [ 1, 2, 3 ],
+    'pointers.pointer1.compute() = [ 1, 2, 3 ]'
+  )
+  t.same(
+    master.get(['pointers', 'pointer2']).compute(),
+    [ 1, 2, 3 ],
+    'pointers.pointer2.compute() = [ 1, 2, 3 ]'
+  )
+  t.equals(
+    master.inspect(),
+    'Struct { deep, pointers }',
+    'master.inspect() = Struct { deep, pointers }'
+  )
+  t.same(
+    master.serialize(),
+    {
+      deep: {
+        real: [ 1, 2, 3 ]
+      },
+      pointers: {
+        pointer1: ['@', 'deep', 'real'],
+        pointer2: ['@', 'pointers', 'pointer1']
+      }
+    },
+    'master.pointers.serialize() = correct'
+  )
+  t.same(
+    master.get(['deep', 'real']).inspect(),
+    'Struct real { val: 1,2,3 }',
+    'master.deep.real.inspect() = Struct real { val: 1,2,3 }'
+  )
+
+  const branch1 = master.create({
+    deep: {
+      real: [ 3, 2, 1 ]
+    }
+  })
+
+  t.same(
+    branch1.get(['pointers', 'pointer2']).compute(),
+    [ 3, 2, 1 ],
+    'branch1.pointers.pointer2.compute() = [ 3, 2, 1 ]'
+  )
+  t.same(
+    branch1.serialize(),
+    {
+      deep: { real: [ 3, 2, 1 ] },
+      pointers: {
+        pointer1: [ '@', 'deep', 'real' ],
+        pointer2: [ '@', 'pointers', 'pointer1' ]
       }
     },
     'branch1.serialize() = correct'

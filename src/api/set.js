@@ -68,7 +68,7 @@ const set = (leaf, val, stamp, id, branch) => {
       if (val[0] === '@') {
         setReferenceByPath(leaf, val.slice(1), stamp, id, branch)
       } else {
-        // TODO: handle setting array
+        setVal(leaf, val, stamp, id, branch)
       }
     } else if (val.isLeaf) {
       setReference(leaf, val, stamp, id, branch)

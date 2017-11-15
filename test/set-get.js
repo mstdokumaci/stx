@@ -67,7 +67,7 @@ test('set - get', t => {
         pointer4: [ '@', 'pointers', 'pointer2' ]
       }
     },
-    'master.pointers.serialize() = good'
+    'master.pointers.serialize() = correct'
   )
   t.same(
     master.get('pointers').serialize(),
@@ -77,25 +77,57 @@ test('set - get', t => {
       pointer3: [ '@', 'pointers', 'pointer1' ],
       pointer4: [ '@', 'pointers', 'pointer2' ]
     },
-    'master.pointers.serialize() = good'
+    'master.pointers.serialize() = correct'
   )
   t.same(
     master.get('deep').serialize(),
     { real: 'thing' },
     'master.pointers.serialize() = { real: \'thing\' }'
   )
+
+  const branch1 = master.create({
+    deep: {
+      real2: 'thing2'
+    }
+  })
+
+  branch1.get(['pointers', 'pointer2']).set(['@', 'deep', 'real2'])
+
   t.equals(
     master.get('pointers').get('pointer5', ['@', 'pointers', 'pointer1']).origin().get('real').compute(),
     'thing',
     'master.pointers.pointer5.origin().real.compute() = thing'
   )
-
   master.get(['pointers', 'pointer6'], ['@', 'pointers', 'pointer5'])
 
   t.equals(
     master.get(['pointers', 'pointer6', 'real']).compute(),
     'thing',
     'master.pointers.pointer6.real.compute() = thing'
+  )
+
+  t.equals(
+    branch1.get(['pointers', 'pointer2']).compute(),
+    'thing2',
+    'branch1.pointers.pointer2.compute() = thing2'
+  )
+  t.same(
+    branch1.serialize(),
+    {
+      deep: {
+        real2: 'thing2',
+        real: 'thing'
+      },
+      pointers: {
+        pointer1: [ '@', 'deep' ],
+        pointer2: [ '@', 'deep', 'real2' ],
+        pointer3: [ '@', 'pointers', 'pointer1' ],
+        pointer4: [ '@', 'pointers', 'pointer2' ],
+        pointer5: [ '@', 'pointers', 'pointer1' ],
+        pointer6: [ '@', 'pointers', 'pointer5' ]
+      }
+    },
+    'branch1.serialize() = correct'
   )
 
   t.end()

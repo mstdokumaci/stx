@@ -1,7 +1,9 @@
 import { getString } from '../cache'
+import { getFromLeaves } from './get'
 
 const children = (branch, leaf, cb) => {
   const exists = {}
+  const oBranch = branch
   const id = leaf.id
   const subLeaves = []
   while (branch) {
@@ -11,15 +13,15 @@ const children = (branch, leaf, cb) => {
         if (exists[leafId]) {
           return
         }
-        exists[leafId] = true
+        exists[leafId] = getFromLeaves(oBranch, leafId)
         if (cb) {
-          return cb(leaf.kBranch.leaves[leafId])
+          return cb(exists[leafId])
         } else {
-          subLeaves.push(leaf.kBranch.leaves[leafId])
+          subLeaves.push(exists[leafId])
         }
       })
       if (found) {
-        return leaf.kBranch.leaves[found]
+        return exists[found]
       }
     }
     branch = branch.inherits

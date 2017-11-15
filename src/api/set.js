@@ -3,9 +3,6 @@ import { addToStrings } from '../cache'
 import { root, keyToId } from '../id'
 import { getFromLeaves, getByPath } from './get'
 
-const setReferenceByPath = (leaf, path, stamp, id, branch) =>
-  set(leaf, getByPath(branch, path, root, {}, stamp), stamp, id, branch)
-
 const setVal = (leaf, val, stamp, id, branch) => {
   if (leaf.kBranch !== branch) {
     branch.leaves[id] = leaf = new Leaf(val, stamp, id, branch, leaf.p, leaf.key)
@@ -14,6 +11,9 @@ const setVal = (leaf, val, stamp, id, branch) => {
   }
   return leaf
 }
+
+const setReferenceByPath = (leaf, path, stamp, id, branch) =>
+  set(leaf, getByPath(branch, path, root, {}, stamp), stamp, id, branch)
 
 const setReference = (leaf, val, stamp, id, branch) => {
   const oBranch = branch
@@ -29,7 +29,7 @@ const setReference = (leaf, val, stamp, id, branch) => {
       } else {
         val.rF = [ id ]
       }
-      return true
+      return
     }
     branch = branch.inherits
   }
@@ -45,9 +45,7 @@ const setKeys = (leaf, val, stamp, id, branch) => {
       const leafId = keyToId(key, id)
       const existing = getFromLeaves(branch, leafId)
       if (existing) {
-        if (set(existing, val[key], stamp, leafId, branch)) {
-          keys.push(leafId)
-        }
+        set(existing, val[key], stamp, leafId, branch)
       } else {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
@@ -68,17 +66,17 @@ const set = (leaf, val, stamp, id, branch) => {
       // TODO: handle removal
     } else if (Array.isArray(val)) {
       if (val[0] === '@') {
-        return setReferenceByPath(leaf, val.slice(1), stamp, id, branch)
+        setReferenceByPath(leaf, val.slice(1), stamp, id, branch)
       } else {
         // TODO: handle setting array
       }
     } else if (val.isLeaf) {
-      return setReference(leaf, val, stamp, id, branch)
+      setReference(leaf, val, stamp, id, branch)
     } else {
       setKeys(leaf, val, stamp, id, branch)
     }
   } else {
-    return setVal(leaf, val, stamp, id, branch)
+    setVal(leaf, val, stamp, id, branch)
   }
 }
 

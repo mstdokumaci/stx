@@ -1,12 +1,11 @@
 import { getString } from '../cache'
-import { getFromLeaves } from './get'
 
 const children = (branch, leaf, cb) => {
   const exists = {}
   const id = leaf.id
-  leaf = getFromLeaves(branch, id)
   const subLeaves = []
   while (branch) {
+    leaf = branch.leaves[id]
     if (leaf && leaf.keys) {
       const found = leaf.keys.find(leafId => {
         if (exists[leafId]) {
@@ -24,9 +23,6 @@ const children = (branch, leaf, cb) => {
       }
     }
     branch = branch.inherits
-    if (branch) {
-      leaf = branch.leaves[id]
-    }
   }
   return subLeaves
 }

@@ -3,23 +3,23 @@ import { addToStrings } from '../cache'
 import { root, keyToId } from '../id'
 import { getFromLeaves, getByPath } from './get'
 
-const setVal = (leaf, val, stamp, id, branch) => {
+const setVal = (branch, leaf, id, val, stamp) => {
   if (leaf.struct !== branch) {
-    branch.leaves[id] = leaf = new Leaf(val, stamp, id, branch, leaf.p, leaf.key)
+    branch.leaves[id] = leaf = new Leaf(branch, id, val, stamp, leaf.p, leaf.key)
   } else if (val !== void 0) {
     leaf.val = val
   }
   return leaf
 }
 
-const setReferenceByPath = (leaf, path, stamp, id, branch) =>
-  set(leaf, getByPath(branch, path, root, {}, stamp), stamp, id, branch)
+const setReferenceByPath = (branch, leaf, id, path, stamp) =>
+  set(branch, leaf, id, getByPath(branch, path, root, {}, stamp), stamp)
 
-const setReference = (leaf, val, stamp, id, branch) => {
+const setReference = (branch, leaf, id, val, stamp) => {
   const oBranch = branch
   while (branch) {
     if (branch === val.branch) {
-      leaf = setVal(leaf, void 0, stamp, id, oBranch)
+      leaf = setVal(oBranch, leaf, id, void 0, stamp)
       leaf.rT = val.id
       if (branch !== oBranch) {
         id = [oBranch, id]
@@ -36,47 +36,47 @@ const setReference = (leaf, val, stamp, id, branch) => {
   throw new Error('Reference must be in same branch')
 }
 
-const setKeys = (leaf, val, stamp, id, branch) => {
+const setKeys = (branch, leaf, id, val, stamp) => {
   let keys = []
   for (let key in val) {
     if (key === 'val') {
-      setVal(leaf, val.val, stamp, id, branch)
+      setVal(branch, leaf, id, val.val, stamp)
     } else {
       const leafId = keyToId(key, id)
       const existing = getFromLeaves(branch, leafId)
       if (existing) {
-        set(existing, val[key], stamp, leafId, branch)
+        set(branch, existing, leafId, val[key], stamp)
       } else {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
         keys.push(leafId)
-        branch.leaves[leafId] = new Leaf(val[key], stamp, leafId, branch, id, keyId)
+        branch.leaves[leafId] = new Leaf(branch, leafId, val[key], stamp, id, keyId)
       }
     }
   }
   if (keys.length) {
-    leaf = setVal(leaf, void 0, stamp, id, branch)
+    leaf = setVal(branch, leaf, id, void 0, stamp)
     leaf.keys = leaf.keys ? leaf.keys.concat(keys) : keys
   }
 }
 
-const set = (leaf, val, stamp, id, branch) => {
+const set = (branch, leaf, id, val, stamp) => {
   if (typeof val === 'object') {
     if (!val) {
       // TODO: handle removal
     } else if (Array.isArray(val)) {
       if (val[0] === '@') {
-        setReferenceByPath(leaf, val.slice(1), stamp, id, branch)
+        setReferenceByPath(branch, leaf, id, val.slice(1), stamp)
       } else {
-        setVal(leaf, val, stamp, id, branch)
+        setVal(branch, leaf, id, val, stamp)
       }
     } else if (val.isLeaf) {
-      setReference(leaf, val, stamp, id, branch)
+      setReference(branch, leaf, id, val, stamp)
     } else {
-      setKeys(leaf, val, stamp, id, branch)
+      setKeys(branch, leaf, id, val, stamp)
     }
   } else {
-    setVal(leaf, val, stamp, id, branch)
+    setVal(branch, leaf, id, val, stamp)
   }
 }
 

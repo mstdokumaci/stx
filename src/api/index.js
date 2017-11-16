@@ -16,10 +16,10 @@ const defineApi = (leaf, struct) => {
 
   // SET
   define(leaf, 'set', function (val, stamp) {
-    set(this, val, stamp, this.id, this.branch)
+    set(this.branch, this, this.id, val, stamp)
   })
   define(struct, 'set', function (val, stamp) {
-    set(this.leaves[root], val, stamp, root, this)
+    set(this, this.leaves[root], root, val, stamp)
   })
 
   // GET

@@ -1,7 +1,7 @@
 const test = require('tape')
 const { Struct } = require('../')
 
-test('set - get references', t => {
+test('set - get - references', t => {
   const master = new Struct()
 
   master.set({

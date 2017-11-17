@@ -24,10 +24,10 @@ const defineApi = (leaf, struct) => {
 
   // GET
   define(leaf, 'get', function (path, val, stamp) {
-    return getApi(this.branch, path, this.id, val, stamp)
+    return getApi(this.branch, this.id, path, val, stamp)
   })
   define(struct, 'get', function (path, val, stamp) {
-    return getApi(this, path, root, val, stamp)
+    return getApi(this, root, path, val, stamp)
   })
 
   // PARENT

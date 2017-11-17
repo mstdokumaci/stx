@@ -16,7 +16,7 @@ const setVal = (branch, leaf, val, stamp) => {
 }
 
 const setReferenceByPath = (branch, leaf, path, stamp) =>
-  set(branch, leaf, getByPath(branch, path, root, {}, stamp), stamp)
+  set(branch, leaf, getByPath(branch, root, path, {}, stamp), stamp)
 
 const setReference = (branch, leaf, val, stamp) => {
   const oBranch = branch

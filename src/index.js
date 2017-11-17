@@ -3,13 +3,14 @@ import { defineApi, set } from './api/index'
 
 const Leaf = function (branch, id, val, stamp, parent, key) {
   this.id = id
+  this.struct = branch
+  this.branch = branch
   if (parent) {
     this.p = parent
   }
   if (key) {
     this.key = key
   }
-  this.struct = branch
   if (val !== void 0) {
     set(branch, this, val, stamp)
   }

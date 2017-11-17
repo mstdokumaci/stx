@@ -21,7 +21,7 @@ const getFromLeaves = (branch, id) => {
   }
 }
 
-const getByKey = (branch, key, id = root, val, stamp) => {
+const getByKey = (branch, id = root, key, val, stamp) => {
   const leafId = keyToId(key, id)
   let leaf = getFromLeaves(branch, leafId)
   if (leaf) {
@@ -33,7 +33,7 @@ const getByKey = (branch, key, id = root, val, stamp) => {
   }
 }
 
-const getByPath = (branch, path, id = root, val, stamp) => {
+const getByPath = (branch, id = root, path, val, stamp) => {
   const ids = pathToIds(path, id)
   let i = ids.length - 1
   const leafId = ids[i]
@@ -53,7 +53,7 @@ const getByPath = (branch, path, id = root, val, stamp) => {
   }
 }
 
-const getApi = (branch, path, id = root, val, stamp) => {
+const getApi = (branch, id = root, path, val, stamp) => {
   if (Array.isArray(path)) {
     const ids = pathToIds(path, id)
     let i = ids.length - 1
@@ -65,7 +65,7 @@ const getApi = (branch, path, id = root, val, stamp) => {
       while (i) {
         let leaf = getFromLeaves(branch, ids[i])
         if (leaf && (leaf = origin(branch, leaf))) {
-          return getApi(branch, path.slice(i + 1), leaf.id, val, stamp)
+          return getApi(branch, leaf.id, path.slice(i + 1), val, stamp)
         }
         i--
       }
@@ -82,7 +82,7 @@ const getApi = (branch, path, id = root, val, stamp) => {
       }
     }
   } else {
-    return getByKey(branch, path, id, val, stamp)
+    return getByKey(branch, id, path, val, stamp)
   }
 }
 

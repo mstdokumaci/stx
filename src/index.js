@@ -11,7 +11,7 @@ const Leaf = function (branch, id, val, stamp, parent, key) {
   }
   this.struct = branch
   if (val !== void 0) {
-    set(branch, this, id, val, stamp)
+    set(branch, this, val, stamp)
   }
 }
 

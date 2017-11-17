@@ -29,56 +29,58 @@ const getByKey = (branch, id = root, key, val, stamp) => {
   } else if (val !== void 0) {
     leaf = getFromLeaves(branch, id)
     set(branch, leaf, { [ key ]: val }, stamp)
-    return getFromLeaves(branch, leafId)
+    return branch.leaves[leafId]
+  }
+}
+
+const setByPath = (branch, id, path, val, stamp, ids, i) => {
+  const leafId = ids[i]
+  while (i--) {
+    val = { [ path.pop() ]: val }
+    let leaf = getFromLeaves(branch, ids[i])
+    if (leaf) {
+      set(branch, leaf, val, stamp)
+      return branch.leaves[leafId]
+    }
+  }
+  val = { [ path.pop() ]: val }
+  let leaf = getFromLeaves(branch, id)
+  if (leaf) {
+    set(branch, leaf, val, stamp)
+    return branch.leaves[leafId]
   }
 }
 
 const getByPath = (branch, id = root, path, val, stamp) => {
   const ids = pathToIds(path, id)
   let i = ids.length - 1
-  const leafId = ids[i]
-  let leaf = getFromLeaves(branch, leafId)
+  let leaf = getFromLeaves(branch, ids[i])
   if (leaf) {
     return leaf
   } else if (val !== void 0) {
-    while (i) {
-      val = { [ path.splice(i) ]: val }
-      i--
-      let leaf = getFromLeaves(branch, ids[i])
-      if (leaf) {
-        set(branch, leaf, val, stamp)
-        return getFromLeaves(branch, leafId)
-      }
-    }
+    setByPath(branch, id, path, val, stamp, ids, i)
   }
 }
 
 const getApi = (branch, id = root, path, val, stamp) => {
   if (Array.isArray(path)) {
+    // if (path.length < 2) {
+    //   return getByKey(branch, id, path[0], val, stamp)
+    // }
     const ids = pathToIds(path, id)
     let i = ids.length - 1
-    const leafId = ids[i]
-    let leaf = getFromLeaves(branch, leafId)
+    let leaf = getFromLeaves(branch, ids[i])
     if (leaf) {
       return leaf
-    } else if (val === void 0) {
-      while (i) {
+    } else {
+      while (i--) {
         let leaf = getFromLeaves(branch, ids[i])
         if (leaf && (leaf = origin(branch, leaf))) {
           return getApi(branch, leaf.id, path.slice(i + 1), val, stamp)
         }
-        i--
       }
-    } else {
-      while (i) {
-        val = { [ path.splice(i) ]: val }
-        i--
-        let leaf = getFromLeaves(branch, ids[i])
-        if (leaf) {
-          set(branch, leaf, val, stamp)
-          leaf = getFromLeaves(branch, leafId)
-          return origin(branch, leaf) || leaf
-        }
+      if (val !== void 0) {
+        setByPath(branch, id, path, val, stamp, ids, ids.length - 1)
       }
     }
   } else {

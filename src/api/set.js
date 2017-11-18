@@ -2,7 +2,7 @@ import { Leaf } from '../index'
 import { addToStrings } from '../cache'
 import { root, keyToId } from '../id'
 import { getFromLeaves, getByPath } from './get'
-import { remove } from './remove'
+import { remove, removeReference } from './remove'
 
 const setVal = (branch, leaf, val, stamp) => {
   if (leaf.struct !== branch) {
@@ -11,6 +11,7 @@ const setVal = (branch, leaf, val, stamp) => {
     )
   } else if (val !== void 0) {
     leaf.val = val
+    removeReference(branch, leaf, stamp)
   }
   return leaf
 }
@@ -23,6 +24,7 @@ const setReference = (branch, leaf, val, stamp) => {
   while (branch) {
     if (branch === val.branch) {
       leaf = setVal(oBranch, leaf, void 0, stamp)
+      leaf.val = void 0
       leaf.rT = val.id
       const id = branch === oBranch ? leaf.id : [ oBranch, leaf.id ]
       if (val.rF) {
@@ -41,7 +43,7 @@ const setKeys = (branch, leaf, val, stamp) => {
   let keys = []
   for (let key in val) {
     if (key === 'val') {
-      setVal(branch, leaf, val.val, stamp)
+      set(branch, leaf, val.val, stamp)
     } else {
       const subLeafId = keyToId(key, leaf.id)
       const existing = getFromLeaves(branch, subLeafId)

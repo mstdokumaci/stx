@@ -1,5 +1,12 @@
 import { Leaf } from '../index'
 
+const removeReference = (branch, leaf, stamp) => {
+  if (leaf.rT) {
+    // TODO: remove rF
+    leaf.rT = void 0
+  }
+}
+
 const removeFromParent = (parent, id, stamp) => {
   parent.keys.splice(
     parent.keys.indexOf(id), 1
@@ -37,6 +44,7 @@ const remove = (branch, leaf, stamp) => {
   }
 
   removeChildren(branch, leaf, stamp)
+  removeReference(branch, leaf, stamp)
 }
 
-export { remove }
+export { remove, removeReference }

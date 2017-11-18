@@ -94,7 +94,7 @@ test('set - get - references', t => {
   branch1.get(['pointers', 'pointer2']).set(['@', 'deep', 'real2'])
 
   t.equals(
-    master.get('pointers').get('pointer5', ['@', 'pointers', 'pointer1']).origin().get('real').compute(),
+    master.get('pointers').get('pointer5', ['@', 'pointers', 'pointer1']).get('real').compute(),
     'thing',
     'master.pointers.pointer5.origin().real.compute() = thing'
   )

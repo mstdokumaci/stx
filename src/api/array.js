@@ -13,11 +13,13 @@ const children = (branch, leaf, cb) => {
         if (exists[leafId]) {
           return
         }
-        if (exists[leafId] = getFromLeaves(oBranch, leafId)) {
+        const got = getFromLeaves(oBranch, leafId)
+        if (got) {
+          exists[leafId] = got
           if (cb) {
-            return cb(exists[leafId])
+            return cb(got)
           } else {
-            subLeaves.push(exists[leafId])
+            subLeaves.push(got)
           }
         } else {
           exists[leafId] = true

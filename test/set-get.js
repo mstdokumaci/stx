@@ -88,6 +88,11 @@ test('set - get - references', t => {
   const branch1 = master.create({
     deep: {
       real2: 'thing2'
+    },
+    pointers: {
+      pointer1: {
+        real3: 'thing3'
+      }
     }
   })
 
@@ -119,7 +124,10 @@ test('set - get - references', t => {
         real: 'thing'
       },
       pointers: {
-        pointer1: [ '@', 'deep' ],
+        pointer1: {
+          val: [ '@', 'deep' ],
+          real3: 'thing3'
+        },
         pointer2: [ '@', 'deep', 'real2' ],
         pointer3: [ '@', 'pointers', 'pointer1' ],
         pointer4: [ '@', 'pointers', 'pointer2' ],

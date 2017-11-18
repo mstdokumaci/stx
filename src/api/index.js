@@ -2,7 +2,7 @@ import { Struct } from '../index'
 import { getString } from '../cache'
 import { root } from '../id'
 import { set } from './set'
-import { origin, getFromLeaves, getApi } from './get'
+import { getFromLeaves, origin, getApi } from './get'
 import { compute } from './compute'
 import { forEach, map, filter, find, reduce } from './array'
 import { inspect, serialize } from './serialize'
@@ -126,7 +126,7 @@ const defineApi = (leaf, struct) => {
 
   // COMPUTE
   define(leaf, 'compute', function () {
-    return compute(this.branch, this)
+    return compute(this.branch, this.id)
   })
 
   /* ===== STRUCT ONLY API ===== */

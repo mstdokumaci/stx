@@ -1,24 +1,22 @@
 import { keyToId, pathToIds } from '../id'
 import { set } from './set'
 
-const origin = (branch, leaf) => {
-  while (leaf && leaf.rT) {
-    leaf = getFromLeaves(branch, leaf.rT)
-  }
-  return leaf
-}
-
 const getFromLeaves = (branch, id) => {
   const oBranch = branch
   while (branch) {
     if (branch.leaves[id]) {
       const leaf = branch.leaves[id]
+      if (leaf === null) {
+        return
+      }
       leaf.branch = oBranch
       return leaf
     }
     branch = branch.inherits
   }
 }
+
+const origin = (branch, leaf) => getFromLeaves(branch, leaf.rT) || leaf
 
 const getByKey = (branch, id, key, val, stamp, inReference) => {
   const leafId = keyToId(key, id)
@@ -89,4 +87,4 @@ const getApi = (branch, id, path, val, stamp) => {
   }
 }
 
-export { origin, getFromLeaves, getByKey, getByPath, getApi }
+export { getFromLeaves, origin, getByKey, getByPath, getApi }

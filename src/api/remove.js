@@ -1,5 +1,3 @@
-import { Leaf } from '../index'
-
 const removeReference = (branch, leaf, stamp) => {
   if (leaf.rT) {
     // TODO: remove rF
@@ -13,32 +11,31 @@ const removeFromParent = (parent, id, stamp) => {
   )
 }
 
-const removeOwn = (branch, leaf, stamp) => {
+const removeOwn = (branch, leaf, stamp, ignoreParent) => {
   delete branch.leaves[leaf.id]
 
-  removeFromParent(branch.leaves[leaf.p], leaf.id, stamp)
+  if (!ignoreParent) {
+    removeFromParent(branch.leaves[leaf.p], leaf.id, stamp)
+  }
 }
 
 const removeBranch = (branch, leaf, stamp) => {
-  branch.leaves[leaf.id] = new Leaf(
-    branch, leaf.id, void 0, stamp, leaf.p, leaf.key
-  )
-  branch.leaves[leaf.id].val = null
+  branch.leaves[leaf.id] = null
 }
 
 const removeChildren = (branch, leaf, stamp) => {
   if (leaf.keys) {
     leaf.keys.forEach(keyId => {
       if (branch.leaves[keyId]) {
-        remove(branch, branch.leaves[keyId], stamp)
+        remove(branch, branch.leaves[keyId], stamp, true)
       }
     })
   }
 }
 
-const remove = (branch, leaf, stamp) => {
+const remove = (branch, leaf, stamp, ignoreParent) => {
   if (leaf.struct === branch) {
-    removeOwn(branch, leaf, stamp)
+    removeOwn(branch, leaf, stamp, ignoreParent)
   } else {
     removeBranch(branch, leaf, stamp)
   }

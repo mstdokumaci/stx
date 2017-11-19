@@ -36,11 +36,8 @@ const serialize = (branch, leaf) => {
   let child = false
   const result = {}
   children(branch, leaf, subLeaf => {
-    const keyResult = serialize(branch, subLeaf)
-    if (keyResult !== void 0) {
-      child = true
-      result[getString(subLeaf.key)] = keyResult
-    }
+    child = true
+    result[getString(subLeaf.key)] = serialize(branch, subLeaf)
   })
   if (child) {
     if (val !== void 0) {
@@ -49,6 +46,8 @@ const serialize = (branch, leaf) => {
     return result
   } else if (val !== void 0) {
     return val
+  } else {
+    return {}
   }
 }
 

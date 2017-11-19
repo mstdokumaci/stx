@@ -9,30 +9,30 @@ test('set - get - references', t => {
       real: 'thing'
     },
     pointers: {
-      pointer1: ['@', 'deep'],
-      pointer2: ['@', 'deep', 'real'],
-      pointer3: ['@', 'pointers', 'pointer1'],
-      pointer4: ['@', 'pointers', 'pointer2']
+      pointer1: [ '@', 'deep' ],
+      pointer2: [ '@', 'deep', 'real' ],
+      pointer3: [ '@', 'pointers', 'pointer1' ],
+      pointer4: [ '@', 'pointers', 'pointer2' ]
     }
   })
 
   t.equals(
-    master.get(['pointers', 'pointer1', 'real']).compute(),
+    master.get([ 'pointers', 'pointer1', 'real' ]).compute(),
     'thing',
     'pointers.pointer1.real.compute() = thing'
   )
   t.equals(
-    master.get(['pointers', 'pointer2']).compute(),
+    master.get([ 'pointers', 'pointer2' ]).compute(),
     'thing',
     'pointers.pointer2.compute() = thing'
   )
   t.equals(
-    master.get(['pointers', 'pointer3', 'real']).compute(),
+    master.get([ 'pointers', 'pointer3', 'real' ]).compute(),
     'thing',
     'pointers.pointer3.real.compute() = thing'
   )
   t.equals(
-    master.get(['pointers', 'pointer4']).compute(),
+    master.get([ 'pointers', 'pointer4' ]).compute(),
     'thing',
     'pointers.pointer4.compute() = thing'
   )
@@ -47,12 +47,12 @@ test('set - get - references', t => {
     'master.pointers.inspect() = Struct pointers { pointer1, pointer2, pointer3, pointer4 }'
   )
   t.equals(
-    master.get(['pointers', 'pointer2']).inspect(),
+    master.get([ 'pointers', 'pointer2' ]).inspect(),
     'Struct pointer2 { val: Struct real { val: thing } }',
     'master.pointers.pointer2.inspect() = Struct pointer2 { val: Struct real { val: thing } }'
   )
   t.same(
-    master.get(['deep', 'real']).path(),
+    master.get([ 'deep', 'real' ]).path(),
     [ 'deep', 'real' ],
     'master.deep.real.path() = [ \'deep\', \'real\' ]'
   )
@@ -96,23 +96,23 @@ test('set - get - references', t => {
     }
   })
 
-  branch1.get(['pointers', 'pointer2']).set(['@', 'deep', 'real2'])
+  branch1.get([ 'pointers', 'pointer2' ]).set([ '@', 'deep', 'real2' ])
 
   t.equals(
-    master.get('pointers').get('pointer5', ['@', 'pointers', 'pointer1']).get('real').compute(),
+    master.get('pointers').get('pointer5', [ '@', 'pointers', 'pointer1' ]).get('real').compute(),
     'thing',
     'master.pointers.pointer5.origin().real.compute() = thing'
   )
-  master.get(['pointers', 'pointer6'], ['@', 'pointers', 'pointer5'])
+  master.get([ 'pointers', 'pointer6' ], [ '@', 'pointers', 'pointer5' ])
 
   t.equals(
-    master.get(['pointers', 'pointer6', 'real']).compute(),
+    master.get([ 'pointers', 'pointer6', 'real' ]).compute(),
     'thing',
     'master.pointers.pointer6.real.compute() = thing'
   )
 
   t.equals(
-    branch1.get(['pointers', 'pointer2']).compute(),
+    branch1.get([ 'pointers', 'pointer2' ]).compute(),
     'thing2',
     'branch1.pointers.pointer2.compute() = thing2'
   )
@@ -149,18 +149,18 @@ test('set - get - arrays', t => {
       real: [ 1, 2, 3 ]
     },
     pointers: {
-      pointer1: ['@', 'deep', 'real'],
-      pointer2: ['@', 'pointers', 'pointer1']
+      pointer1: [ '@', 'deep', 'real' ],
+      pointer2: [ '@', 'pointers', 'pointer1' ]
     }
   })
 
   t.same(
-    master.get(['pointers', 'pointer1']).compute(),
+    master.get([ 'pointers', 'pointer1' ]).compute(),
     [ 1, 2, 3 ],
     'pointers.pointer1.compute() = [ 1, 2, 3 ]'
   )
   t.same(
-    master.get(['pointers', 'pointer2']).compute(),
+    master.get([ 'pointers', 'pointer2' ]).compute(),
     [ 1, 2, 3 ],
     'pointers.pointer2.compute() = [ 1, 2, 3 ]'
   )
@@ -176,14 +176,14 @@ test('set - get - arrays', t => {
         real: [ 1, 2, 3 ]
       },
       pointers: {
-        pointer1: ['@', 'deep', 'real'],
-        pointer2: ['@', 'pointers', 'pointer1']
+        pointer1: [ '@', 'deep', 'real' ],
+        pointer2: [ '@', 'pointers', 'pointer1' ]
       }
     },
     'master.pointers.serialize() = correct'
   )
   t.same(
-    master.get(['deep', 'real']).inspect(),
+    master.get([ 'deep', 'real' ]).inspect(),
     'Struct real { val: 1,2,3 }',
     'master.deep.real.inspect() = Struct real { val: 1,2,3 }'
   )
@@ -195,7 +195,7 @@ test('set - get - arrays', t => {
   })
 
   t.same(
-    branch1.get(['pointers', 'pointer2']).compute(),
+    branch1.get([ 'pointers', 'pointer2' ]).compute(),
     [ 3, 2, 1 ],
     'branch1.pointers.pointer2.compute() = [ 3, 2, 1 ]'
   )

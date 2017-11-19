@@ -8,18 +8,20 @@ const children = (branch, leaf, cb) => {
   const subLeaves = []
   while (branch) {
     leaf = branch.leaves[id]
-    if (leaf && leaf.keys) {
+    if (leaf === null) {
+      return subLeaves
+    } else if (leaf && leaf.keys) {
       const found = leaf.keys.find(leafId => {
         if (exists[leafId]) {
           return
         }
-        const got = getFromLeaves(oBranch, leafId)
-        if (got) {
-          exists[leafId] = got
+        const subLeaf = getFromLeaves(oBranch, leafId)
+        if (subLeaf) {
+          exists[leafId] = subLeaf
           if (cb) {
-            return cb(got)
+            return cb(subLeaf)
           } else {
-            subLeaves.push(got)
+            subLeaves.push(subLeaf)
           }
         } else {
           exists[leafId] = true

@@ -1,3 +1,5 @@
+import { getFromLeaves } from './get'
+
 const removeReference = (branch, leaf, stamp) => {
   if (leaf.rT) {
     // TODO: remove rF
@@ -26,9 +28,8 @@ const removeBranch = (branch, leaf, stamp) => {
 const removeChildren = (branch, leaf, stamp) => {
   if (leaf.keys) {
     leaf.keys.forEach(keyId => {
-      if (branch.leaves[keyId]) {
-        remove(branch, branch.leaves[keyId], stamp, true)
-      }
+      const subLeaf = getFromLeaves(branch, keyId)
+      remove(branch, subLeaf, stamp, true)
     })
   }
 }

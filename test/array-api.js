@@ -68,21 +68,21 @@ test('array api - forEach', t => {
   const masterArray = []
   master.get('articles').forEach((article, id) => {
     article.forEach((prop, propName) => {
-      masterArray.push([id, propName, prop.compute()])
+      masterArray.push([ id, propName, prop.compute() ])
     })
   })
 
   const branch1Array = []
   branch1.get('articles').forEach((article, id) => {
     article.forEach((prop, propName) => {
-      branch1Array.push([id, propName, prop.compute()])
+      branch1Array.push([ id, propName, prop.compute() ])
     })
   })
 
   const branch2Array = []
   branch2.get('articles').forEach((article, id) => {
     article.forEach((prop, propName) => {
-      branch2Array.push([id, propName, prop.compute()])
+      branch2Array.push([ id, propName, prop.compute() ])
     })
   })
 
@@ -230,8 +230,6 @@ test('array api - find', t => {
 })
 
 test('array api - reduce', t => {
-  global.debug = true
-
   const master = new Struct({
     payments: {
       first: 5,

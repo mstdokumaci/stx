@@ -4,11 +4,10 @@ import { set } from './set'
 const getFromLeaves = (branch, id) => {
   const oBranch = branch
   while (branch) {
-    if (branch.leaves[id]) {
+    if (branch.leaves[id] === null) {
+      return null
+    } else if (branch.leaves[id]) {
       const leaf = branch.leaves[id]
-      if (leaf === null) {
-        return
-      }
       leaf.branch = oBranch
       return leaf
     }

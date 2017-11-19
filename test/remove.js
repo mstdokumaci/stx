@@ -167,5 +167,20 @@ test('remove override', t => {
     'branch2.second.title = void 0'
   )
 
+  branch1.get('content').set({
+    second: null
+  })
+
+  t.same(
+    branch1.serialize(),
+    {
+      content: {
+        third: { id: 3, name: 'third' },
+        first: { id: 1, name: 'first' }
+      }
+    },
+    'branch1.serialize() = correct'
+  )
+
   t.end()
 })

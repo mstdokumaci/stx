@@ -52,7 +52,7 @@ const setKeys = (branch, leaf, val, stamp, isSubLeaf) => {
         if (isSubLeaf) {
           keys.push(subLeafId)
         }
-      } else {
+      } else if (val[key] !== null) {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
         keys.push(subLeafId)

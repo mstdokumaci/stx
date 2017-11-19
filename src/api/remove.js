@@ -1,5 +1,16 @@
 import { getFromLeaves } from './get'
 
+const removeOverrides = (branches, id) => {
+  branches.forEach(branch => {
+    if (branch.leaves[id] === null) {
+      delete branch.leaves[id]
+    }
+    if (branch.branches.length) {
+      removeOverrides(branch.branches, id)
+    }
+  })
+}
+
 const removeReference = (branch, leaf, stamp) => {
   if (leaf.rT) {
     // TODO: remove rF
@@ -8,9 +19,10 @@ const removeReference = (branch, leaf, stamp) => {
 }
 
 const removeFromParent = (parent, id, stamp) => {
-  parent.keys.splice(
-    parent.keys.indexOf(id), 1
-  )
+  const index = parent.keys.indexOf(id)
+  if (~index) {
+    parent.keys.splice(index, 1)
+  }
 }
 
 const removeOwn = (branch, leaf, stamp, ignoreParent) => {
@@ -18,6 +30,10 @@ const removeOwn = (branch, leaf, stamp, ignoreParent) => {
 
   if (!ignoreParent) {
     removeFromParent(branch.leaves[leaf.p], leaf.id, stamp)
+  }
+
+  if (branch.branches.length) {
+    removeOverrides(branch.branches, leaf.id)
   }
 }
 
@@ -27,10 +43,9 @@ const removeBranch = (branch, leaf, stamp) => {
 
 const removeChildren = (branch, leaf, stamp) => {
   if (leaf.keys) {
-    leaf.keys.forEach(keyId => {
-      const subLeaf = getFromLeaves(branch, keyId)
-      remove(branch, subLeaf, stamp, true)
-    })
+    leaf.keys.forEach(keyId =>
+      remove(branch, getFromLeaves(branch, keyId), stamp, true)
+    )
   }
 }
 

@@ -1,11 +1,11 @@
 import { getString } from '../cache'
-import { getVal } from './compute'
+import { getValOrRef } from './compute'
 import { children } from './array'
 
 const inspect = (branch, leaf) => {
   const subLeaves = children(branch, leaf)
   const start = 'Struct ' + (leaf.key ? getString(leaf.key) + ' ' : '')
-  let val = getVal(branch, leaf.id)
+  let val = getValOrRef(branch, leaf.id)
   if (val && val.isLeaf) {
     val = inspect(branch, val)
   }
@@ -29,7 +29,7 @@ const inspect = (branch, leaf) => {
 }
 
 const serialize = (branch, leaf) => {
-  let val = getVal(branch, leaf.id)
+  let val = getValOrRef(branch, leaf.id)
   if (val && val.isLeaf) {
     val = [ '@' ].concat(val.path())
   }

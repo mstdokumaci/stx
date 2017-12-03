@@ -1,6 +1,6 @@
 import { getFromLeaves } from './get'
 
-const getVal = (branch, id) => {
+const getValOrRef = (branch, id) => {
   const oBranch = branch
   while (branch) {
     let leaf = branch.leaves[id]
@@ -33,4 +33,4 @@ const compute = (branch, id) => {
   }
 }
 
-export { getVal, compute }
+export { getValOrRef, compute }

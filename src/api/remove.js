@@ -14,6 +14,7 @@ const removeOverrides = (branches, id) => {
 const removeReference = (branch, leaf, stamp) => {
   if (leaf.rT) {
     // TODO: remove rF
+    // const rT = getFromLeaves(oBranch, leaf.rT)
     leaf.rT = void 0
   }
 }

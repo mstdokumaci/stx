@@ -13,8 +13,12 @@ const removeOverrides = (branches, id) => {
 
 const removeReference = (branch, leaf, stamp) => {
   if (leaf.rT) {
-    // TODO: remove rF
-    // const rT = getFromLeaves(oBranch, leaf.rT)
+    const rT = getFromLeaves(branch, leaf.rT)
+    if (rT.rF) {
+      const rFIndex = leaf.struct === rT.struct ? rT.rF.indexOf(leaf.id)
+        : rT.rF.findIndex(from => from[0] === leaf.struct && from[1] === leaf.id)
+      rT.rF.splice(rFIndex, 1)
+    }
     leaf.rT = void 0
   }
 }

@@ -6,9 +6,22 @@ import { remove, removeReference } from './remove'
 
 const setVal = (branch, leaf, val, stamp) => {
   if (leaf.struct !== branch) {
+    const rF = leaf.rF
     branch.leaves[leaf.id] = leaf = new Leaf(
       branch, leaf.id, val, stamp, leaf.p, leaf.key
     )
+    if (rF) {
+      leaf.rF = rF.map(from =>{
+        if (Array.isArray(from)) {
+          if (from[0] === branch) {
+            from = from[1]
+          }
+        } else {
+          from = [ branch, from ]
+        }
+        return from
+      })
+    }
   } else if (val !== void 0) {
     leaf.val = val
     removeReference(branch, leaf, stamp)

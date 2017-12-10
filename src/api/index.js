@@ -6,6 +6,7 @@ import { getFromLeaves, origin, getApi } from './get'
 import { compute } from './compute'
 import { forEach, map, filter, find, reduce } from './array'
 import { inspect, serialize } from './serialize'
+import { listen, emit } from './listeners'
 
 const define = (obj, key, val) => {
   Object.defineProperty(obj, key, { value: val, configurable: true })
@@ -112,6 +113,22 @@ const defineApi = (leaf, struct) => {
   })
   define(struct, 'reduce', function (cb, accumulator) {
     return reduce(this, this.leaves[root], cb, accumulator)
+  })
+
+  // ON
+  define(leaf, 'on', function (name, cb) {
+    return listen(this.branch, this, name, cb)
+  })
+  define(struct, 'on', function (name, cb) {
+    return listen(this, this.leaves[root], name, cb)
+  })
+
+  // EMIT
+  define(leaf, 'emit', function (name, val) {
+    return emit(this.branch, this, name, val)
+  })
+  define(struct, 'emit', function (name, val) {
+    return emit(this, this.leaves[root], name, val)
   })
 
   /* ===== LEAF ONLY API ===== */

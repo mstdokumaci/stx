@@ -11,7 +11,7 @@ const setVal = (leaf, val, stamp) => {
       leaf.branch, leaf.id, val, stamp, leaf.p, leaf.key
     )
     if (rF) {
-      leaf.rF = rF.map(from =>{
+      leaf.rF = rF.map(from => {
         if (Array.isArray(from)) {
           if (from[0] === leaf.branch) {
             from = from[1]

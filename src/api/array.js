@@ -36,26 +36,23 @@ const children = (branch, leaf, cb) => {
   return subLeaves
 }
 
-const forEach = (branch, leaf, cb) => {
-  children(branch, leaf, subLeaf => {
-    subLeaf.branch = branch
+const forEach = (leaf, cb) => {
+  children(leaf.branch, leaf, subLeaf => {
     cb(subLeaf, getString(subLeaf.key))
   })
 }
 
-const map = (branch, leaf, cb) => {
+const map = (leaf, cb) => {
   const mapped = []
-  children(branch, leaf, subLeaf => {
-    subLeaf.branch = branch
+  children(leaf.branch, leaf, subLeaf => {
     mapped.push(cb(subLeaf, getString(subLeaf.key)))
   })
   return mapped
 }
 
-const filter = (branch, leaf, cb) => {
+const filter = (leaf, cb) => {
   const filtered = []
-  children(branch, leaf, subLeaf => {
-    subLeaf.branch = branch
+  children(leaf.branch, leaf, subLeaf => {
     if (cb(subLeaf, getString(subLeaf.key))) {
       filtered.push(subLeaf)
     }
@@ -63,17 +60,15 @@ const filter = (branch, leaf, cb) => {
   return filtered
 }
 
-const find = (branch, leaf, cb) => {
-  return Object.assign(children(branch, leaf, subLeaf => {
-    subLeaf.branch = branch
+const find = (leaf, cb) => {
+  return children(leaf.branch, leaf, subLeaf => {
     return cb(subLeaf, getString(subLeaf.key))
-  }), { branch })
+  })
 }
 
-const reduce = (branch, leaf, cb, accumulator) => {
+const reduce = (leaf, cb, accumulator) => {
   let skipFirst = accumulator === void 0
-  children(branch, leaf, subLeaf => {
-    subLeaf.branch = branch
+  children(leaf.branch, leaf, subLeaf => {
     if (skipFirst) {
       accumulator = subLeaf
       skipFirst = false

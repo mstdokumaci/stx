@@ -77,42 +77,42 @@ const defineApi = (leaf, struct) => {
 
   // FOREACH
   define(leaf, 'forEach', function (cb) {
-    return forEach(this.branch, this, cb)
+    return forEach(this, cb)
   })
   define(struct, 'forEach', function (cb) {
-    return forEach(this, this.leaves[root], cb)
+    return forEach(this.leaves[root], cb)
   })
 
   // MAP
   define(leaf, 'map', function (cb) {
-    return map(this.branch, this, cb)
+    return map(this, cb)
   })
   define(struct, 'map', function (cb) {
-    return map(this, this.leaves[root], cb)
+    return map(this.leaves[root], cb)
   })
 
   // FILTER
   define(leaf, 'filter', function (cb) {
-    return filter(this.branch, this, cb)
+    return filter(this, cb)
   })
   define(struct, 'filter', function (cb) {
-    return filter(this, this.leaves[root], cb)
+    return filter(this.leaves[root], cb)
   })
 
   // FIND
   define(leaf, 'find', function (cb) {
-    return find(this.branch, this, cb)
+    return find(this, cb)
   })
   define(struct, 'find', function (cb) {
-    return find(this, this.leaves[root], cb)
+    return find(this.leaves[root], cb)
   })
 
   // REDUCE
   define(leaf, 'reduce', function (cb, accumulator) {
-    return reduce(this.branch, this, cb, accumulator)
+    return reduce(this, cb, accumulator)
   })
   define(struct, 'reduce', function (cb, accumulator) {
-    return reduce(this, this.leaves[root], cb, accumulator)
+    return reduce(this.leaves[root], cb, accumulator)
   })
 
   // ON
@@ -146,7 +146,7 @@ const defineApi = (leaf, struct) => {
 
   // ORIGIN
   define(leaf, 'origin', function () {
-    return origin(this.branch, this)
+    return origin(this)
   })
 
   // COMPUTE

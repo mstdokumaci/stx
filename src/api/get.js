@@ -15,7 +15,7 @@ const getFromLeaves = (branch, id) => {
   }
 }
 
-const origin = (branch, leaf) => getFromLeaves(branch, leaf.rT) || leaf
+const origin = leaf => getFromLeaves(leaf.branch, leaf.rT) || leaf
 
 const getByKey = (branch, id, key, val, stamp, inReference) => {
   const leafId = keyToId(key, id)

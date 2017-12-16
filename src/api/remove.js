@@ -35,9 +35,7 @@ const removeOwn = (branch, leaf, stamp, ignoreParent) => {
 
   if (!ignoreParent) {
     removeFromParent(branch.leaves[leaf.p], leaf.id, stamp)
-  }
-
-  if (branch.branches.length) {
+  } else if (branch.branches.length) {
     removeOverrides(branch.branches, leaf.id)
   }
 }

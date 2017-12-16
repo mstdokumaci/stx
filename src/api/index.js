@@ -6,7 +6,7 @@ import { getFromLeaves, origin, getApi } from './get'
 import { compute } from './compute'
 import { forEach, map, filter, find, reduce } from './array'
 import { inspect, serialize } from './serialize'
-import { listen, emit } from './listeners'
+import { listen, emit, unListen } from './listeners'
 
 const define = (obj, key, val) => {
   Object.defineProperty(obj, key, { value: val, configurable: true })
@@ -116,19 +116,27 @@ const defineApi = (leaf, struct) => {
   })
 
   // ON
-  define(leaf, 'on', function (name, cb) {
-    return listen(this.branch, this, name, cb)
+  define(leaf, 'on', function (event, cb, id) {
+    return listen(this, event, cb, id)
   })
-  define(struct, 'on', function (name, cb) {
-    return listen(this, this.leaves[root], name, cb)
+  define(struct, 'on', function (event, cb, id) {
+    return listen(this.leaves[root], event, cb, id)
+  })
+
+  // OFF
+  define(leaf, 'off', function (event, id) {
+    return unListen(this, event, id)
+  })
+  define(struct, 'off', function (event, id) {
+    return unListen(this.leaves[root], event, id)
   })
 
   // EMIT
-  define(leaf, 'emit', function (name, val) {
-    return emit(this.branch, this, name, val)
+  define(leaf, 'emit', function (event, val) {
+    return emit(this, event, val)
   })
-  define(struct, 'emit', function (name, val) {
-    return emit(this, this.leaves[root], name, val)
+  define(struct, 'emit', function (event, val) {
+    return emit(this.leaves[root], event, val)
   })
 
   /* ===== LEAF ONLY API ===== */

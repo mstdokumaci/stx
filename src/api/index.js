@@ -17,18 +17,18 @@ const defineApi = (leaf, struct) => {
 
   // SET
   define(leaf, 'set', function (val, stamp) {
-    set(this.branch, this, val, stamp)
+    set(this, val, stamp)
   })
   define(struct, 'set', function (val, stamp) {
-    set(this, this.leaves[root], val, stamp)
+    set(this.leaves[root], val, stamp)
   })
 
   // GET
   define(leaf, 'get', function (path, val, stamp) {
-    return getApi(this.branch, this.id, path, val, stamp)
+    return getApi(this, path, val, stamp)
   })
   define(struct, 'get', function (path, val, stamp) {
-    return getApi(this, root, path, val, stamp)
+    return getApi(this.leaves[root], path, val, stamp)
   })
 
   // PARENT

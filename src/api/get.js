@@ -32,7 +32,7 @@ const getByKey = (branch, id, key, val, stamp, inReference) => {
     }
 
     if (!inReference && val !== void 0) {
-      set(branch, leaf, { [ key ]: val }, stamp)
+      set(leaf, { [ key ]: val }, stamp)
       return branch.leaves[leafId]
     }
   }
@@ -48,7 +48,7 @@ const setByPath = (branch, ids, path, val, stamp, inReference) => {
     val = { [ path.pop() ]: val }
     const leaf = getFromLeaves(branch, ids[i])
     if (leaf) {
-      set(branch, leaf, val, stamp)
+      set(leaf, val, stamp)
       return branch.leaves[leafId]
     }
   }
@@ -78,11 +78,11 @@ const getByPath = (branch, id, path, val, stamp, inReference) => {
   }
 }
 
-const getApi = (branch, id, path, val, stamp) => {
+const getApi = (leaf, path, val, stamp) => {
   if (Array.isArray(path)) {
-    return getByPath(branch, id, path, val, stamp)
+    return getByPath(leaf.branch, leaf.id, path, val, stamp)
   } else {
-    return getByKey(branch, id, path, val, stamp)
+    return getByKey(leaf.branch, leaf.id, path, val, stamp)
   }
 }
 

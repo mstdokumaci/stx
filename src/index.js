@@ -23,7 +23,7 @@ const Leaf = function (branch, id, val, stamp, parent, key, isSubLeaf) {
     this.key = key
   }
   if (val !== void 0) {
-    set(branch, this, val, stamp, isSubLeaf)
+    set(this, val, stamp, isSubLeaf)
   }
   if (branch.branches.length) {
     respectOverrides(branch.branches, id, parent)

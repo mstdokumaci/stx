@@ -47,20 +47,20 @@ const removeBranch = (branch, leaf, stamp) => {
 const removeChildren = (branch, leaf, stamp) => {
   if (leaf.keys) {
     leaf.keys.forEach(keyId =>
-      remove(branch, getFromLeaves(branch, keyId), stamp, true)
+      remove(getFromLeaves(branch, keyId), stamp, true)
     )
   }
 }
 
-const remove = (branch, leaf, stamp, ignoreParent) => {
-  if (leaf.struct === branch) {
-    removeOwn(branch, leaf, stamp, ignoreParent)
+const remove = (leaf, stamp, ignoreParent) => {
+  if (leaf.struct === leaf.branch) {
+    removeOwn(leaf.branch, leaf, stamp, ignoreParent)
   } else {
-    removeBranch(branch, leaf, stamp)
+    removeBranch(leaf.branch, leaf, stamp)
   }
 
-  removeChildren(branch, leaf, stamp)
-  removeReference(branch, leaf, stamp)
+  removeChildren(leaf.branch, leaf, stamp)
+  removeReference(leaf.branch, leaf, stamp)
 }
 
 export { remove, removeReference }

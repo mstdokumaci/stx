@@ -4,42 +4,42 @@ import { root, keyToId } from '../id'
 import { getFromLeaves, getByPath } from './get'
 import { remove, removeReference } from './remove'
 
-const setVal = (branch, leaf, val, stamp) => {
-  if (leaf.struct !== branch) {
+const setVal = (leaf, val, stamp) => {
+  if (leaf.struct !== leaf.branch) {
     const rF = leaf.rF
-    branch.leaves[leaf.id] = leaf = new Leaf(
-      branch, leaf.id, val, stamp, leaf.p, leaf.key
+    leaf.branch.leaves[leaf.id] = leaf = new Leaf(
+      leaf.branch, leaf.id, val, stamp, leaf.p, leaf.key
     )
     if (rF) {
       leaf.rF = rF.map(from =>{
         if (Array.isArray(from)) {
-          if (from[0] === branch) {
+          if (from[0] === leaf.branch) {
             from = from[1]
           }
         } else {
-          from = [ branch, from ]
+          from = [ leaf.branch, from ]
         }
         return from
       })
     }
   } else if (val !== void 0) {
     leaf.val = val
-    removeReference(branch, leaf, stamp)
+    removeReference(leaf.branch, leaf, stamp)
   }
   return leaf
 }
 
-const setReferenceByPath = (branch, leaf, path, stamp) =>
-  set(branch, leaf, getByPath(branch, root, path, {}, stamp), stamp)
+const setReferenceByPath = (leaf, path, stamp) =>
+  set(leaf, getByPath(leaf.branch, root, path, {}, stamp), stamp)
 
-const setReference = (branch, leaf, val, stamp) => {
-  const oBranch = branch
+const setReference = (leaf, val, stamp) => {
+  let branch = leaf.branch
   while (branch) {
     if (branch === val.branch) {
-      leaf = setVal(oBranch, leaf, void 0, stamp)
+      leaf = setVal(leaf, void 0, stamp)
       leaf.val = void 0
       leaf.rT = val.id
-      const id = branch === oBranch ? leaf.id : [ oBranch, leaf.id ]
+      const id = branch === leaf.branch ? leaf.id : [ leaf.branch, leaf.id ]
       if (val.rF) {
         val.rF.push(id)
       } else {
@@ -52,16 +52,16 @@ const setReference = (branch, leaf, val, stamp) => {
   throw new Error('Reference must be in same branch')
 }
 
-const setKeys = (branch, leaf, val, stamp, isSubLeaf) => {
+const setKeys = (leaf, val, stamp, isSubLeaf) => {
   let keys = []
   for (let key in val) {
     if (key === 'val') {
-      set(branch, leaf, val.val, stamp)
+      set(leaf, val.val, stamp)
     } else {
       const subLeafId = keyToId(key, leaf.id)
-      const existing = getFromLeaves(branch, subLeafId)
+      const existing = getFromLeaves(leaf.branch, subLeafId)
       if (existing) {
-        set(branch, existing, val[key], stamp)
+        set(existing, val[key], stamp)
         if (isSubLeaf) {
           keys.push(subLeafId)
         }
@@ -69,36 +69,36 @@ const setKeys = (branch, leaf, val, stamp, isSubLeaf) => {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
         keys.push(subLeafId)
-        branch.leaves[subLeafId] = new Leaf(
-          branch, subLeafId, val[key], stamp, leaf.id, keyId, true
+        leaf.branch.leaves[subLeafId] = new Leaf(
+          leaf.branch, subLeafId, val[key], stamp, leaf.id, keyId, true
         )
       }
     }
   }
   if (keys.length) {
-    leaf = setVal(branch, leaf, void 0, stamp)
+    leaf = setVal(leaf, void 0, stamp)
     leaf.keys = leaf.keys ? leaf.keys.concat(keys) : keys
   }
 }
 
-const set = (branch, leaf, val, stamp, isSubLeaf) => {
+const set = (leaf, val, stamp, isSubLeaf) => {
   if (typeof val === 'object') {
     if (!val) {
-      remove(branch, leaf, stamp)
+      remove(leaf, stamp)
     } else if (Array.isArray(val)) {
       if (val[0] === '@') {
-        setReferenceByPath(branch, leaf, val.slice(1), stamp)
+        setReferenceByPath(leaf, val.slice(1), stamp)
       } else {
-        setVal(branch, leaf, val, stamp)
+        setVal(leaf, val, stamp)
       }
     } else if (val.isLeaf) {
-      setReference(branch, leaf, val, stamp)
+      setReference(leaf, val, stamp)
     } else {
-      setKeys(branch, leaf, val, stamp, isSubLeaf)
+      setKeys(leaf, val, stamp, isSubLeaf)
     }
   } else {
-    setVal(branch, leaf, val, stamp)
+    setVal(leaf, val, stamp)
   }
 }
 
-export { setReferenceByPath, setReference, set, setVal }
+export { set, setVal }

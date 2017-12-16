@@ -7,7 +7,7 @@ const listen = (leaf, event, cb, id) => {
     id = lastId++
   }
 
-  leaf = setVal(leaf.branch, leaf, void 0)
+  leaf = setVal(leaf, void 0)
 
   if (!leaf.listeners) {
     leaf.listeners = { [ event ]: {} }

@@ -132,11 +132,11 @@ const defineApi = (leaf, struct) => {
   })
 
   // EMIT
-  define(leaf, 'emit', function (event, val) {
+  define(leaf, 'emit', function (event, val, stamp) {
     return emit(this, event, val)
   })
-  define(struct, 'emit', function (event, val) {
-    return emit(this.leaves[root], event, val)
+  define(struct, 'emit', function (event, val, stamp) {
+    return emit(this.leaves[root], event, val, stamp)
   })
 
   /* ===== LEAF ONLY API ===== */

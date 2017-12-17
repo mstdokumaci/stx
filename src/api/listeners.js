@@ -26,7 +26,19 @@ const unListen = (leaf, event, id) => {
 
 const emit = (leaf, event, val, stamp) => {
   const oBranch = leaf.branch
+
+  emitBranches(leaf, event, val, stamp)
+
+  leaf.branch = oBranch
+  return leaf
+}
+
+const emitBranches = (leaf, event, val, stamp) => {
   const listeners = leaf.branch.listeners
+
+  if (leaf.branch.leaves[leaf.id] === null) {
+    return
+  }
 
   if (listeners[leaf.id] && listeners[leaf.id][event]) {
     for (const id in listeners[leaf.id][event]) {
@@ -36,10 +48,8 @@ const emit = (leaf, event, val, stamp) => {
 
   leaf.branch.branches.forEach(branch => {
     leaf.branch = branch
-    emit(leaf, event, val, stamp)
+    emitBranches(leaf, event, val, stamp)
   })
-
-  leaf.branch = oBranch
 }
 
 export { listen, unListen, emit }

@@ -49,18 +49,18 @@ const defineApi = (leaf, struct) => {
 
   // INSPECT
   define(leaf, 'inspect', function () {
-    return inspect(this.branch, this)
+    return inspect(this)
   })
   define(struct, 'inspect', function () {
-    return inspect(this, this.leaves[root])
+    return inspect(this.leaves[root])
   })
 
   // SERIALIZE
   define(leaf, 'serialize', function () {
-    return serialize(this.branch, this)
+    return serialize(this)
   })
   define(struct, 'serialize', function () {
-    return serialize(this, this.leaves[root])
+    return serialize(this.leaves[root])
   })
 
   // PATH

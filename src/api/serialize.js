@@ -2,12 +2,12 @@ import { getString } from '../cache'
 import { getValOrRef } from './compute'
 import { children } from './array'
 
-const inspect = (branch, leaf) => {
-  const subLeaves = children(branch, leaf)
+const inspect = (leaf) => {
+  const subLeaves = children(leaf.branch, leaf)
   const start = 'Struct ' + (leaf.key ? getString(leaf.key) + ' ' : '')
-  let val = getValOrRef(branch, leaf.id)
+  let val = getValOrRef(leaf.branch, leaf.id)
   if (val && val.isLeaf) {
-    val = inspect(branch, val)
+    val = inspect(val)
   }
   if (subLeaves.length) {
     let keys = []
@@ -28,16 +28,16 @@ const inspect = (branch, leaf) => {
   }
 }
 
-const serialize = (branch, leaf) => {
-  let val = getValOrRef(branch, leaf.id)
+const serialize = (leaf) => {
+  let val = getValOrRef(leaf.branch, leaf.id)
   if (val && val.isLeaf) {
     val = [ '@' ].concat(val.path())
   }
   let child = false
   const result = {}
-  children(branch, leaf, subLeaf => {
+  children(leaf.branch, leaf, subLeaf => {
     child = true
-    result[getString(subLeaf.key)] = serialize(branch, subLeaf)
+    result[getString(subLeaf.key)] = serialize(subLeaf)
   })
   if (child) {
     if (val !== void 0) {

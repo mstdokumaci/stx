@@ -24,7 +24,7 @@ const setVal = (leaf, val, stamp) => {
     }
   } else if (val !== void 0) {
     leaf.val = val
-    removeReference(leaf.branch, leaf, stamp)
+    removeReference(leaf, stamp)
   }
   return leaf
 }

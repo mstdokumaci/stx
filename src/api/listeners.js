@@ -19,7 +19,9 @@ const listen = (leaf, event, cb, id) => {
 }
 
 const unListen = (leaf, event, id) => {
+  const listeners = leaf.branch.listeners
 
+  delete listeners[leaf.id][event][id]
 }
 
 const emit = (leaf, event, val, stamp) => {
@@ -27,8 +29,8 @@ const emit = (leaf, event, val, stamp) => {
   const listeners = leaf.branch.listeners
 
   if (listeners[leaf.id] && listeners[leaf.id][event]) {
-    for (let fn in listeners[leaf.id][event]) {
-      fn(val, stamp, leaf)
+    for (const id in listeners[leaf.id][event]) {
+      listeners[leaf.id][event][id](val, stamp, leaf)
     }
   }
 

@@ -120,3 +120,59 @@ test('listeners - off', t => {
 
   t.end()
 })
+
+test('listeners - remove', t => {
+  const masterFire = []
+  const branch1Fire = []
+  const branch2Fire = []
+
+  const master = new Struct({
+    id: 'master',
+    first: {
+      id: 1
+    }
+  })
+
+  const branch1 = master.create({
+    id: 'branch1'
+  })
+
+  const branch2 = branch1.create({
+    id: 'branch2'
+  })
+
+  master.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
+    masterFire.push(`${item.root().get('id').compute()}-${val}`)
+  )
+  branch1.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
+    branch1Fire.push(`${item.root().get('id').compute()}-${val}`)
+  )
+  branch2.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
+    branch2Fire.push(`${item.root().get('id').compute()}-${val}`)
+  )
+
+  master.get([ 'first', 'id' ]).emit('success', 'value1')
+  branch1.get([ 'first', 'id' ]).emit('success', 'value2')
+  branch2.get([ 'first', 'id' ]).emit('success', 'value3')
+
+  branch1.get('first').set(null)
+
+  master.get([ 'first', 'id' ]).emit('success', 'value4')
+
+  t.same(
+    masterFire, [ 'master-value1', 'master-value4' ],
+    'masterFire = [ master-value1, master-value4 ]'
+  )
+  t.same(
+    branch1Fire,
+    [ 'branch1-value1', 'branch1-value2' ],
+    'branch1Fire = [ branch1-value1, branch1-value2 ]'
+  )
+  t.same(
+    branch2Fire,
+    [ 'branch2-value1', 'branch2-value2', 'branch2-value3' ],
+    'branch2Fire = [ branch1-value1, branch1-value2, branch1-value3 ]'
+  )
+
+  t.end()
+})

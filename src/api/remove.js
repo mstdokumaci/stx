@@ -23,6 +23,10 @@ const removeReference = (leaf, stamp) => {
   }
 }
 
+const removeListeners = (leaf, stamp) => {
+  delete leaf.branch.listeners[leaf.id]
+}
+
 const removeFromParent = (parent, id, stamp) => {
   const index = parent.keys.indexOf(id)
   if (~index) {
@@ -61,6 +65,7 @@ const remove = (leaf, stamp, ignoreParent) => {
 
   removeChildren(leaf, stamp)
   removeReference(leaf, stamp)
+  removeListeners(leaf)
 }
 
 export { remove, removeReference }

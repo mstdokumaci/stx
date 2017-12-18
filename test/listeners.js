@@ -9,9 +9,6 @@ test('listeners - on and emit', t => {
     id: 'master',
     first: {
       id: 1
-    },
-    second: {
-      id: 2
     }
   })
 
@@ -26,16 +23,35 @@ test('listeners - on and emit', t => {
     branch1Fire.push(`${item.get('id').compute()}-${val}`)
   )
 
-  master.emit('success', 'COMPLETE')
+  master.emit('success', 'value1')
 
   t.same(
-    masterFire, [ 'master-COMPLETE' ],
-    'masterFire = [ master-COMPLETE ]'
+    masterFire, [ 'master-value1' ],
+    'masterFire = [ master-value1 ]'
   )
   t.same(
     branch1Fire,
-    [ 'branch1-COMPLETE' ],
-    'branch1Fire = [ branch1-COMPLETE ]'
+    [ 'branch1-value1' ],
+    'branch1Fire = [ branch1-value1 ]'
+  )
+
+  master.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
+    masterFire.push(`${item.root().get('id').compute()}-${val}`)
+  )
+  branch1.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
+    branch1Fire.push(`${item.root().get('id').compute()}-${val}`)
+  )
+
+  master.get([ 'first', 'id' ]).emit('success', 'value2')
+
+  t.same(
+    masterFire, [ 'master-value1', 'master-value2' ],
+    'masterFire = [ master-value1, master-value2 ]'
+  )
+  t.same(
+    branch1Fire,
+    [ 'branch1-value1', 'branch1-value2' ],
+    'branch1Fire = [ branch1-value1, branch1-value2 ]'
   )
 
   t.end()

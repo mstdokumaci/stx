@@ -1,6 +1,6 @@
 {
   "name": "stx",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "a blazing fast state manager with network sync out of the box",
   "main": "dist/index.js",
   "browser": {

@@ -24,6 +24,7 @@ test('listeners - on and emit', t => {
   )
 
   master.emit('success', 'value1')
+  branch1.emit('success', 'value2')
 
   t.same(
     masterFire, [ 'master-value1' ],
@@ -31,8 +32,8 @@ test('listeners - on and emit', t => {
   )
   t.same(
     branch1Fire,
-    [ 'branch1-value1' ],
-    'branch1Fire = [ branch1-value1 ]'
+    [ 'branch1-value1', 'branch1-value2' ],
+    'branch1Fire = [ branch1-value1, branch1-value2 ]'
   )
 
   master.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
@@ -42,11 +43,74 @@ test('listeners - on and emit', t => {
     branch1Fire.push(`${item.root().get('id').compute()}-${val}`)
   )
 
-  master.get([ 'first', 'id' ]).emit('success', 'value2')
+  master.get([ 'first', 'id' ]).emit('success', 'value3')
+  branch1.get([ 'first', 'id' ]).emit('success', 'value4')
 
   t.same(
-    masterFire, [ 'master-value1', 'master-value2' ],
-    'masterFire = [ master-value1, master-value2 ]'
+    masterFire, [ 'master-value1', 'master-value3' ],
+    'masterFire = [ master-value1, master-value3 ]'
+  )
+  t.same(
+    branch1Fire,
+    [ 'branch1-value1', 'branch1-value2', 'branch1-value3', 'branch1-value4' ],
+    'branch1Fire = [ branch1-value1, branch1-value2, branch1-value3, branch1-value4 ]'
+  )
+
+  t.end()
+})
+
+test('listeners - off', t => {
+  const masterFire = []
+  const branch1Fire = []
+
+  const master = new Struct({
+    id: 'master',
+    first: {
+      id: 1
+    }
+  })
+
+  const branch1 = master.create({
+    id: 'branch1'
+  })
+
+  master.on('success', (val, stamp, item) =>
+    masterFire.push(`${item.get('id').compute()}-${val}`),
+    'listener1'
+  )
+  branch1.on('success', (val, stamp, item) =>
+    branch1Fire.push(`${item.get('id').compute()}-${val}`)
+  )
+
+  master.off('success', 'listener1')
+  master.emit('success', 'value1')
+  branch1.emit('success', 'value2')
+
+  t.same(
+    masterFire, [ ],
+    'masterFire = [ ]'
+  )
+  t.same(
+    branch1Fire,
+    [ 'branch1-value1', 'branch1-value2' ],
+    'branch1Fire = [ branch1-value1, branch1-value2 ]'
+  )
+
+  master.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
+    masterFire.push(`${item.root().get('id').compute()}-${val}`)
+  )
+  branch1.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
+    branch1Fire.push(`${item.root().get('id').compute()}-${val}`),
+    'listener2'
+  )
+
+  branch1.get(['first', 'id']).off('success', 'listener2')
+  master.get([ 'first', 'id' ]).emit('success', 'value3')
+  branch1.get([ 'first', 'id' ]).emit('success', 'value4')
+
+  t.same(
+    masterFire, [ 'master-value3' ],
+    'masterFire = [ master-value3 ]'
   )
   t.same(
     branch1Fire,

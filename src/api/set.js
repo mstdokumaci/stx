@@ -35,7 +35,9 @@ const setReferenceByPath = (leaf, path, stamp) =>
 const setReference = (leaf, val, stamp) => {
   let branch = leaf.branch
   while (branch) {
-    if (branch === val.branch) {
+    if (branch.leaves[val.id] === null) {
+      throw new Error('Reference must be in same branch')
+    } else if (branch === val.branch) {
       leaf = setVal(leaf, void 0, stamp)
       leaf.val = void 0
       leaf.rT = val.id

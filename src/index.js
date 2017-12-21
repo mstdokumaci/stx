@@ -39,7 +39,6 @@ const Struct = function (val, stamp, inherits) {
   }
   this.listeners = {}
   this.leaves[root] = new Leaf(this, root, val, stamp)
-  this.leaves[root].branch = this
 }
 
 defineApi(Leaf.prototype, Struct.prototype)

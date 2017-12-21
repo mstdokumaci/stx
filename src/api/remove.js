@@ -1,4 +1,5 @@
 import { getFromLeaves } from './get'
+import { emit } from './listeners'
 
 const removeOverrides = (branches, id) => {
   branches.forEach(branch => {
@@ -30,6 +31,7 @@ const removeListeners = (leaf, stamp) => {
 const removeFromParent = (parent, id, stamp) => {
   const index = parent.keys.indexOf(id)
   if (~index) {
+    emit(parent, 'data', 'set', stamp)
     parent.keys.splice(index, 1)
   }
 }
@@ -57,6 +59,8 @@ const removeChildren = (leaf, stamp) => {
 }
 
 const remove = (leaf, stamp, ignoreParent) => {
+  emit(leaf, 'data', 'remove', stamp)
+
   if (leaf.struct === leaf.branch) {
     removeOwn(leaf, stamp, ignoreParent)
   } else {

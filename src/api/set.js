@@ -10,6 +10,7 @@ const setVal = (leaf, val, stamp) => {
     return leaf
   }
   if (leaf.struct !== leaf.branch) {
+    const fromStruct = leaf.struct
     const rF = leaf.rF
     leaf.branch.leaves[leaf.id] = leaf = new Leaf(
       leaf.branch, leaf.id, val, stamp, leaf.p, leaf.key
@@ -21,7 +22,7 @@ const setVal = (leaf, val, stamp) => {
             from = from[1]
           }
         } else {
-          from = [ leaf.branch, from ]
+          from = [ fromStruct, from ]
         }
         return from
       })
@@ -29,7 +30,7 @@ const setVal = (leaf, val, stamp) => {
   } else if (val !== void 0) {
     leaf.val = val
     removeReference(leaf, stamp)
-    emit(leaf, 'data', val, stamp, true)
+    emit(leaf, 'data', 'set', stamp, true)
   }
   return leaf
 }
@@ -52,7 +53,7 @@ const setReference = (leaf, val, stamp) => {
       } else {
         val.rF = [ id ]
       }
-      return emit(leaf, 'data', val, stamp, true)
+      return emit(leaf, 'data', 'set', stamp, true)
     }
     branch = branch.inherits
   }
@@ -85,7 +86,7 @@ const setKeys = (leaf, val, stamp, isSubLeaf) => {
   if (keys.length) {
     leaf = setVal(leaf, void 0, stamp)
     leaf.keys = leaf.keys ? leaf.keys.concat(keys) : keys
-    emit(leaf, 'data', void 0, stamp)
+    emit(leaf, 'data', 'set', stamp)
   }
 }
 

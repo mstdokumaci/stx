@@ -67,7 +67,7 @@ test('set - get - references', t => {
         pointer4: [ '@', 'pointers', 'pointer2' ]
       }
     },
-    'master.pointers.serialize() = correct'
+    'master.serialize() = correct'
   )
   t.same(
     master.get('pointers').serialize(),
@@ -82,7 +82,7 @@ test('set - get - references', t => {
   t.same(
     master.get('deep').serialize(),
     { real: 'thing' },
-    'master.pointers.serialize() = { real: \'thing\' }'
+    'master.deep.serialize() = { real: \'thing\' }'
   )
 
   const branch1 = master.create({

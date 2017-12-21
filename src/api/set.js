@@ -3,8 +3,12 @@ import { addToStrings } from '../cache'
 import { root, keyToId } from '../id'
 import { getFromLeaves, getByPath } from './get'
 import { remove, removeReference } from './remove'
+import { emit } from './listeners'
 
 const setVal = (leaf, val, stamp) => {
+  if (val === leaf.val && val !== void 0) {
+    return leaf
+  }
   if (leaf.struct !== leaf.branch) {
     const rF = leaf.rF
     leaf.branch.leaves[leaf.id] = leaf = new Leaf(
@@ -25,6 +29,7 @@ const setVal = (leaf, val, stamp) => {
   } else if (val !== void 0) {
     leaf.val = val
     removeReference(leaf, stamp)
+    emit(leaf, 'data', val, stamp, true)
   }
   return leaf
 }
@@ -47,7 +52,7 @@ const setReference = (leaf, val, stamp) => {
       } else {
         val.rF = [ id ]
       }
-      return
+      return emit(leaf, 'data', val, stamp, true)
     }
     branch = branch.inherits
   }
@@ -80,6 +85,7 @@ const setKeys = (leaf, val, stamp, isSubLeaf) => {
   if (keys.length) {
     leaf = setVal(leaf, void 0, stamp)
     leaf.keys = leaf.keys ? leaf.keys.concat(keys) : keys
+    emit(leaf, 'data', void 0, stamp)
   }
 }
 

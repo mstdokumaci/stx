@@ -22,19 +22,20 @@ const unListen = (leaf, event, id) => {
   delete leaf.branch.listeners[leaf.id][event][id]
 }
 
-const emit = (leaf, event, val, stamp) => {
-  const oBranch = leaf.branch
-
-  emitBranches(leaf, event, val, stamp)
-
-  leaf.branch = oBranch
-  return leaf
-}
-
-const emitBranches = (leaf, event, val, stamp) => {
+const emitBranches = (leaf, event, val, stamp, isVal) => {
   const listeners = leaf.branch.listeners
 
-  if (leaf.branch.leaves[leaf.id] === null) {
+  if (
+    leaf.branch.leaves[leaf.id] === null ||
+    (
+      isVal &&
+      leaf.branch.leaves[leaf.id] &&
+      (
+        leaf.branch.leaves[leaf.id].val !== void 0 ||
+        leaf.branch.leaves[leaf.id].rT !== void 0
+      )
+    )
+  ) {
     return
   }
 
@@ -48,6 +49,15 @@ const emitBranches = (leaf, event, val, stamp) => {
     leaf.branch = branch
     emitBranches(leaf, event, val, stamp)
   })
+}
+
+const emit = (leaf, event, val, stamp, isVal) => {
+  const oBranch = leaf.branch
+
+  emitBranches(leaf, event, val, stamp, isVal)
+
+  leaf.branch = oBranch
+  return leaf
 }
 
 export { listen, unListen, emit }

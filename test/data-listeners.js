@@ -54,3 +54,49 @@ test('listeners - set', t => {
 
   t.end()
 })
+
+test('listeners - remove', t => {
+  const masterFire = []
+  const branch1Fire = []
+
+  const master = new Struct({
+    id: 'master',
+    first: {
+      id: 1
+    }
+  })
+
+  const branch1 = master.create({
+    id: 'branch1'
+  })
+
+  master.get('first').on('data', (val, stamp, item) => {
+    masterFire.push(`${item.root().get('id').compute()}-${val}-${item.get('id').compute()}`)
+  })
+
+  branch1.get('first').on('data', (val, stamp, item) => {
+    branch1Fire.push(`${item.root().get('id').compute()}-${val}-${item.get('id').compute()}`)
+  })
+
+  master.set({
+    first: null
+  })
+
+  branch1.set({
+    first: {
+      title: 'first'
+    }
+  })
+
+  t.same(
+    masterFire, [ 'master-remove-1' ],
+    'masterFire = [ master-remove-1 ]'
+  )
+  t.same(
+    branch1Fire,
+    [ 'branch1-remove-1' ],
+    'branch1Fire = [ branch1-remove-1 ]'
+  )
+
+  t.end()
+})

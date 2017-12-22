@@ -27,7 +27,8 @@ test('listeners - on and emit', t => {
   branch1.emit('success', 'value2')
 
   t.same(
-    masterFire, [ 'master-value1' ],
+    masterFire,
+    [ 'master-value1' ],
     'masterFire = [ master-value1 ]'
   )
   t.same(
@@ -47,7 +48,8 @@ test('listeners - on and emit', t => {
   branch1.get([ 'first', 'id' ]).emit('success', 'value4')
 
   t.same(
-    masterFire, [ 'master-value1', 'master-value3' ],
+    masterFire,
+    [ 'master-value1', 'master-value3' ],
     'masterFire = [ master-value1, master-value3 ]'
   )
   t.same(
@@ -87,7 +89,8 @@ test('listeners - off', t => {
   branch1.emit('success', 'value2')
 
   t.same(
-    masterFire, [ ],
+    masterFire,
+    [ ],
     'masterFire = [ ]'
   )
   t.same(
@@ -109,7 +112,8 @@ test('listeners - off', t => {
   branch1.get([ 'first', 'id' ]).emit('success', 'value4')
 
   t.same(
-    masterFire, [ 'master-value3' ],
+    masterFire,
+    [ 'master-value3' ],
     'masterFire = [ master-value3 ]'
   )
   t.same(
@@ -160,7 +164,8 @@ test('listeners - remove', t => {
   master.get([ 'first', 'id' ]).emit('success', 'value4')
 
   t.same(
-    masterFire, [ 'master-value1', 'master-value4' ],
+    masterFire,
+    [ 'master-value1', 'master-value4' ],
     'masterFire = [ master-value1, master-value4 ]'
   )
   t.same(

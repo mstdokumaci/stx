@@ -23,6 +23,20 @@ const unListen = (leaf, event, id) => {
 }
 
 const emitBranches = (leaf, event, val, stamp, isVal) => {
+  if (
+    leaf.branch.leaves[leaf.id] === null ||
+    (
+      isVal &&
+      leaf.branch.leaves[leaf.id] &&
+      (
+        leaf.branch.leaves[leaf.id].val !== void 0 ||
+        leaf.branch.leaves[leaf.id].rT !== void 0
+      )
+    )
+  ) {
+    return
+  }
+
   leaf.branch.branches.forEach(branch => {
     leaf.branch = branch
     emitOwn(leaf, event, val, stamp, isVal)
@@ -44,20 +58,6 @@ const emitReferences = (leaf, event, val, stamp) => {
 }
 
 const emitOwn = (leaf, event, val, stamp, isVal) => {
-  if (
-    leaf.branch.leaves[leaf.id] === null ||
-    (
-      isVal &&
-      leaf.branch.leaves[leaf.id] &&
-      (
-        leaf.branch.leaves[leaf.id].val !== void 0 ||
-        leaf.branch.leaves[leaf.id].rT !== void 0
-      )
-    )
-  ) {
-    return
-  }
-
   const listeners = leaf.branch.listeners
 
   if (listeners[leaf.id] && listeners[leaf.id][event]) {
@@ -66,8 +66,8 @@ const emitOwn = (leaf, event, val, stamp, isVal) => {
     }
   }
 
-  emitBranches(leaf, event, val, stamp)
   emitReferences(leaf, event, val, stamp)
+  emitBranches(leaf, event, val, stamp, isVal)
 }
 
 const emit = (leaf, event, val, stamp, isVal) => {

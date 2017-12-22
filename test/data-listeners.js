@@ -43,7 +43,8 @@ test('listeners - set', t => {
   })
 
   t.same(
-    masterFire, [ 'master-set-first', 'master-set-first' ],
+    masterFire,
+    [ 'master-set-first', 'master-set-first' ],
     'masterFire = [ master-set-first, master-set-first ]'
   )
   t.same(
@@ -89,13 +90,63 @@ test('listeners - remove', t => {
   })
 
   t.same(
-    masterFire, [ 'master-remove-1' ],
+    masterFire,
+    [ 'master-remove-1' ],
     'masterFire = [ master-remove-1 ]'
   )
   t.same(
     branch1Fire,
     [ 'branch1-remove-1' ],
     'branch1Fire = [ branch1-remove-1 ]'
+  )
+
+  t.end()
+})
+
+test('listeners - references', t => {
+  const masterFire = []
+  const branch1Fire = []
+
+  const master = new Struct({
+    id: 'master',
+    deep: {
+      real: 'thing'
+    },
+    pointers: {
+      pointer1: ['@', 'deep', 'real'],
+      pointer2: ['@', 'deep']
+    }
+  })
+
+  const branch1 = master.create({
+    id: 'branch1'
+  })
+
+  master.get(['pointers', 'pointer1']).on('data', (val, stamp, item) => {
+    masterFire.push(`${item.root().get('id').compute()}-${val}-${item.compute()}`)
+  })
+
+  branch1.get(['pointers', 'pointer1']).on('data', (val, stamp, item) => {
+    branch1Fire.push(`${item.root().get('id').compute()}-${val}-${item.compute()}`)
+  })
+
+  global.debug = true
+  master.set({
+    deep: {
+      real: 'updated-thing'
+    }
+  })
+  global.debug = false
+
+  t.same(
+    masterFire,
+    [ 'master-set-updated-thing' ],
+    'masterFire = [ master-set-updated-thing ]'
+  )
+  t.same(
+    branch1Fire,
+    [ 'branch1-set-updated-thing' ],
+    'branch1Fire = [ branch1-set-updated-thing ]'
   )
 
   t.end()

@@ -23,8 +23,27 @@ const unListen = (leaf, event, id) => {
 }
 
 const emitBranches = (leaf, event, val, stamp, isVal) => {
-  const listeners = leaf.branch.listeners
+  leaf.branch.branches.forEach(branch => {
+    leaf.branch = branch
+    emitOwn(leaf, event, val, stamp, isVal)
+  })
+}
 
+const emitReferences = (leaf, event, val, stamp) => {
+  if (leaf.rF) {
+    leaf.rF.forEach(from => {
+      const referenceLeaf = Array.isArray(from) ? from[0].leaves[from[1]]
+        : leaf.struct.leaves[from]
+      const oBranch = referenceLeaf.branch
+
+      referenceLeaf.branch = leaf.branch
+      emitOwn(referenceLeaf, event, val, stamp)
+      referenceLeaf.branch = oBranch
+    })
+  }
+}
+
+const emitOwn = (leaf, event, val, stamp, isVal) => {
   if (
     leaf.branch.leaves[leaf.id] === null ||
     (
@@ -39,36 +58,22 @@ const emitBranches = (leaf, event, val, stamp, isVal) => {
     return
   }
 
+  const listeners = leaf.branch.listeners
+
   if (listeners[leaf.id] && listeners[leaf.id][event]) {
     for (const id in listeners[leaf.id][event]) {
       listeners[leaf.id][event][id](val, stamp, leaf)
     }
   }
 
-  leaf.branch.branches.forEach(branch => {
-    leaf.branch = branch
-    emitBranches(leaf, event, val, stamp)
-  })
-}
-
-const emitReferences = (leaf, event, val, stamp) => {
-  if (leaf.rF) {
-    leaf.rF.forEach(from => {
-      const isArray = Array.isArray(from)
-      const referenceLeaf = Object.assign(
-        isArray ? from[0].leaves[from[1]] : leaf.struct.leaves[from],
-        { branch: isArray ? from[0] : leaf.struct }
-      )
-      emit(referenceLeaf, event, val, stamp)
-    })
-  }
+  emitBranches(leaf, event, val, stamp)
+  emitReferences(leaf, event, val, stamp)
 }
 
 const emit = (leaf, event, val, stamp, isVal) => {
   const oBranch = leaf.branch
 
-  emitReferences(leaf, event, val, stamp)
-  emitBranches(leaf, event, val, stamp, isVal)
+  emitOwn(leaf, event, val, stamp, isVal)
 
   leaf.branch = oBranch
   return leaf

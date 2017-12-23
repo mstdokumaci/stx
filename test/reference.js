@@ -23,7 +23,7 @@ test('references', t => {
     pointers: {
       pointer3: [ '@', 'deep', 'real' ],
       pointer4: [ '@', 'deep', 'real2' ],
-      pointer5: [ '@', 'pointers', 'pointer1' ]
+      pointer5: master.get([ 'pointers', 'pointer1' ])
     }
   })
 

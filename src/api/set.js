@@ -13,8 +13,9 @@ const setVal = (leaf, val, stamp) => {
     const fromStruct = leaf.struct
     const rF = leaf.rF
     leaf.branch.leaves[leaf.id] = leaf = new Leaf(
-      leaf.branch, leaf.id, val, stamp, leaf.p, leaf.key
+      leaf.branch, leaf.id, leaf.p, leaf.key
     )
+    set(leaf, val, stamp)
     if (rF) {
       leaf.rF = rF.map(from => {
         if (Array.isArray(from)) {
@@ -43,7 +44,7 @@ const setReference = (leaf, val, stamp) => {
   while (branch) {
     if (branch.leaves[val.id] === null) {
       throw new Error('Reference must be in same branch')
-    } else if (branch === val.branch) {
+    } else if (branch === val.struct) {
       leaf = setVal(leaf, void 0, stamp)
       leaf.val = void 0
       leaf.rT = val.id
@@ -78,8 +79,9 @@ const setKeys = (leaf, val, stamp, isSubLeaf) => {
         addToStrings(keyId, key)
         keys.push(subLeafId)
         leaf.branch.leaves[subLeafId] = new Leaf(
-          leaf.branch, subLeafId, val[key], stamp, leaf.id, keyId, true
+          leaf.branch, subLeafId, leaf.id, keyId
         )
+        set(leaf.branch.leaves[subLeafId], val[key], stamp, true)
       }
     }
   }

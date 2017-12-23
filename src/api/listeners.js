@@ -48,8 +48,8 @@ const emitReferences = (leaf, event, val, stamp) => {
     leaf.rF.forEach(from => {
       const referenceLeaf = Array.isArray(from) ? from[0].leaves[from[1]]
         : leaf.struct.leaves[from]
-      const oBranch = referenceLeaf.branch
 
+      const oBranch = referenceLeaf.branch
       referenceLeaf.branch = leaf.branch
       emitOwn(referenceLeaf, event, val, stamp)
       referenceLeaf.branch = oBranch

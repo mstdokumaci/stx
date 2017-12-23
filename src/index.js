@@ -12,7 +12,7 @@ const respectOverrides = (branches, id, parent) => {
   })
 }
 
-const Leaf = function (branch, id, val, stamp, parent, key, isSubLeaf) {
+const Leaf = function (branch, id, parent, key) {
   this.id = id
   this.struct = branch
   this.branch = branch
@@ -21,9 +21,6 @@ const Leaf = function (branch, id, val, stamp, parent, key, isSubLeaf) {
   }
   if (key) {
     this.key = key
-  }
-  if (val !== void 0) {
-    set(this, val, stamp, isSubLeaf)
   }
   if (branch.branches.length) {
     respectOverrides(branch.branches, id, parent)
@@ -38,7 +35,8 @@ const Struct = function (val, stamp, inherits) {
     this.inherits.branches.push(this)
   }
   this.listeners = {}
-  this.leaves[root] = new Leaf(this, root, val, stamp)
+  this.leaves[root] = new Leaf(this, root)
+  set(this.leaves[root], val, stamp)
 }
 
 defineApi(Leaf.prototype, Struct.prototype)

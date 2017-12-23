@@ -106,6 +106,7 @@ test('listeners - remove', t => {
 test('listeners - references', t => {
   const masterFire = []
   const branch1Fire = []
+  const branch2Fire = []
 
   const master = new Struct({
     id: 'master',
@@ -130,13 +131,11 @@ test('listeners - references', t => {
     branch1Fire.push(`${item.root().get('id').compute()}-${val}-${item.compute()}`)
   })
 
-  global.debug = true
   master.set({
     deep: {
       real: 'updated-thing'
     }
   })
-  global.debug = false
 
   t.same(
     masterFire,
@@ -148,6 +147,45 @@ test('listeners - references', t => {
     [ 'branch1-set-updated-thing' ],
     'branch1Fire = [ branch1-set-updated-thing ]'
   )
+
+  master.get(['pointers', 'pointer2']).on('data', (val, stamp, item) => {
+    masterFire.push(`${item.root().get('id').compute()}-${val}-${item.get('real').compute()}`)
+  })
+
+  branch1.get(['pointers', 'pointer2']).on('data', (val, stamp, item) => {
+    branch1Fire.push(`${item.root().get('id').compute()}-${val}-${item.get('real').compute()}`)
+  })
+
+  global.debug = true
+  const branch2 = branch1.create({
+    id: 'branch2',
+    pointers: {
+      pointer3: ['@', 'pointers', 'pointer2'],
+      pointer4: ['@', 'pointers', 'pointer1']
+    }
+  })
+
+  branch2.get(['pointers', 'pointer3']).on('data', (val, stamp, item) => {
+    branch2Fire.push(`${item.root().get('id').compute()}-${val}-${item.get('real2').compute()}`)
+  })
+
+  global.debug = true
+  branch1.set({
+    deep: {
+      real2: 'thing2'
+    }
+  })
+  global.debug = false
+
+  branch2.set({
+    deep: {
+      real: 'overrided-thing'
+    }
+  })
+
+  console.log(masterFire)
+  console.log(branch1Fire)
+  console.log(branch2Fire)
 
   t.end()
 })

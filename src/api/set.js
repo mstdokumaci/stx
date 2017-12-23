@@ -10,23 +10,11 @@ const setVal = (leaf, val, stamp) => {
     return leaf
   }
   if (leaf.struct !== leaf.branch) {
-    const fromStruct = leaf.struct
-    const rF = leaf.rF
     leaf.branch.leaves[leaf.id] = leaf = new Leaf(
       leaf.branch, leaf.id, leaf.p, leaf.key
     )
-    set(leaf, val, stamp)
-    if (rF) {
-      leaf.rF = rF.map(from => {
-        if (Array.isArray(from)) {
-          if (from[0] === leaf.branch) {
-            from = from[1]
-          }
-        } else {
-          from = [ fromStruct, from ]
-        }
-        return from
-      })
+    if (val !== void 0 ) {
+      set(leaf, val, stamp)
     }
   } else if (val !== void 0) {
     leaf.val = val

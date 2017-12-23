@@ -169,13 +169,11 @@ test('listeners - references', t => {
     branch2Fire.push(`${item.root().get('id').compute()}-${val}-${item.get('real2').compute()}`)
   })
 
-  global.debug = true
   branch1.set({
     deep: {
       real2: 'thing2'
     }
   })
-  global.debug = false
 
   branch2.set({
     deep: {

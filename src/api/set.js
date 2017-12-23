@@ -13,7 +13,7 @@ const setVal = (leaf, val, stamp) => {
     leaf.branch.leaves[leaf.id] = leaf = new Leaf(
       leaf.branch, leaf.id, leaf.p, leaf.key
     )
-    if (val !== void 0 ) {
+    if (val !== void 0) {
       set(leaf, val, stamp)
     }
   } else if (val !== void 0) {

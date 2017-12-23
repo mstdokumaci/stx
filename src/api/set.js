@@ -25,24 +25,29 @@ const setVal = (leaf, val, stamp) => {
 }
 
 const setReferenceByPath = (leaf, path, stamp) =>
-  set(leaf, getByPath(leaf.branch, root, path, {}, stamp), stamp)
+  setReference(leaf, getByPath(leaf.branch, root, path, {}, stamp), stamp)
 
 const setReference = (leaf, val, stamp) => {
+  leaf = setVal(leaf, void 0, stamp)
+  leaf.val = void 0
+  leaf.rT = val.id
+  const id = val.struct === leaf.branch ? leaf.id
+    : [ leaf.branch, leaf.id ]
+  if (val.rF) {
+    val.rF.push(id)
+  } else {
+    val.rF = [ id ]
+  }
+  emit(leaf, 'data', 'set', stamp, true)
+}
+
+const setReferenceByLeaf = (leaf, val, stamp) => {
   let branch = leaf.branch
   while (branch) {
     if (branch.leaves[val.id] === null) {
       throw new Error('Reference must be in same branch')
     } else if (branch === val.struct) {
-      leaf = setVal(leaf, void 0, stamp)
-      leaf.val = void 0
-      leaf.rT = val.id
-      const id = branch === leaf.branch ? leaf.id : [ leaf.branch, leaf.id ]
-      if (val.rF) {
-        val.rF.push(id)
-      } else {
-        val.rF = [ id ]
-      }
-      return emit(leaf, 'data', 'set', stamp, true)
+      return setReference(leaf, val, stamp)
     }
     branch = branch.inherits
   }
@@ -91,7 +96,7 @@ const set = (leaf, val, stamp, isSubLeaf) => {
         setVal(leaf, val, stamp)
       }
     } else if (val.isLeaf) {
-      setReference(leaf, val, stamp)
+      setReferenceByLeaf(leaf, val, stamp)
     } else {
       setKeys(leaf, val, stamp, isSubLeaf)
     }

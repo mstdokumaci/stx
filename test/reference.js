@@ -90,6 +90,11 @@ test('references', t => {
   const branch2 = branch1.create({
     deep: {
       real: 'override'
+    },
+    pointers: {
+      pointer1: {
+        real: 'reference-override'
+      }
     }
   })
 
@@ -115,6 +120,11 @@ test('references', t => {
   )
 
   t.equals(
+    branch2.get([ 'pointers', 'pointer1', 'real' ]).compute(),
+    'reference-override',
+    'branch2.pointers.pointer1.real.compute() = reference-override'
+  )
+  t.equals(
     branch2.get([ 'pointers', 'pointer2' ]).compute(),
     'override',
     'branch2.pointers.pointer2.compute() = override'
@@ -128,6 +138,11 @@ test('references', t => {
     branch2.get([ 'pointers', 'pointer4' ]).compute(),
     'thing2',
     'branch2.pointers.pointer4.compute() = thing2'
+  )
+  t.equals(
+    branch2.get([ 'pointers', 'pointer5', 'real2' ]).compute(),
+    'thing2',
+    'branch2.pointers.pointer5.real2.compute() = thing2'
   )
 
   t.end()

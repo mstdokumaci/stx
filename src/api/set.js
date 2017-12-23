@@ -24,9 +24,6 @@ const setVal = (leaf, val, stamp) => {
   return leaf
 }
 
-const setReferenceByPath = (leaf, path, stamp) =>
-  setReference(leaf, getByPath(leaf.branch, root, path, {}, stamp), stamp)
-
 const setReference = (leaf, val, stamp) => {
   leaf = setVal(leaf, void 0, stamp)
   leaf.val = void 0
@@ -40,6 +37,9 @@ const setReference = (leaf, val, stamp) => {
   }
   emit(leaf, 'data', 'set', stamp, true)
 }
+
+const setReferenceByPath = (leaf, path, stamp) =>
+  setReference(leaf, getByPath(leaf.branch, root, path, {}, stamp), stamp)
 
 const setReferenceByLeaf = (leaf, val, stamp) => {
   let branch = leaf.branch

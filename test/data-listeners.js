@@ -156,7 +156,6 @@ test('listeners - references', t => {
     branch1Fire.push(`${item.root().get('id').compute()}-${val}-${item.get('real').compute()}`)
   })
 
-  global.debug = true
   const branch2 = branch1.create({
     id: 'branch2',
     pointers: {

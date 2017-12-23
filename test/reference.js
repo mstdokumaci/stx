@@ -144,6 +144,43 @@ test('references', t => {
     'thing2',
     'branch2.pointers.pointer5.real2.compute() = thing2'
   )
+  t.equals(
+    branch2.get([ 'pointers', 'pointer5' ]).get('real2').compute(),
+    'thing2',
+    'branch2.pointers.pointer5.real2.compute() = thing2'
+  )
+
+  branch1.set({
+    pointers: {
+      pointer1: 'override'
+    }
+  })
+
+  t.equals(
+    branch2.get([ 'pointers', 'pointer5', 'real' ]).compute(),
+    'reference-override',
+    'branch2.pointers.pointer5.real = reference-override'
+  )
+  t.equals(
+    branch2.get([ 'pointers', 'pointer1', 'real2' ]),
+    void 0,
+    'branch2.pointers.pointer1.real2 = undefined'
+  )
+  t.equals(
+    branch2.get([ 'pointers', 'pointer5' ]).get('real2'),
+    void 0,
+    'branch2.pointers.pointer5.real2 = undefined'
+  )
+  t.equals(
+    branch2.get([ 'pointers', 'pointer1' ]).compute(),
+    'override',
+    'branch2.pointers.pointer1.compute() = override'
+  )
+  t.equals(
+    branch2.get([ 'pointers', 'pointer5' ]).compute(),
+    'override',
+    'branch2.pointers.pointer5.compute() = override'
+  )
 
   t.end()
 })

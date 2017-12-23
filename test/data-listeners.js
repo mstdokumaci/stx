@@ -181,7 +181,11 @@ test('listeners - references', t => {
     }
   })
 
-  console.log(masterFire)
+  t.same(
+    masterFire,
+    [ 'master-set-updated-thing' ],
+    'masterFire = [ master-set-updated-thing ]'
+  )
   console.log(branch1Fire)
   console.log(branch2Fire)
 

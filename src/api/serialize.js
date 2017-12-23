@@ -3,7 +3,7 @@ import { getValOrRef } from './compute'
 import { children } from './array'
 
 const inspect = (leaf) => {
-  const subLeaves = children(leaf.branch, leaf)
+  const subLeaves = children(leaf)
   const start = 'Struct ' + (leaf.key ? getString(leaf.key) + ' ' : '')
   let val = getValOrRef(leaf.branch, leaf.id)
   if (val && val.isLeaf) {
@@ -35,7 +35,7 @@ const serialize = (leaf) => {
   }
   let child = false
   const result = {}
-  children(leaf.branch, leaf, subLeaf => {
+  children(leaf, subLeaf => {
     child = true
     result[getString(subLeaf.key)] = serialize(subLeaf)
   })

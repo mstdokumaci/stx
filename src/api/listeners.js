@@ -1,3 +1,5 @@
+import { getFromLeaves } from './get'
+
 let lastId = 0
 
 const listen = (leaf, event, cb, id) => {
@@ -44,16 +46,22 @@ const emitBranches = (leaf, event, val, stamp, isVal) => {
 }
 
 const emitReferences = (leaf, event, val, stamp) => {
-  if (leaf.rF) {
-    leaf.rF.forEach(from => {
-      const referenceLeaf = Array.isArray(from) ? from[0].leaves[from[1]]
-        : leaf.struct.leaves[from]
-
-      const oBranch = referenceLeaf.branch
-      referenceLeaf.branch = leaf.branch
-      emitOwn(referenceLeaf, event, val, stamp)
-      referenceLeaf.branch = oBranch
-    })
+  let branch = leaf.struct
+  const oBranch = leaf.branch
+  const id = leaf.id
+  while (branch) {
+    leaf = branch.leaves[id]
+    if (leaf === null) {
+      return
+    } else if (leaf && leaf.rF) {
+      leaf.rF.forEach(from => {
+        const referenceLeaf = getFromLeaves(oBranch, from)
+        if (referenceLeaf) {
+          emitOwn(referenceLeaf, event, val, stamp)
+        }
+      })
+    }
+    branch = branch.inherits
   }
 }
 

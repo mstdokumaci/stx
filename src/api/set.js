@@ -25,15 +25,16 @@ const setVal = (leaf, val, stamp) => {
 }
 
 const setReference = (leaf, val, stamp) => {
+  if (leaf.rT === val.id) {
+    return
+  }
   leaf = setVal(leaf, void 0, stamp)
   leaf.val = void 0
   leaf.rT = val.id
-  const id = val.struct === leaf.branch ? leaf.id
-    : [ leaf.branch, leaf.id ]
   if (val.rF) {
-    val.rF.push(id)
+    val.rF.push(leaf.id)
   } else {
-    val.rF = [ id ]
+    val.rF = [ leaf.id ]
   }
   emit(leaf, 'data', 'set', stamp, true)
 }

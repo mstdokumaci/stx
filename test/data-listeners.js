@@ -159,8 +159,7 @@ test('listeners - references', t => {
   const branch2 = branch1.create({
     id: 'branch2',
     pointers: {
-      pointer3: ['@', 'pointers', 'pointer2'],
-      pointer4: ['@', 'pointers', 'pointer1']
+      pointer3: ['@', 'pointers', 'pointer2']
     }
   })
 
@@ -176,7 +175,7 @@ test('listeners - references', t => {
 
   branch2.set({
     deep: {
-      real: 'overrided-thing'
+      real: 'override2-thing'
     }
   })
 
@@ -185,8 +184,16 @@ test('listeners - references', t => {
     [ 'master-set-updated-thing' ],
     'masterFire = [ master-set-updated-thing ]'
   )
-  console.log(branch1Fire)
-  console.log(branch2Fire)
+  t.same(
+    branch1Fire,
+    [ 'branch1-set-updated-thing', 'branch1-set-updated-thing' ],
+    'branch1Fire = [ branch1-set-updated-thing, branch1-set-updated-thing ]'
+  )
+  t.same(
+    branch2Fire,
+    [ 'branch2-set-thing2', 'branch2-set-thing2' ],
+    'branch2Fire = [ branch2-set-thing2, branch2-set-thing2 ]'
+  )
 
   t.end()
 })

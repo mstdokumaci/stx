@@ -1,9 +1,10 @@
 import { getString } from '../cache'
 import { getFromLeaves } from './get'
 
-const children = (branch, leaf, cb) => {
+const children = (leaf, cb) => {
   const exists = {}
-  const oBranch = branch
+  let branch = leaf.struct
+  const oBranch = leaf.branch
   const id = leaf.id
   const subLeaves = []
   while (branch) {
@@ -37,14 +38,14 @@ const children = (branch, leaf, cb) => {
 }
 
 const forEach = (leaf, cb) => {
-  children(leaf.branch, leaf, subLeaf => {
+  children(leaf, subLeaf => {
     cb(subLeaf, getString(subLeaf.key))
   })
 }
 
 const map = (leaf, cb) => {
   const mapped = []
-  children(leaf.branch, leaf, subLeaf => {
+  children(leaf, subLeaf => {
     mapped.push(cb(subLeaf, getString(subLeaf.key)))
   })
   return mapped
@@ -52,7 +53,7 @@ const map = (leaf, cb) => {
 
 const filter = (leaf, cb) => {
   const filtered = []
-  children(leaf.branch, leaf, subLeaf => {
+  children(leaf, subLeaf => {
     if (cb(subLeaf, getString(subLeaf.key))) {
       filtered.push(subLeaf)
     }
@@ -61,14 +62,14 @@ const filter = (leaf, cb) => {
 }
 
 const find = (leaf, cb) => {
-  return children(leaf.branch, leaf, subLeaf => {
+  return children(leaf, subLeaf => {
     return cb(subLeaf, getString(subLeaf.key))
   })
 }
 
 const reduce = (leaf, cb, accumulator) => {
   let skipFirst = accumulator === void 0
-  children(leaf.branch, leaf, subLeaf => {
+  children(leaf, subLeaf => {
     if (skipFirst) {
       accumulator = subLeaf
       skipFirst = false

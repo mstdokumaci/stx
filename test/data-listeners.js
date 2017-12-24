@@ -159,12 +159,17 @@ test('listeners - references', t => {
   const branch2 = branch1.create({
     id: 'branch2',
     pointers: {
-      pointer3: ['@', 'pointers', 'pointer2']
+      pointer3: ['@', 'pointers', 'pointer2'],
+      pointer4: ['@', 'pointers', 'pointer1']
     }
   })
 
   branch2.get(['pointers', 'pointer3']).on('data', (val, stamp, item) => {
     branch2Fire.push(`${item.root().get('id').compute()}-${val}-${item.get('real2').compute()}`)
+  })
+
+  branch2.get(['pointers', 'pointer4']).on('data', (val, stamp, item) => {
+    branch2Fire.push(`${item.root().get('id').compute()}-${val}-${item.compute()}`)
   })
 
   branch1.set({
@@ -191,8 +196,8 @@ test('listeners - references', t => {
   )
   t.same(
     branch2Fire,
-    [ 'branch2-set-thing2', 'branch2-set-thing2' ],
-    'branch2Fire = [ branch2-set-thing2, branch2-set-thing2 ]'
+    [ 'branch2-set-thing2', 'branch2-set-thing2', 'branch2-set-override2-thing' ],
+    'branch2Fire = [ branch2-set-thing2, branch2-set-thing2, branch2-set-override2-thing ]'
   )
 
   t.end()

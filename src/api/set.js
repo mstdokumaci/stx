@@ -55,7 +55,7 @@ const setReferenceByLeaf = (leaf, val, stamp) => {
   throw new Error('Reference must be in same branch')
 }
 
-const setKeys = (leaf, val, stamp, isSubLeaf) => {
+const setKeys = (leaf, val, stamp) => {
   let keys = []
   for (let key in val) {
     if (key === 'val') {
@@ -65,9 +65,6 @@ const setKeys = (leaf, val, stamp, isSubLeaf) => {
       const existing = getFromLeaves(leaf.branch, subLeafId)
       if (existing) {
         set(existing, val[key], stamp)
-        if (isSubLeaf) {
-          keys.push(subLeafId)
-        }
       } else if (val[key] !== null) {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
@@ -75,7 +72,7 @@ const setKeys = (leaf, val, stamp, isSubLeaf) => {
         leaf.branch.leaves[subLeafId] = new Leaf(
           leaf.branch, subLeafId, leaf.id, keyId
         )
-        set(leaf.branch.leaves[subLeafId], val[key], stamp, true)
+        set(leaf.branch.leaves[subLeafId], val[key], stamp)
       }
     }
   }
@@ -86,7 +83,7 @@ const setKeys = (leaf, val, stamp, isSubLeaf) => {
   }
 }
 
-const set = (leaf, val, stamp, isSubLeaf) => {
+const set = (leaf, val, stamp) => {
   if (typeof val === 'object') {
     if (!val) {
       remove(leaf, stamp)
@@ -99,7 +96,7 @@ const set = (leaf, val, stamp, isSubLeaf) => {
     } else if (val.isLeaf) {
       setReferenceByLeaf(leaf, val, stamp)
     } else {
-      setKeys(leaf, val, stamp, isSubLeaf)
+      setKeys(leaf, val, stamp)
     }
   } else {
     setVal(leaf, val, stamp)

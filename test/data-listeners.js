@@ -150,11 +150,11 @@ test('listeners - references', t => {
 
   master.get(['pointers', 'pointer2']).on('data', (val, stamp, item) => {
     masterFire.push(`${item.root().get('id').compute()}-${val}-${item.get('real').compute()}`)
-  })
+  }, 'listener1')
 
   branch1.get(['pointers', 'pointer2']).on('data', (val, stamp, item) => {
     branch1Fire.push(`${item.root().get('id').compute()}-${val}-${item.get('real').compute()}`)
-  })
+  }, 'listener1')
 
   const branch2 = branch1.create({
     id: 'branch2',
@@ -199,6 +199,29 @@ test('listeners - references', t => {
     [ 'branch2-set-thing2', 'branch2-set-thing2', 'branch2-set-override2-thing' ],
     'branch2Fire = [ branch2-set-thing2, branch2-set-thing2, branch2-set-override2-thing ]'
   )
+
+  master.get(['pointers', 'pointer2']).off('data', 'listener1')
+  branch1.get(['pointers', 'pointer2']).off('data', 'listener1')
+
+  master.set({
+    deep: {
+      real: null
+    }
+  })
+
+  branch2.set({
+    deep: {
+      real: 'updated2-thing'
+    }
+  })
+
+  t.same(
+    masterFire,
+    [ 'master-set-updated-thing', 'master-remove-updated-thing' ],
+    'masterFire = [ master-set-updated-thing, master-remove-updated-thing ]'
+  )
+  console.log(branch1Fire)
+  console.log(branch2Fire)
 
   t.end()
 })

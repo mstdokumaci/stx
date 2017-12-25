@@ -230,7 +230,11 @@ test('listeners - references', t => {
     [ 'branch1-set-updated-thing', 'branch1-new-key-updated-thing', 'branch1-remove-updated-thing' ],
     'branch1Fire = [ branch1-set-updated-thing, branch1-new-key-updated-thing, branch1-remove-updated-thing ]'
   )
-  console.log(branch2Fire)
+  t.same(
+    branch2Fire,
+    [ 'branch2-new-key-thing2', 'branch2-set-override-thing', 'branch2-set-updated2-thing' ],
+    'branch1Fire = [ branch2-new-key-thing2, branch2-set-override-thing, branch2-set-updated2-thing ]'
+  )
 
   t.end()
 })

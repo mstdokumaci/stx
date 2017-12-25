@@ -1,8 +1,8 @@
 const test = require('tape')
-const { Struct } = require('../')
+const { create } = require('../')
 
 test('remove own', t => {
-  const master = new Struct({
+  const master = create({
     content: {
       first: {
         id: 1,
@@ -84,7 +84,7 @@ test('remove own', t => {
 })
 
 test('remove override', t => {
-  const master = new Struct({
+  const master = create({
     content: {
       first: {
         id: 1,

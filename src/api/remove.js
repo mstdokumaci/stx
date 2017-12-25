@@ -35,9 +35,9 @@ const removeFromBranches = (branches, id, parent, rF, stamp) =>
     }
   })
 
-const removeReference = (leaf, stamp) => {
+const removeReference = (branch, leaf, stamp) => {
   if (leaf.rT) {
-    const rT = getFromLeaves(leaf.branch, leaf.rT)
+    const rT = getFromLeaves(branch, leaf.rT)
     if (rT.rF) {
       const rFIndex = leaf.struct === rT.struct ? rT.rF.indexOf(leaf.id)
         : rT.rF.findIndex(from => from[0] === leaf.struct && from[1] === leaf.id)
@@ -62,14 +62,14 @@ const removeFromParent = (parent, id, stamp) => {
   }
 }
 
-const removeOwn = (leaf, stamp, ignoreParent) => {
-  delete leaf.branch.leaves[leaf.id]
+const removeOwn = (branch, leaf, stamp, ignoreParent) => {
+  delete branch.leaves[leaf.id]
 
   const parent = ignoreParent ? void 0
-    : removeFromParent(leaf.branch.leaves[leaf.p], leaf.id, stamp)
+    : removeFromParent(branch.leaves[leaf.parent], leaf.id, stamp)
 
-  if (leaf.branch.branches.length) {
-    removeFromBranches(leaf.branch.branches, leaf.id, parent, leaf.rF, stamp)
+  if (branch.branches.length) {
+    removeFromBranches(branch.branches, leaf.id, parent, leaf.rF, stamp)
   }
 }
 
@@ -77,26 +77,26 @@ const removeBranch = (branch, id) => {
   branch.leaves[id] = null
 }
 
-const removeChildren = (leaf, stamp) => {
+const removeChildren = (branch, leaf, stamp) => {
   if (leaf.keys) {
     leaf.keys.forEach(keyId =>
-      remove(getFromLeaves(leaf.branch, keyId), stamp, true)
+      remove(getFromLeaves(branch, keyId), stamp, true)
     )
   }
 }
 
-const remove = (leaf, stamp, ignoreParent) => {
+const remove = (branch, leaf, stamp, ignoreParent) => {
   emit(leaf, 'data', 'remove', stamp, true)
 
-  if (leaf.struct === leaf.branch) {
-    removeOwn(leaf, stamp, ignoreParent)
+  if (leaf.struct === branch) {
+    removeOwn(branch, leaf, stamp, ignoreParent)
   } else {
-    removeBranch(leaf.branch, leaf.id)
+    removeBranch(branch, leaf.id)
   }
 
-  removeChildren(leaf, stamp)
-  removeReference(leaf, stamp)
-  removeListeners(leaf.branch, leaf.id)
+  removeChildren(branch, leaf, stamp)
+  removeReference(branch, leaf, stamp)
+  removeListeners(branch, leaf.id)
 }
 
 export { remove, removeReference }

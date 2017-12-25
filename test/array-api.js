@@ -1,8 +1,8 @@
 const test = require('tape')
-const { Struct } = require('../dist/index')
+const { create } = require('../dist/index')
 
 test('array api - forEach', t => {
-  const master = new Struct({
+  const master = create({
     articles: {
       first: {
         title: 'First Article'
@@ -119,7 +119,7 @@ test('array api - forEach', t => {
 })
 
 test('array api - map', t => {
-  const master = new Struct({
+  const master = create({
     articles: {
       first: {
         favourite: false,
@@ -183,7 +183,7 @@ test('array api - map', t => {
 })
 
 test('array api - find', t => {
-  const master = new Struct({
+  const master = create({
     first: {
       name: 'first',
       favourite: false
@@ -230,7 +230,7 @@ test('array api - find', t => {
 })
 
 test('array api - reduce', t => {
-  const master = new Struct({
+  const master = create({
     payments: {
       first: 5,
       second: 10

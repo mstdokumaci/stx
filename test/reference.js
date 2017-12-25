@@ -1,8 +1,8 @@
 const test = require('tape')
-const { Struct } = require('../dist/index')
+const { create } = require('../dist/index')
 
 test('references', t => {
-  const master = new Struct()
+  const master = create()
 
   master.set({
     deep: {

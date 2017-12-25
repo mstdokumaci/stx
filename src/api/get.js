@@ -26,8 +26,6 @@ const getRefFromLeaves = (branch, id) => {
   }
 }
 
-const origin = leaf => getFromLeaves(leaf.branch, leaf.rT) || leaf
-
 const getByKey = (branch, id, key, val, stamp, inReference) => {
   const leafId = keyToId(key, id)
   const subLeaf = getFromLeaves(branch, leafId)
@@ -88,12 +86,12 @@ const getByPath = (branch, id, path, val, stamp, inReference) => {
   }
 }
 
-const getApi = (leaf, path, val, stamp) => {
+const getApi = (branch, id, path, val, stamp) => {
   if (Array.isArray(path)) {
-    return getByPath(leaf.branch, leaf.id, path, val, stamp)
+    return getByPath(branch, id, path, val, stamp)
   } else {
-    return getByKey(leaf.branch, leaf.id, path, val, stamp)
+    return getByKey(branch, id, path, val, stamp)
   }
 }
 
-export { getFromLeaves, origin, getByPath, getApi }
+export { getFromLeaves, getByPath, getApi }

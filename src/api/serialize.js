@@ -1,13 +1,24 @@
 import { getString } from '../cache'
 import { getValOrRef } from './compute'
 import { children } from './array'
+import { root } from '../id'
+import { getFromLeaves } from './get'
 
-const inspect = (leaf) => {
-  const subLeaves = children(leaf)
+const path = (branch, leaf) => {
+  const path = []
+  while (leaf && leaf.id !== root) {
+    path.unshift(getString(leaf.key))
+    leaf = getFromLeaves(branch, leaf.parent)
+  }
+  return path
+}
+
+const inspect = (branch, leaf) => {
+  const subLeaves = children(branch, leaf)
   const start = 'Struct ' + (leaf.key ? getString(leaf.key) + ' ' : '')
-  let val = getValOrRef(leaf.branch, leaf.id)
-  if (val && val.isLeaf) {
-    val = inspect(val)
+  let val = getValOrRef(branch, leaf.id)
+  if (val && val.struct) {
+    val = inspect(branch, val)
   }
   if (subLeaves.length) {
     let keys = []
@@ -28,16 +39,16 @@ const inspect = (leaf) => {
   }
 }
 
-const serialize = (leaf) => {
-  let val = getValOrRef(leaf.branch, leaf.id)
-  if (val && val.isLeaf) {
-    val = [ '@' ].concat(val.path())
+const serialize = (branch, leaf) => {
+  let val = getValOrRef(branch, leaf.id)
+  if (val && val.struct) {
+    val = [ '@' ].concat(path(branch, val))
   }
   let child = false
   const result = {}
-  children(leaf, subLeaf => {
+  children(branch, leaf, subLeaf => {
     child = true
-    result[getString(subLeaf.key)] = serialize(subLeaf)
+    result[getString(subLeaf.key)] = serialize(branch, subLeaf)
   })
   if (child) {
     if (val !== void 0) {
@@ -51,4 +62,4 @@ const serialize = (leaf) => {
   }
 }
 
-export { inspect, serialize }
+export { path, inspect, serialize }

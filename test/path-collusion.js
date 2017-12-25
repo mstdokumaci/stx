@@ -1,8 +1,8 @@
 const test = require('tape')
-const { Struct } = require('../')
+const { create } = require('../')
 
 test('path collusion', t => {
-  const state = new Struct()
+  const state = create()
   const arr = {}
 
   let d = Date.now()

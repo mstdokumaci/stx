@@ -1,4 +1,5 @@
 import { getFromLeaves } from './get'
+import { Leaf } from '../index'
 
 const getValOrRef = (branch, id) => {
   const oBranch = branch
@@ -14,6 +15,8 @@ const getValOrRef = (branch, id) => {
     branch = branch.inherits
   }
 }
+
+const origin = (branch, leaf) => getFromLeaves(branch, leaf.rT) || leaf
 
 const compute = (branch, id) => {
   const oBranch = branch
@@ -33,4 +36,4 @@ const compute = (branch, id) => {
   }
 }
 
-export { getValOrRef, compute }
+export { getValOrRef, compute, origin }

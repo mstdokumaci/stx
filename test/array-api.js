@@ -118,7 +118,7 @@ test('array api - forEach', t => {
   t.end()
 })
 
-test('array api - map', t => {
+test('array api - filter', t => {
   const master = create({
     articles: {
       first: {
@@ -177,6 +177,56 @@ test('array api - map', t => {
       .map(item => item.get('name').compute()),
     [ 'first', 'second' ],
     'branch2.articles.filter() = [ first, second ]'
+  )
+
+  t.end()
+})
+
+test('array api - map', t => {
+  const master = create({
+    articles: {
+      first: {
+        name: 'first'
+      },
+      second: {
+        name: 'second'
+      }
+    }
+  })
+
+  const branch1 = master.create()
+  branch1.get('articles').set({
+    third: {
+      name: 'third'
+    }
+  })
+
+  const branch2 = branch1.create({
+    articles: {
+      second: null
+    }
+  })
+
+  t.same(
+    master
+      .get('articles')
+      .map(item => item.get('name').compute()),
+    [ 'first', 'second' ],
+    'master.articles.map() = [ first, second ]'
+  )
+  t.same(
+    branch1
+      .get('articles')
+      .map(item => item.get('name').compute()),
+    [ 'third', 'first', 'second' ],
+    'branch1.articles.map() = [ third, first, second ]'
+  )
+  t.same(
+    branch2
+      .get('articles')
+      .map(item => item.get('name').compute()),
+    [ 'third', 'first' ],
+    'branch2.articles.map() = [ third, first ]'
   )
 
   t.end()

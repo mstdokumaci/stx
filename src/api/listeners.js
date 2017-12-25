@@ -1,4 +1,5 @@
 import { getFromLeaves } from './get'
+import { Leaf } from '../index'
 
 let lastId = 0
 
@@ -79,7 +80,7 @@ const emit = (branch, leaf, event, val, stamp, isVal, isRef) => {
   emitReferences(branch, leaf, event, val, stamp)
 
   if (branch.branches.length && !isRef) {
-    emitBranches(branch.branches, event, val, stamp, isVal, event === 'data' && val === 'remove-key')
+    emitBranches(branch.branches, leaf, event, val, stamp, isVal, event === 'data' && val === 'remove-key')
   }
 }
 

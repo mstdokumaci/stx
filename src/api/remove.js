@@ -51,12 +51,12 @@ const removeListeners = (branch, id) => {
   delete branch.listeners[id]
 }
 
-const removeFromParent = (parent, id, stamp) => {
+const removeFromParent = (branch, parent, id, stamp) => {
   if (parent) {
     const index = parent.keys.indexOf(id)
     if (~index) {
       parent.keys.splice(index, 1)
-      emit(parent, 'data', 'remove-key', stamp, true)
+      emit(branch, parent, 'data', 'remove-key', stamp, true)
       return parent.id
     }
   }
@@ -66,7 +66,7 @@ const removeOwn = (branch, leaf, stamp, ignoreParent) => {
   delete branch.leaves[leaf.id]
 
   const parent = ignoreParent ? void 0
-    : removeFromParent(branch.leaves[leaf.parent], leaf.id, stamp)
+    : removeFromParent(branch, branch.leaves[leaf.parent], leaf.id, stamp)
 
   if (branch.branches.length) {
     removeFromBranches(branch.branches, leaf.id, parent, leaf.rF, stamp)
@@ -80,13 +80,13 @@ const removeBranch = (branch, id) => {
 const removeChildren = (branch, leaf, stamp) => {
   if (leaf.keys) {
     leaf.keys.forEach(keyId =>
-      remove(getFromLeaves(branch, keyId), stamp, true)
+      remove(branch, getFromLeaves(branch, keyId), stamp, true)
     )
   }
 }
 
 const remove = (branch, leaf, stamp, ignoreParent) => {
-  emit(leaf, 'data', 'remove', stamp, true)
+  emit(branch, leaf, 'data', 'remove', stamp, true)
 
   if (leaf.struct === branch) {
     removeOwn(branch, leaf, stamp, ignoreParent)

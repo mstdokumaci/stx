@@ -213,3 +213,38 @@ test('set - get - arrays', t => {
 
   t.end()
 })
+
+test('interference', t => {
+  const master = create({
+    deep: {
+      real: 'thing'
+    }
+  })
+
+  const branch1 = master.create()
+  const branch2 = branch1.create()
+
+  const b1Real = branch1.get([ 'deep', 'real' ])
+  const b2Deep = branch2.get([ 'deep', 'real' ]).parent()
+
+  b1Real.set('override1')
+  b2Deep.set({ real: 'override2' })
+
+  t.equals(
+    master.get([ 'deep', 'real' ]).compute(),
+    'thing',
+    'master.deep.real = thing'
+  )
+  t.equals(
+    branch1.get([ 'deep', 'real' ]).compute(),
+    'override1',
+    'branch1.deep.real = override1'
+  )
+  t.equals(
+    branch2.get([ 'deep', 'real' ]).compute(),
+    'override2',
+    'branch2.deep.real = override2'
+  )
+
+  t.end()
+})

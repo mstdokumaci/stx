@@ -1,5 +1,4 @@
 import { getFromLeaves } from './get'
-import { Leaf } from '../index'
 
 const getValOrRef = (branch, id) => {
   const oBranch = branch

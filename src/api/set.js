@@ -107,7 +107,7 @@ const set = (branch, leaf, val, stamp) => {
         setVal(branch, leaf, val, stamp)
       }
     } else if (val.isLeaf) {
-      setReferenceByLeaf(branch, leaf, val, stamp)
+      setReferenceByLeaf(branch, leaf, val.leaf, stamp)
     } else {
       setKeys(branch, leaf, val, stamp)
     }

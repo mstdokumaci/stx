@@ -55,17 +55,21 @@ const map = (branch, leaf, cb) => {
 const filter = (branch, leaf, cb) => {
   const filtered = []
   children(branch, leaf, subLeaf => {
-    if (cb(new Leaf(branch, subLeaf), getString(subLeaf.key))) {
-      filtered.push(subLeaf)
+    const subLeafInstance = new Leaf(branch, subLeaf)
+    if (cb(subLeafInstance, getString(subLeaf.key))) {
+      filtered.push(subLeafInstance)
     }
   })
   return filtered
 }
 
 const find = (branch, leaf, cb) => {
-  return children(branch, leaf, subLeaf => {
+  const found = children(branch, leaf, subLeaf => {
     return cb(new Leaf(branch, subLeaf), getString(subLeaf.key))
   })
+  if (found) {
+    return new Leaf(branch, found)
+  }
 }
 
 const reduce = (branch, leaf, cb, accumulator) => {

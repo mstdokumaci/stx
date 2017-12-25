@@ -4,7 +4,7 @@ import { getFromLeaves, getByPath } from './get'
 import { remove, removeReference } from './remove'
 import { emit } from './listeners'
 
-const respectOverrides = (branches, id, parent) => {
+const respectOverrides = (branches, id, parent) =>
   branches.forEach(branch => {
     if (branch.leaves[parent] === null) {
       branch.leaves[id] = null
@@ -13,12 +13,11 @@ const respectOverrides = (branches, id, parent) => {
       respectOverrides(branch.branches, id, parent)
     }
   })
-}
 
 const addLeaf = (struct, id, parent, key) => {
   struct.leaves[id] = { struct, id, parent, key }
   if (struct.branches.length) {
-    respectOverrides(struct.branches, id, p)
+    respectOverrides(struct.branches, id, parent)
   }
   return struct.leaves[id]
 }

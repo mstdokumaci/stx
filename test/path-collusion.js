@@ -51,7 +51,7 @@ test('path collusion', t => {
   )
 
   t.equals(
-    Object.keys(state.leaves).length,
+    Object.keys(state.branch.leaves).length,
     100001,
     '100001 leaves in state'
   )

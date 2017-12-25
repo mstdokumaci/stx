@@ -53,13 +53,15 @@ const defineApi = leaf => {
     return new Leaf(this.branch, this.branch.leaves[root])
   })
 
-
-  /* ===== RETURNS OTHER ===== */
-
   // ORIGIN
   define(leaf, 'origin', function () {
-    return origin(this.branch, this.leaf)
+    const originLeaf = origin(this.branch, this.leaf)
+    if (originLeaf) {
+      return new Leaf(this.branch, originLeaf)
+    }
   })
+
+  /* ===== RETURNS OTHER ===== */
 
   // COMPUTE
   define(leaf, 'compute', function () {

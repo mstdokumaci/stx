@@ -42,7 +42,7 @@ const getByKey = (branch, id, key, val, stamp, inReference) => {
 
     if (!inReference && val !== void 0) {
       const leaf = getFromLeaves(branch, id)
-      set(leaf, { [ key ]: val }, stamp)
+      set(branch, leaf, { [ key ]: val }, stamp)
       return branch.leaves[leafId]
     }
   }
@@ -58,7 +58,7 @@ const setByPath = (branch, ids, path, val, stamp, inReference) => {
     val = { [ path.pop() ]: val }
     const leaf = getFromLeaves(branch, ids[i])
     if (leaf) {
-      set(leaf, val, stamp)
+      set(branch, leaf, val, stamp)
       return branch.leaves[leafId]
     }
   }

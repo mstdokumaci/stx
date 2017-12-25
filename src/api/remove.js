@@ -10,7 +10,7 @@ const removeFromBranches = (branches, id, parent, rF, stamp) =>
       rF = void 0
     } else if (branch.leaves[id]) {
       if (parent) {
-        const parentLeaf = setVal(getFromLeaves(branch, parent), void 0, stamp)
+        const parentLeaf = setVal(branch, getFromLeaves(branch, parent), void 0, stamp)
         if (parentLeaf.keys) {
           parentLeaf.keys.push(id)
         } else {

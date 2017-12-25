@@ -12,7 +12,6 @@ const define = (obj, key, val) => {
 }
 
 const defineApi = leaf => {
-
   // ISLEAF
   define(leaf, 'isLeaf', true)
 

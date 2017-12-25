@@ -24,7 +24,6 @@ test('listeners - set', t => {
     branch1Fire.push(`${item.root().get('id').compute()}-${val}-${item.get('title').compute()}`)
   })
 
-
   master.set({
     first: {
       title: 'first'

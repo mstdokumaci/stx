@@ -79,7 +79,7 @@ const setKeys = (leaf, val, stamp) => {
   if (keys.length) {
     leaf = setVal(leaf, void 0, stamp)
     leaf.keys = leaf.keys ? leaf.keys.concat(keys) : keys
-    emit(leaf, 'data', 'set', stamp)
+    emit(leaf, 'data', 'new-key', stamp)
   }
 }
 

@@ -26,31 +26,35 @@ const unListen = (leaf, event, id) => {
   }
 }
 
-const emitBranches = (leaf, event, val, stamp, isVal) => {
-  if (
-    leaf.branch.leaves[leaf.id] === null ||
-    (
-      isVal &&
-      leaf.branch.leaves[leaf.id] &&
-      (
-        leaf.branch.leaves[leaf.id].val !== void 0 ||
-        leaf.branch.leaves[leaf.id].rT !== void 0
-      )
-    )
-  ) {
-    return
-  }
-
+const emitBranches = (leaf, event, val, stamp, isVal, isRemoveKey) =>
   leaf.branch.branches.forEach(branch => {
+    if (
+      branch.leaves[leaf.id] === null ||
+      (
+        isVal &&
+        branch.leaves[leaf.id] &&
+        (
+          branch.leaves[leaf.id].val !== void 0 ||
+          branch.leaves[leaf.id].rT !== void 0
+        )
+      ) ||
+      (
+        isRemoveKey &&
+        branch.leaves[leaf.id]
+      )
+    ) {
+      return
+    }
+
     leaf.branch = branch
     emitOwn(leaf, event, val, stamp, isVal)
   })
-}
 
 const emitReferences = (leaf, event, val, stamp) => {
   let branch = leaf.struct
   const oBranch = leaf.branch
   const id = leaf.id
+
   while (branch) {
     leaf = branch.leaves[id]
     if (leaf === null) {
@@ -59,7 +63,7 @@ const emitReferences = (leaf, event, val, stamp) => {
       leaf.rF.forEach(from => {
         const referenceLeaf = getFromLeaves(oBranch, from)
         if (referenceLeaf) {
-          emitOwn(referenceLeaf, event, val, stamp)
+          emitOwn(referenceLeaf, event, val, stamp, void 0, true)
         }
       })
     }
@@ -67,7 +71,7 @@ const emitReferences = (leaf, event, val, stamp) => {
   }
 }
 
-const emitOwn = (leaf, event, val, stamp, isVal) => {
+const emitOwn = (leaf, event, val, stamp, isVal, isRef) => {
   const listeners = leaf.branch.listeners
 
   if (listeners[leaf.id] && listeners[leaf.id][event]) {
@@ -77,7 +81,9 @@ const emitOwn = (leaf, event, val, stamp, isVal) => {
   }
 
   emitReferences(leaf, event, val, stamp)
-  emitBranches(leaf, event, val, stamp, isVal)
+  if (!isRef) {
+    emitBranches(leaf, event, val, stamp, isVal, event === 'data' && val === 'remove-key')
+  }
 }
 
 const emit = (leaf, event, val, stamp, isVal) => {

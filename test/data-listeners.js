@@ -24,10 +24,15 @@ test('listeners - set', t => {
     branch1Fire.push(`${item.root().get('id').compute()}-${val}-${item.get('title').compute()}`)
   })
 
+
   master.set({
     first: {
       title: 'first'
     }
+  })
+
+  branch1.get(['first', 'title']).on('data', (val, stamp, item) => {
+    branch1Fire.push(`${item.root().get('id').compute()}-${val}-${item.compute()}`)
   })
 
   branch1.set({
@@ -44,13 +49,13 @@ test('listeners - set', t => {
 
   t.same(
     masterFire,
-    [ 'master-set-first', 'master-set-first' ],
-    'masterFire = [ master-set-first, master-set-first ]'
+    [ 'master-new-key-first', 'master-remove-key-first' ],
+    'masterFire = [ master-new-key-first, master-remove-key-first ]'
   )
   t.same(
     branch1Fire,
-    [ 'branch1-set-first', 'branch1-set-first-override' ],
-    'branch1Fire = [ branch1-set-first, branch1-set-first-override ]'
+    [ 'branch1-new-key-first', 'branch1-set-first-override', 'branch1-remove-key-first-override' ],
+    'branch1Fire = [ branch1-new-key-first, branch1-set-first-override, branch1-remove-key-first-override ]'
   )
 
   t.end()
@@ -180,7 +185,7 @@ test('listeners - references', t => {
 
   branch2.set({
     deep: {
-      real: 'override2-thing'
+      real: 'override-thing'
     }
   })
 
@@ -191,13 +196,13 @@ test('listeners - references', t => {
   )
   t.same(
     branch1Fire,
-    [ 'branch1-set-updated-thing', 'branch1-set-updated-thing' ],
-    'branch1Fire = [ branch1-set-updated-thing, branch1-set-updated-thing ]'
+    [ 'branch1-set-updated-thing', 'branch1-new-key-updated-thing' ],
+    'branch1Fire = [ branch1-set-updated-thing, branch1-new-key-updated-thing ]'
   )
   t.same(
     branch2Fire,
-    [ 'branch2-set-thing2', 'branch2-set-thing2', 'branch2-set-override2-thing' ],
-    'branch2Fire = [ branch2-set-thing2, branch2-set-thing2, branch2-set-override2-thing ]'
+    [ 'branch2-new-key-thing2', 'branch2-set-override-thing' ],
+    'branch2Fire = [ branch2-new-key-thing2, branch2-set-override-thing ]'
   )
 
   master.get(['pointers', 'pointer2']).off('data', 'listener1')
@@ -220,7 +225,11 @@ test('listeners - references', t => {
     [ 'master-set-updated-thing', 'master-remove-updated-thing' ],
     'masterFire = [ master-set-updated-thing, master-remove-updated-thing ]'
   )
-  console.log(branch1Fire)
+  t.same(
+    branch1Fire,
+    [ 'branch1-set-updated-thing', 'branch1-new-key-updated-thing', 'branch1-remove-updated-thing' ],
+    'branch1Fire = [ branch1-set-updated-thing, branch1-new-key-updated-thing, branch1-remove-updated-thing ]'
+  )
   console.log(branch2Fire)
 
   t.end()

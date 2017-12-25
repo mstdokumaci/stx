@@ -1,13 +1,14 @@
 import { getFromLeaves } from './get'
+import { Leaf } from '../index'
 
 let lastId = 0
 
-const listen = (leaf, event, cb, id) => {
+const listen = (branch, leaf, event, cb, id) => {
   if (!id) {
     id = lastId++
   }
 
-  const listeners = leaf.branch.listeners
+  const listeners = branch.listeners
 
   if (!listeners[leaf.id]) {
     listeners[leaf.id] = { [ event ]: {} }
@@ -16,18 +17,16 @@ const listen = (leaf, event, cb, id) => {
   }
 
   listeners[leaf.id][event][id] = cb
-
-  return leaf
 }
 
-const unListen = (leaf, event, id) => {
-  if (leaf.branch.listeners[leaf.id] && leaf.branch.listeners[leaf.id][event] && id) {
-    delete leaf.branch.listeners[leaf.id][event][id]
+const unListen = (branch, leaf, event, id) => {
+  if (branch.listeners[leaf.id] && branch.listeners[leaf.id][event] && id) {
+    delete branch.listeners[leaf.id][event][id]
   }
 }
 
-const emitBranches = (leaf, event, val, stamp, isVal, isRemoveKey) =>
-  leaf.branch.branches.forEach(branch => {
+const emitBranches = (branches, leaf, event, val, stamp, isVal, isRemoveKey) =>
+  branches.forEach(branch => {
     if (
       branch.leaves[leaf.id] === null ||
       (
@@ -46,13 +45,11 @@ const emitBranches = (leaf, event, val, stamp, isVal, isRemoveKey) =>
       return
     }
 
-    leaf.branch = branch
-    emitOwn(leaf, event, val, stamp, isVal)
+    emit(branch, leaf, event, val, stamp, isVal)
   })
 
-const emitReferences = (leaf, event, val, stamp) => {
+const emitReferences = (oBranch, leaf, event, val, stamp) => {
   let branch = leaf.struct
-  const oBranch = leaf.branch
   const id = leaf.id
 
   while (branch) {
@@ -63,7 +60,7 @@ const emitReferences = (leaf, event, val, stamp) => {
       leaf.rF.forEach(from => {
         const referenceLeaf = getFromLeaves(oBranch, from)
         if (referenceLeaf) {
-          emitOwn(referenceLeaf, event, val, stamp, void 0, true)
+          emit(oBranch, referenceLeaf, event, val, stamp, void 0, true)
         }
       })
     }
@@ -71,28 +68,20 @@ const emitReferences = (leaf, event, val, stamp) => {
   }
 }
 
-const emitOwn = (leaf, event, val, stamp, isVal, isRef) => {
-  const listeners = leaf.branch.listeners
+const emit = (branch, leaf, event, val, stamp, isVal, isRef) => {
+  const listeners = branch.listeners
 
   if (listeners[leaf.id] && listeners[leaf.id][event]) {
     for (const id in listeners[leaf.id][event]) {
-      listeners[leaf.id][event][id](val, stamp, leaf)
+      listeners[leaf.id][event][id](val, stamp, new Leaf(branch, leaf))
     }
   }
 
-  emitReferences(leaf, event, val, stamp)
-  if (!isRef) {
-    emitBranches(leaf, event, val, stamp, isVal, event === 'data' && val === 'remove-key')
+  emitReferences(branch, leaf, event, val, stamp)
+
+  if (branch.branches.length && !isRef) {
+    emitBranches(branch.branches, leaf, event, val, stamp, isVal, event === 'data' && val === 'remove-key')
   }
-}
-
-const emit = (leaf, event, val, stamp, isVal) => {
-  const oBranch = leaf.branch
-
-  emitOwn(leaf, event, val, stamp, isVal)
-
-  leaf.branch = oBranch
-  return leaf
 }
 
 export { listen, unListen, emit }

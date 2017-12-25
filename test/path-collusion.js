@@ -1,8 +1,8 @@
 const test = require('tape')
-const { Struct } = require('../')
+const { create } = require('../')
 
 test('path collusion', t => {
-  const state = new Struct()
+  const state = create()
   const arr = {}
 
   let d = Date.now()
@@ -51,7 +51,7 @@ test('path collusion', t => {
   )
 
   t.equals(
-    Object.keys(state.leaves).length,
+    Object.keys(state.branch.leaves).length,
     100001,
     '100001 leaves in state'
   )

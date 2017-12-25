@@ -1,11 +1,11 @@
 const test = require('tape')
-const { Struct } = require('../dist/index')
+const { create } = require('../dist/index')
 
 test('listeners - set', t => {
   const masterFire = []
   const branch1Fire = []
 
-  const master = new Struct({
+  const master = create({
     id: 'master',
     first: {
       id: 1
@@ -65,7 +65,7 @@ test('listeners - remove', t => {
   const masterFire = []
   const branch1Fire = []
 
-  const master = new Struct({
+  const master = create({
     id: 'master',
     first: {
       id: 1
@@ -113,7 +113,7 @@ test('listeners - references', t => {
   const branch1Fire = []
   const branch2Fire = []
 
-  const master = new Struct({
+  const master = create({
     id: 'master',
     deep: {
       real: 'thing'

@@ -1,10 +1,11 @@
+import { Leaf } from '../index'
 import { getString } from '../cache'
 import { getFromLeaves } from './get'
+import { compute } from './compute'
 
-const children = (leaf, cb) => {
+const children = (oBranch, leaf, cb) => {
   const exists = {}
   let branch = leaf.struct
-  const oBranch = leaf.branch
   const id = leaf.id
   const subLeaves = []
   while (branch) {
@@ -37,44 +38,48 @@ const children = (leaf, cb) => {
   return subLeaves
 }
 
-const forEach = (leaf, cb) => {
-  children(leaf, subLeaf => {
-    cb(subLeaf, getString(subLeaf.key))
+const forEach = (branch, leaf, cb) => {
+  children(branch, leaf, subLeaf => {
+    cb(new Leaf(branch, subLeaf), getString(subLeaf.key))
   })
 }
 
-const map = (leaf, cb) => {
+const map = (branch, leaf, cb) => {
   const mapped = []
-  children(leaf, subLeaf => {
-    mapped.push(cb(subLeaf, getString(subLeaf.key)))
+  children(branch, leaf, subLeaf => {
+    mapped.push(cb(new Leaf(branch, subLeaf), getString(subLeaf.key)))
   })
   return mapped
 }
 
-const filter = (leaf, cb) => {
+const filter = (branch, leaf, cb) => {
   const filtered = []
-  children(leaf, subLeaf => {
-    if (cb(subLeaf, getString(subLeaf.key))) {
-      filtered.push(subLeaf)
+  children(branch, leaf, subLeaf => {
+    const subLeafInstance = new Leaf(branch, subLeaf)
+    if (cb(subLeafInstance, getString(subLeaf.key))) {
+      filtered.push(subLeafInstance)
     }
   })
   return filtered
 }
 
-const find = (leaf, cb) => {
-  return children(leaf, subLeaf => {
-    return cb(subLeaf, getString(subLeaf.key))
+const find = (branch, leaf, cb) => {
+  const found = children(branch, leaf, subLeaf => {
+    return cb(new Leaf(branch, subLeaf), getString(subLeaf.key))
   })
+  if (found) {
+    return new Leaf(branch, found)
+  }
 }
 
-const reduce = (leaf, cb, accumulator) => {
+const reduce = (branch, leaf, cb, accumulator) => {
   let skipFirst = accumulator === void 0
-  children(leaf, subLeaf => {
+  children(branch, leaf, subLeaf => {
     if (skipFirst) {
-      accumulator = subLeaf
+      accumulator = compute(branch, subLeaf.id)
       skipFirst = false
     } else {
-      accumulator = cb(accumulator, subLeaf, getString(subLeaf.key))
+      accumulator = cb(accumulator, new Leaf(branch, subLeaf), getString(subLeaf.key))
     }
   })
   return accumulator

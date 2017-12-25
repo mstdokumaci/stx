@@ -26,8 +26,6 @@ const getRefFromLeaves = (branch, id) => {
   }
 }
 
-const origin = leaf => getFromLeaves(leaf.branch, leaf.rT) || leaf
-
 const getByKey = (branch, id, key, val, stamp, inReference) => {
   const leafId = keyToId(key, id)
   const subLeaf = getFromLeaves(branch, leafId)
@@ -44,7 +42,7 @@ const getByKey = (branch, id, key, val, stamp, inReference) => {
 
     if (!inReference && val !== void 0) {
       const leaf = getFromLeaves(branch, id)
-      set(leaf, { [ key ]: val }, stamp)
+      set(branch, leaf, { [ key ]: val }, stamp)
       return branch.leaves[leafId]
     }
   }
@@ -60,7 +58,7 @@ const setByPath = (branch, ids, path, val, stamp, inReference) => {
     val = { [ path.pop() ]: val }
     const leaf = getFromLeaves(branch, ids[i])
     if (leaf) {
-      set(leaf, val, stamp)
+      set(branch, leaf, val, stamp)
       return branch.leaves[leafId]
     }
   }
@@ -88,12 +86,12 @@ const getByPath = (branch, id, path, val, stamp, inReference) => {
   }
 }
 
-const getApi = (leaf, path, val, stamp) => {
+const getApi = (branch, id, path, val, stamp) => {
   if (Array.isArray(path)) {
-    return getByPath(leaf.branch, leaf.id, path, val, stamp)
+    return getByPath(branch, id, path, val, stamp)
   } else {
-    return getByKey(leaf.branch, leaf.id, path, val, stamp)
+    return getByKey(branch, id, path, val, stamp)
   }
 }
 
-export { getFromLeaves, origin, getByPath, getApi }
+export { getFromLeaves, getByPath, getApi }

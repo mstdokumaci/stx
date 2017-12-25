@@ -1,8 +1,8 @@
 const test = require('tape')
-const { Struct } = require('../')
+const { create } = require('../')
 
 test('set - get - references', t => {
-  const master = new Struct()
+  const master = create()
 
   master.set({
     deep: {
@@ -142,7 +142,7 @@ test('set - get - references', t => {
 })
 
 test('set - get - arrays', t => {
-  const master = new Struct()
+  const master = create()
 
   master.set({
     deep: {

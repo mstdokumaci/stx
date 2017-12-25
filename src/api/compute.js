@@ -15,6 +15,8 @@ const getValOrRef = (branch, id) => {
   }
 }
 
+const origin = (branch, leaf) => getFromLeaves(branch, leaf.rT) || leaf
+
 const compute = (branch, id) => {
   const oBranch = branch
   while (branch) {
@@ -33,4 +35,4 @@ const compute = (branch, id) => {
   }
 }
 
-export { getValOrRef, compute }
+export { getValOrRef, compute, origin }

@@ -34,7 +34,7 @@ const setVal = (branch, leaf, val, stamp) => {
   } else if (val !== void 0) {
     leaf.val = val
     removeReference(branch, leaf, stamp)
-    emit(branch, leaf, 'data', 'set', stamp, true)
+    emit(branch, leaf, 'data', 'set', stamp)
   }
   return leaf
 }
@@ -51,7 +51,7 @@ const setReference = (branch, leaf, val, stamp) => {
   } else {
     val.rF = [ leaf.id ]
   }
-  emit(branch, leaf, 'data', 'set', stamp, true)
+  emit(branch, leaf, 'data', 'set', stamp)
 }
 
 const setReferenceByPath = (branch, leaf, path, stamp) =>
@@ -92,7 +92,7 @@ const setKeys = (branch, leaf, val, stamp) => {
   if (keys.length) {
     leaf = setVal(branch, leaf, void 0, stamp)
     leaf.keys = leaf.keys ? leaf.keys.concat(keys) : keys
-    emit(branch, leaf, 'data', 'new-key', stamp)
+    emit(branch, leaf, 'data', 'add-key', stamp)
   }
 }
 

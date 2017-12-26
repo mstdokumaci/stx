@@ -48,13 +48,13 @@ test('listeners - set', t => {
 
   t.same(
     masterFire,
-    [ 'master-new-key-first', 'master-remove-key-first' ],
-    'masterFire = [ master-new-key-first, master-remove-key-first ]'
+    [ 'master-add-key-first', 'master-remove-key-first' ],
+    'masterFire = [ master-add-key-first, master-remove-key-first ]'
   )
   t.same(
     branch1Fire,
-    [ 'branch1-new-key-first', 'branch1-set-first-override', 'branch1-remove-key-first-override' ],
-    'branch1Fire = [ branch1-new-key-first, branch1-set-first-override, branch1-remove-key-first-override ]'
+    [ 'branch1-add-key-first', 'branch1-set-first-override', 'branch1-remove-key-first-override' ],
+    'branch1Fire = [ branch1-add-key-first, branch1-set-first-override, branch1-remove-key-first-override ]'
   )
 
   t.end()
@@ -195,13 +195,13 @@ test('listeners - references', t => {
   )
   t.same(
     branch1Fire,
-    [ 'branch1-set-updated-thing', 'branch1-new-key-updated-thing' ],
-    'branch1Fire = [ branch1-set-updated-thing, branch1-new-key-updated-thing ]'
+    [ 'branch1-set-updated-thing', 'branch1-add-key-updated-thing' ],
+    'branch1Fire = [ branch1-set-updated-thing, branch1-add-key-updated-thing ]'
   )
   t.same(
     branch2Fire,
-    [ 'branch2-new-key-thing2', 'branch2-set-override-thing' ],
-    'branch2Fire = [ branch2-new-key-thing2, branch2-set-override-thing ]'
+    [ 'branch2-add-key-thing2', 'branch2-set-override-thing' ],
+    'branch2Fire = [ branch2-add-key-thing2, branch2-set-override-thing ]'
   )
 
   master.get(['pointers', 'pointer2']).off('data', 'listener1')
@@ -226,13 +226,13 @@ test('listeners - references', t => {
   )
   t.same(
     branch1Fire,
-    [ 'branch1-set-updated-thing', 'branch1-new-key-updated-thing', 'branch1-remove-updated-thing' ],
-    'branch1Fire = [ branch1-set-updated-thing, branch1-new-key-updated-thing, branch1-remove-updated-thing ]'
+    [ 'branch1-set-updated-thing', 'branch1-add-key-updated-thing', 'branch1-remove-updated-thing' ],
+    'branch1Fire = [ branch1-set-updated-thing, branch1-add-key-updated-thing, branch1-remove-updated-thing ]'
   )
   t.same(
     branch2Fire,
-    [ 'branch2-new-key-thing2', 'branch2-set-override-thing', 'branch2-set-updated2-thing' ],
-    'branch1Fire = [ branch2-new-key-thing2, branch2-set-override-thing, branch2-set-updated2-thing ]'
+    [ 'branch2-add-key-thing2', 'branch2-set-override-thing', 'branch2-set-updated2-thing' ],
+    'branch2Fire = [ branch2-add-key-thing2, branch2-set-override-thing, branch2-set-updated2-thing ]'
   )
 
   t.end()

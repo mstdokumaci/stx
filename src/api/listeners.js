@@ -25,27 +25,29 @@ const unListen = (branch, leaf, event, id) => {
   }
 }
 
-const emitBranches = (branches, leaf, event, val, stamp, isVal, isRemoveKey) =>
+const emitBranches = (branches, leaf, event, val, stamp) =>
   branches.forEach(branch => {
     if (
       branch.leaves[leaf.id] === null ||
       (
-        isVal &&
+        (
+          event === 'data' &&
+          (
+            val === 'set' ||
+            val === 'remove'
+          )
+        ) &&
         branch.leaves[leaf.id] &&
         (
           branch.leaves[leaf.id].val !== void 0 ||
           branch.leaves[leaf.id].rT !== void 0
         )
-      ) ||
-      (
-        isRemoveKey &&
-        branch.leaves[leaf.id]
       )
     ) {
       return
     }
 
-    emit(branch, leaf, event, val, stamp, isVal)
+    emit(branch, leaf, event, val, stamp)
   })
 
 const emitReferences = (oBranch, leaf, event, val, stamp) => {
@@ -60,7 +62,7 @@ const emitReferences = (oBranch, leaf, event, val, stamp) => {
       leaf.rF.forEach(from => {
         const referenceLeaf = getFromLeaves(oBranch, from)
         if (referenceLeaf) {
-          emit(oBranch, referenceLeaf, event, val, stamp, void 0, true)
+          emit(oBranch, referenceLeaf, event, val, stamp, true)
         }
       })
     }
@@ -68,7 +70,7 @@ const emitReferences = (oBranch, leaf, event, val, stamp) => {
   }
 }
 
-const emit = (branch, leaf, event, val, stamp, isVal, isRef) => {
+const emit = (branch, leaf, event, val, stamp, isRef) => {
   const listeners = branch.listeners
 
   if (listeners[leaf.id] && listeners[leaf.id][event]) {
@@ -79,8 +81,8 @@ const emit = (branch, leaf, event, val, stamp, isVal, isRef) => {
 
   emitReferences(branch, leaf, event, val, stamp)
 
-  if (branch.branches.length && !isRef) {
-    emitBranches(branch.branches, leaf, event, val, stamp, isVal, event === 'data' && val === 'remove-key')
+  if (branch.branches.length && !isRef && !(event === 'data' && val === 'remove-key')) {
+    emitBranches(branch.branches, leaf, event, val, stamp)
   }
 }
 

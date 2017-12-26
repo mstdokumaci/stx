@@ -39,6 +39,24 @@ const setVal = (branch, leaf, val, stamp) => {
   return leaf
 }
 
+const cleanBranchRef = (branches, id, rF) =>
+  branches.forEach(branch => {
+    if (branch.leaves[id] === null) {
+      return
+    } else if (branch.leaves[id]) {
+      if (branch.leaves[id].rF) {
+        const index = branch.leaves[id].rF.indexOf(rF)
+        if (~index) {
+          branch.leaves[id].rF.splice(index, 1)
+        }
+      }
+    }
+
+    if (branch.branches.length) {
+      cleanBranchRef(branch.branches, id, rF)
+    }
+  })
+
 const setReference = (branch, leaf, val, stamp) => {
   if (leaf.rT === val.id) {
     return
@@ -50,6 +68,9 @@ const setReference = (branch, leaf, val, stamp) => {
     val.rF.push(leaf.id)
   } else {
     val.rF = [ leaf.id ]
+  }
+  if (val.struct.branches.length) {
+    cleanBranchRef(val.struct.branches, val.id, leaf.id)
   }
   emit(branch, leaf, 'data', 'set', stamp)
 }
@@ -69,6 +90,21 @@ const setReferenceByLeaf = (branch, leaf, val, stamp) => {
   }
   throw new Error('Reference must be in same branch')
 }
+
+const cleanBranchKeys = (branches, id, keys) =>
+  branches.forEach(branch => {
+    if (branch.leaves[id] === null) {
+      return
+    } else if (branch.leaves[id]) {
+      if (branch.leaves[id].keys) {
+        branch.leaves[id].keys = branch.leaves[id].keys.filter(key => !~keys.indexOf(key))
+      }
+    }
+
+    if (branch.branches.length) {
+      cleanBranchKeys(branch.branches, id, keys)
+    }
+  })
 
 const setKeys = (branch, leaf, val, stamp) => {
   let keys = []
@@ -92,6 +128,7 @@ const setKeys = (branch, leaf, val, stamp) => {
   if (keys.length) {
     leaf = setVal(branch, leaf, void 0, stamp)
     leaf.keys = leaf.keys ? leaf.keys.concat(keys) : keys
+    cleanBranchKeys(branch.branches, leaf.id, keys)
     emit(branch, leaf, 'data', 'add-key', stamp)
   }
 }

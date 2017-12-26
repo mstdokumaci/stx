@@ -48,15 +48,22 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rF, stamp) =>
     }
   })
 
-const removeReference = (branch, leaf, stamp) => {
+const removeReference = (branch, leaf) => {
   if (leaf.rT) {
-    const rT = getFromLeaves(branch, leaf.rT)
-    if (rT.rF) {
-      const rFIndex = leaf.struct === rT.struct ? rT.rF.indexOf(leaf.id)
-        : rT.rF.findIndex(from => from[0] === leaf.struct && from[1] === leaf.id)
-      rT.rF.splice(rFIndex, 1)
-    }
+    const rT = leaf.rT
     leaf.rT = void 0
+    while (branch) {
+      if (branch.leaves[rT] === null) {
+        return
+      } else if (branch.leaves[rT] && branch.leaves[rT].rF) {
+        const index = branch.leaves[rT].rF.indexOf(leaf.id)
+        if (~index) {
+          branch.leaves[rT].rF.splice(index, 1)
+          return
+        }
+      }
+      branch = branch.inherits
+    }
   }
 }
 

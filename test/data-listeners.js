@@ -1,7 +1,7 @@
 const test = require('tape')
 const { create } = require('../dist/index')
 
-test('listeners - set', t => {
+test('data listeners - set', t => {
   const masterFire = []
   const branch1Fire = []
 
@@ -60,7 +60,7 @@ test('listeners - set', t => {
   t.end()
 })
 
-test('listeners - remove', t => {
+test('data listeners - remove', t => {
   const masterFire = []
   const branch1Fire = []
 
@@ -107,7 +107,16 @@ test('listeners - remove', t => {
   t.end()
 })
 
-test('listeners - references', t => {
+test('data listeners - branches', t => {
+  const master = create()
+  const branch1 = master.create()
+  const branch2 = branch1.create()
+  const branch3 = branch1.create()
+
+  t.end()
+})
+
+test('data listeners - references', t => {
   const masterFire = []
   const branch1Fire = []
   const branch2Fire = []

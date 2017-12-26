@@ -51,6 +51,12 @@ test('path collusion', t => {
   )
 
   t.equals(
+    state.inspect(),
+    'Struct { 0, 1, 2, 3, 4, ... 9995 more items }',
+    'state.inspect() = Struct { 0, 1, 2, 3, 4, ... 9995 more items }'
+  )
+
+  t.equals(
     Object.keys(state.branch.leaves).length,
     100001,
     '100001 leaves in state'

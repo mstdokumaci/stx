@@ -190,7 +190,8 @@ test('set - get - arrays', t => {
 
   const branch1 = master.create({
     deep: {
-      real: [ 3, 2, 1 ]
+      real: [ 3, 2, 1 ],
+      other: {}
     }
   })
 
@@ -202,7 +203,10 @@ test('set - get - arrays', t => {
   t.same(
     branch1.serialize(),
     {
-      deep: { real: [ 3, 2, 1 ] },
+      deep: {
+        other: {},
+        real: [ 3, 2, 1 ]
+      },
       pointers: {
         pointer1: [ '@', 'deep', 'real' ],
         pointer2: [ '@', 'pointers', 'pointer1' ]
@@ -245,6 +249,22 @@ test('interference', t => {
     'override2',
     'branch2.deep.real = override2'
   )
+
+  t.end()
+})
+
+test('create from leaf', t => {
+  const master = create({
+    deep: {
+      real: 'thing'
+    }
+  })
+
+  try {
+    const branch1 = master.get(['deep', 'real']).create()
+  } catch (error) {
+    t.equals(error.message, 'Can not create from leaf', 'Can not create from leaf')
+  }
 
   t.end()
 })

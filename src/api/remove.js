@@ -2,6 +2,29 @@ import { getFromLeaves } from './get'
 import { emit } from './listeners'
 import { setVal } from './set'
 
+const removeListeners = (branch, id) => {
+  delete branch.listeners[id]
+}
+
+const removeReference = (branch, leaf) => {
+  if (leaf.rT) {
+    const rT = leaf.rT
+    leaf.rT = void 0
+    while (branch) {
+      if (branch.leaves[rT] === null) {
+        return
+      } else if (branch.leaves[rT] && branch.leaves[rT].rF) {
+        const index = branch.leaves[rT].rF.indexOf(leaf.id)
+        if (~index) {
+          branch.leaves[rT].rF.splice(index, 1)
+          return
+        }
+      }
+      branch = branch.inherits
+    }
+  }
+}
+
 const removeFromBranches = (branches, leaf, id, parent, keys, rF, stamp) =>
   branches.forEach(branch => {
     if (branch.leaves[id] === null) {
@@ -36,10 +59,10 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rF, stamp) =>
           rF = void 0
         }
       } else {
-        removeListeners(branch, id)
         if (parent) {
           emit(branch, getFromLeaves(branch, parent), 'data', 'remove-key', stamp)
         }
+        removeListeners(branch, id)
       }
     }
 
@@ -48,35 +71,12 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rF, stamp) =>
     }
   })
 
-const removeReference = (branch, leaf) => {
-  if (leaf.rT) {
-    const rT = leaf.rT
-    leaf.rT = void 0
-    while (branch) {
-      if (branch.leaves[rT] === null) {
-        return
-      } else if (branch.leaves[rT] && branch.leaves[rT].rF) {
-        const index = branch.leaves[rT].rF.indexOf(leaf.id)
-        if (~index) {
-          branch.leaves[rT].rF.splice(index, 1)
-          return
-        }
-      }
-      branch = branch.inherits
-    }
-  }
-}
-
-const removeListeners = (branch, id) => {
-  delete branch.listeners[id]
-}
-
 const removeFromParent = (branch, parent, id, stamp) => {
   if (parent) {
     const index = parent.keys.indexOf(id)
     if (~index) {
-      parent.keys.splice(index, 1)
       emit(branch, parent, 'data', 'remove-key', stamp)
+      parent.keys.splice(index, 1)
       return parent.id
     }
   }
@@ -93,8 +93,19 @@ const removeOwn = (branch, leaf, stamp, ignoreParent) => {
   }
 }
 
-const removeBranch = (branch, id) => {
-  branch.leaves[id] = null
+const removeInherited = (branch, leaf, stamp, ignoreParent) => {
+  if (!ignoreParent) {
+    const parentLeaf = getFromLeaves(leaf.struct, leaf.parent)
+    emit(branch, parentLeaf, 'data', 'remove-key', stamp)
+  }
+
+  if (branch.branches.length) {
+    removeFromBranches(
+      branch.branches, leaf, leaf.id, ignoreParent ? void 0 : leaf.parent, leaf.keys, leaf.rF, stamp
+    )
+  }
+
+  branch.leaves[leaf.id] = null
 }
 
 const removeChildren = (branch, leaf, stamp) => {
@@ -111,7 +122,7 @@ const remove = (branch, leaf, stamp, ignoreParent) => {
   if (leaf.struct === branch) {
     removeOwn(branch, leaf, stamp, ignoreParent)
   } else {
-    removeBranch(branch, leaf.id)
+    removeInherited(branch, leaf, stamp, ignoreParent)
   }
 
   removeChildren(branch, leaf, stamp)

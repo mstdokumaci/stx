@@ -173,13 +173,13 @@ test('data listeners - add remove key', t => {
   )
 
   mlist.set({
-    third: 3
+    third: 4
   })
 
   t.same(
     masterFire,
-    [ 'master-add-key-1-2', 'master-add-key-1-2-3' ],
-    'masterFire = [ master-add-key-1-2, master-add-key-1-2-3 ]'
+    [ 'master-add-key-1-2', 'master-add-key-1-2-4' ],
+    'masterFire = [ master-add-key-1-2, master-add-key-1-2-4 ]'
   )
   t.same(
     branch1Fire,
@@ -201,10 +201,51 @@ test('data listeners - add remove key', t => {
     third: null
   })
 
-  console.log(masterFire)
-  console.log(branch1Fire)
-  console.log(branch2Fire)
-  console.log(branch3Fire)
+  t.same(
+    masterFire,
+    [ 'master-add-key-1-2', 'master-add-key-1-2-4' ],
+    'masterFire = [ master-add-key-1-2, master-add-key-1-2-4 ]'
+  )
+  t.same(
+    branch1Fire,
+    [ 'branch1-add-key-1-2', 'branch1-add-key-3-1-2' ],
+    'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-3-1-2 ]'
+  )
+  t.same(
+    branch2Fire,
+    [ 'branch2-add-key-1-2', 'branch2-add-key-3-1-2' ],
+    'branch2Fire = [ branch2-add-key-1-2, branch2-add-key-3-1-2 ]'
+  )
+  t.same(
+    branch3Fire,
+    [ 'branch3-add-key-1-2', 'branch3-add-key-3-1-2' ],
+    'branch3Fire = [ branch3-add-key-1-2, branch3-add-key-3-1-2 ]'
+  )
+
+  list1.set({
+    third: null
+  })
+
+  t.same(
+    masterFire,
+    [ 'master-add-key-1-2', 'master-add-key-1-2-4' ],
+    'masterFire = [ master-add-key-1-2, master-add-key-1-2-4 ]'
+  )
+  t.same(
+    branch1Fire,
+    [ 'branch1-add-key-1-2', 'branch1-add-key-3-1-2', 'branch1-remove-key-1-2-4' ],
+    'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-3-1-2, branch1-remove-key-1-2-4 ]'
+  )
+  t.same(
+    branch2Fire,
+    [ 'branch2-add-key-1-2', 'branch2-add-key-3-1-2', 'branch2-remove-key-1-2-4' ],
+    'branch2Fire = [ branch2-add-key-1-2, branch2-add-key-3-1-2, branch2-remove-key-1-2-4 ]'
+  )
+  t.same(
+    branch3Fire,
+    [ 'branch3-add-key-1-2', 'branch3-add-key-3-1-2', 'branch3-remove-key-1-2-4' ],
+    'branch3Fire = [ branch3-add-key-1-2, branch3-add-key-3-1-2, branch3-remove-key-1-2-4 ]'
+  )
 
   t.end()
 })

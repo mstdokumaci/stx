@@ -94,7 +94,7 @@ const setReferenceByLeaf = (branch, leaf, val, stamp) => {
 
 const cleanBranchKeys = (branches, leaf, id, keys, stamp) =>
   branches.forEach(branch => {
-    let keysNext = keys
+    let keysNext = keys.slice()
 
     if (branch.leaves[id] === null) {
       return

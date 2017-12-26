@@ -206,7 +206,8 @@ test('data listeners - add remove key', t => {
   })
 
   list3.set({
-    fourth: 43
+    fourth: 43,
+    fifth: 53
   })
 
   t.same(
@@ -226,8 +227,12 @@ test('data listeners - add remove key', t => {
   )
   t.same(
     branch3Fire,
-    [ 'branch3-add-key-1-2', 'branch3-add-key-31-1-2', 'branch3-add-key-43-1-2-3' ],
-    'branch3Fire = [ branch3-add-key-1-2, branch3-add-key-31-1-2, branch3-add-key-43-1-2-3 ]'
+    [
+      'branch3-add-key-1-2',
+      'branch3-add-key-31-1-2',
+      'branch3-add-key-43-53-1-2-3'
+    ],
+    'branch3Fire = correct'
   )
 
   list1.set({
@@ -254,14 +259,49 @@ test('data listeners - add remove key', t => {
     [
       'branch3-add-key-1-2',
       'branch3-add-key-31-1-2',
-      'branch3-add-key-43-1-2-3',
-      'branch3-remove-key-43-1-2-3'
+      'branch3-add-key-43-53-1-2-3',
+      'branch3-remove-key-43-53-1-2-3'
     ],
-    'branch3Fire = [' +
-    'branch3-add-key-1-2,' +
-    'branch3-add-key-31-1-2,' +
-    'branch3-add-key-43-1-2-3,' +
-    'branch3-remove-key-43-1-2-3 ]'
+    'branch3Fire = correct'
+  )
+
+  list1.set({
+    fifth: 51
+  })
+
+  t.same(
+    masterFire,
+    [ 'master-add-key-1-2', 'master-add-key-1-2-3' ],
+    'masterFire = [ master-add-key-1-2, master-add-key-1-2-3 ]'
+  )
+  t.same(
+    branch1Fire,
+    [
+      'branch1-add-key-1-2',
+      'branch1-add-key-31-1-2',
+      'branch1-remove-key-1-2-3',
+      'branch1-add-key-51-1-2'
+    ],
+    'branch1Fire = correct'
+  )
+  t.same(
+    branch2Fire,
+    [
+      'branch2-add-key-1-2',
+      'branch2-add-key-31-1-2',
+      'branch2-add-key-51-1-2-32'
+    ],
+    'branch2Fire = correct'
+  )
+  t.same(
+    branch3Fire,
+    [
+      'branch3-add-key-1-2',
+      'branch3-add-key-31-1-2',
+      'branch3-add-key-43-53-1-2-3',
+      'branch3-remove-key-43-53-1-2-3'
+    ],
+    'branch3Fire = correct'
   )
 
   t.end()

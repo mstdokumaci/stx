@@ -148,7 +148,7 @@ test('data listeners - add remove key', t => {
   })
 
   list1.set({
-    third: 3
+    third: 31
   })
 
   t.same(
@@ -158,43 +158,76 @@ test('data listeners - add remove key', t => {
   )
   t.same(
     branch1Fire,
-    [ 'branch1-add-key-1-2', 'branch1-add-key-3-1-2' ],
-    'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-3-1-2 ]'
+    [ 'branch1-add-key-1-2', 'branch1-add-key-31-1-2' ],
+    'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-31-1-2 ]'
   )
   t.same(
     branch2Fire,
-    [ 'branch2-add-key-1-2', 'branch2-add-key-3-1-2' ],
-    'branch2Fire = [ branch2-add-key-1-2, branch2-add-key-3-1-2 ]'
+    [ 'branch2-add-key-1-2', 'branch2-add-key-31-1-2' ],
+    'branch2Fire = [ branch2-add-key-1-2, branch2-add-key-31-1-2 ]'
   )
   t.same(
     branch3Fire,
-    [ 'branch3-add-key-1-2', 'branch3-add-key-3-1-2' ],
-    'branch3Fire = [ branch3-add-key-1-2, branch3-add-key-3-1-2 ]'
+    [ 'branch3-add-key-1-2', 'branch3-add-key-31-1-2' ],
+    'branch3Fire = [ branch3-add-key-1-2, branch3-add-key-31-1-2 ]'
   )
 
   mlist.set({
-    third: 4
+    third: 3
   })
 
   t.same(
     masterFire,
-    [ 'master-add-key-1-2', 'master-add-key-1-2-4' ],
-    'masterFire = [ master-add-key-1-2, master-add-key-1-2-4 ]'
+    [ 'master-add-key-1-2', 'master-add-key-1-2-3' ],
+    'masterFire = [ master-add-key-1-2, master-add-key-1-2-3 ]'
   )
   t.same(
     branch1Fire,
-    [ 'branch1-add-key-1-2', 'branch1-add-key-3-1-2' ],
-    'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-3-1-2 ]'
+    [ 'branch1-add-key-1-2', 'branch1-add-key-31-1-2' ],
+    'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-31-1-2 ]'
   )
   t.same(
     branch2Fire,
-    [ 'branch2-add-key-1-2', 'branch2-add-key-3-1-2' ],
-    'branch2Fire = [ branch2-add-key-1-2, branch2-add-key-3-1-2 ]'
+    [ 'branch2-add-key-1-2', 'branch2-add-key-31-1-2' ],
+    'branch2Fire = [ branch2-add-key-1-2, branch2-add-key-31-1-2 ]'
   )
   t.same(
     branch3Fire,
-    [ 'branch3-add-key-1-2', 'branch3-add-key-3-1-2' ],
-    'branch3Fire = [ branch3-add-key-1-2, branch3-add-key-3-1-2 ]'
+    [ 'branch3-add-key-1-2', 'branch3-add-key-31-1-2' ],
+    'branch3Fire = [ branch3-add-key-1-2, branch3-add-key-31-1-2 ]'
+  )
+
+  list1.set({
+    third: null
+  })
+
+  list2.set({
+    third: 32
+  })
+
+  list3.set({
+    fourth: 43
+  })
+
+  t.same(
+    masterFire,
+    [ 'master-add-key-1-2', 'master-add-key-1-2-3' ],
+    'masterFire = [ master-add-key-1-2, master-add-key-1-2-3 ]'
+  )
+  t.same(
+    branch1Fire,
+    [ 'branch1-add-key-1-2', 'branch1-add-key-31-1-2' ],
+    'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-31-1-2 ]'
+  )
+  t.same(
+    branch2Fire,
+    [ 'branch2-add-key-1-2', 'branch2-add-key-31-1-2' ],
+    'branch2Fire = [ branch2-add-key-1-2, branch2-add-key-31-1-2 ]'
+  )
+  t.same(
+    branch3Fire,
+    [ 'branch3-add-key-1-2', 'branch3-add-key-31-1-2', 'branch3-add-key-43-1-2-3' ],
+    'branch3Fire = [ branch3-add-key-1-2, branch3-add-key-31-1-2, branch3-add-key-43-1-2-3 ]'
   )
 
   list1.set({
@@ -203,48 +236,32 @@ test('data listeners - add remove key', t => {
 
   t.same(
     masterFire,
-    [ 'master-add-key-1-2', 'master-add-key-1-2-4' ],
-    'masterFire = [ master-add-key-1-2, master-add-key-1-2-4 ]'
+    [ 'master-add-key-1-2', 'master-add-key-1-2-3' ],
+    'masterFire = [ master-add-key-1-2, master-add-key-1-2-3 ]'
   )
   t.same(
     branch1Fire,
-    [ 'branch1-add-key-1-2', 'branch1-add-key-3-1-2' ],
-    'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-3-1-2 ]'
+    [ 'branch1-add-key-1-2', 'branch1-add-key-31-1-2', 'branch1-remove-key-1-2-3' ],
+    'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-31-1-2, branch1-remove-key-1-2-3 ]'
   )
   t.same(
     branch2Fire,
-    [ 'branch2-add-key-1-2', 'branch2-add-key-3-1-2' ],
-    'branch2Fire = [ branch2-add-key-1-2, branch2-add-key-3-1-2 ]'
+    [ 'branch2-add-key-1-2', 'branch2-add-key-31-1-2' ],
+    'branch2Fire = [ branch2-add-key-1-2, branch2-add-key-31-1-2 ]'
   )
   t.same(
     branch3Fire,
-    [ 'branch3-add-key-1-2', 'branch3-add-key-3-1-2' ],
-    'branch3Fire = [ branch3-add-key-1-2, branch3-add-key-3-1-2 ]'
-  )
-
-  list1.set({
-    third: null
-  })
-
-  t.same(
-    masterFire,
-    [ 'master-add-key-1-2', 'master-add-key-1-2-4' ],
-    'masterFire = [ master-add-key-1-2, master-add-key-1-2-4 ]'
-  )
-  t.same(
-    branch1Fire,
-    [ 'branch1-add-key-1-2', 'branch1-add-key-3-1-2', 'branch1-remove-key-1-2-4' ],
-    'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-3-1-2, branch1-remove-key-1-2-4 ]'
-  )
-  t.same(
-    branch2Fire,
-    [ 'branch2-add-key-1-2', 'branch2-add-key-3-1-2', 'branch2-remove-key-1-2-4' ],
-    'branch2Fire = [ branch2-add-key-1-2, branch2-add-key-3-1-2, branch2-remove-key-1-2-4 ]'
-  )
-  t.same(
-    branch3Fire,
-    [ 'branch3-add-key-1-2', 'branch3-add-key-3-1-2', 'branch3-remove-key-1-2-4' ],
-    'branch3Fire = [ branch3-add-key-1-2, branch3-add-key-3-1-2, branch3-remove-key-1-2-4 ]'
+    [
+      'branch3-add-key-1-2',
+      'branch3-add-key-31-1-2',
+      'branch3-add-key-43-1-2-3',
+      'branch3-remove-key-43-1-2-3'
+    ],
+    'branch3Fire = [' +
+    'branch3-add-key-1-2,' +
+    'branch3-add-key-31-1-2,' +
+    'branch3-add-key-43-1-2-3,' +
+    'branch3-remove-key-43-1-2-3 ]'
   )
 
   t.end()

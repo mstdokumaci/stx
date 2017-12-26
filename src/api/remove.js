@@ -27,6 +27,10 @@ const removeReference = (branch, leaf) => {
 
 const removeFromBranches = (branches, leaf, id, parent, keys, rF, stamp) =>
   branches.forEach(branch => {
+    let parentNext = parent
+    let keysNext = keys
+    let rFNext = rF
+
     if (branch.leaves[id] === null) {
       delete branch.leaves[id]
       return
@@ -40,7 +44,7 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rF, stamp) =>
           branch.leaves[id].keys = branch.leaves[id].keys
             ? branch.leaves[id].keys.concat(addKeys) : addKeys
 
-          keys = keys.filter(keyId => !branch.leaves[keyId])
+          keysNext = keys.filter(keyId => !branch.leaves[keyId])
         }
       }
       if (branch.leaves[id]) {
@@ -51,12 +55,12 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rF, stamp) =>
           } else {
             parentLeaf.keys = [ id ]
           }
-          parent = void 0
+          parentNext = void 0
         }
         if (rF) {
           branch.leaves[id].rF = branch.leaves[id].rF
             ? branch.leaves[id].rF.concat(rF) : rF
-          rF = void 0
+          rFNext = void 0
         }
       } else {
         if (parent) {
@@ -67,7 +71,7 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rF, stamp) =>
     }
 
     if (branch.branches.length) {
-      removeFromBranches(branch.branches, leaf, id, parent, keys, rF, stamp)
+      removeFromBranches(branch.branches, leaf, id, parentNext, keysNext, rFNext, stamp)
     }
   })
 

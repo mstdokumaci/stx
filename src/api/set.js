@@ -62,6 +62,7 @@ const setReference = (branch, leaf, val, stamp) => {
   if (leaf.rT === val.id) {
     return
   }
+  removeReference(branch, leaf)
   leaf = setVal(branch, leaf, void 0, stamp)
   leaf.val = void 0
   leaf.rT = val.id

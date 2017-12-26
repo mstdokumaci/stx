@@ -417,7 +417,7 @@ test('references - key swapping', t => {
     'branch2 movieB favourite true'
   )
   t.equals(
-    branch2.get([ 'movies', '2', 'favourite']).compute(), true,
+    branch2.get([ 'movies', '2', 'favourite' ]).compute(), true,
     'branch2 movieC favourite true'
   )
   t.equals(

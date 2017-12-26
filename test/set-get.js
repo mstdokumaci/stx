@@ -262,6 +262,7 @@ test('create from leaf', t => {
 
   try {
     const branch1 = master.get(['deep', 'real']).create()
+    branch1.set('override')
   } catch (error) {
     t.equals(error.message, 'Can not create from leaf', 'Can not create from leaf')
   }

@@ -300,7 +300,7 @@ test('array api - reduce', t => {
   })
 
   t.equals(
-    master.get('payments').reduce((sum, amount) => sum + amount.compute(), 0),
+    master.get('payments').reduce((sum, amount) => sum + amount.compute()),
     15,
     'master.payments.reduce() = 15'
   )

@@ -81,7 +81,17 @@ const emit = (branch, leaf, event, val, stamp, isRef) => {
 
   emitReferences(branch, leaf, event, val, stamp)
 
-  if (branch.branches.length && !isRef && !(event === 'data' && val === 'remove-key')) {
+  if (
+    branch.branches.length &&
+    !isRef &&
+    !(
+      event === 'data' &&
+      (
+        val === 'remove-key' ||
+        val === 'add-key'
+      )
+    )
+  ) {
     emitBranches(branch.branches, leaf, event, val, stamp)
   }
 }

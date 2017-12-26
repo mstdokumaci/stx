@@ -15,8 +15,6 @@ const defineApi = leaf => {
   // ISLEAF
   define(leaf, 'isLeaf', true)
 
-  /* ===== RETURNS NEW LEAF ===== */
-
   // CREATE
   define(leaf, 'create', function (val, stamp) {
     if (this.leaf.id === root) {
@@ -29,6 +27,7 @@ const defineApi = leaf => {
   // SET
   define(leaf, 'set', function (val, stamp) {
     set(this.branch, this.leaf, val, stamp)
+    return this
   })
 
   // GET
@@ -59,8 +58,6 @@ const defineApi = leaf => {
       return new Leaf(this.branch, originLeaf)
     }
   })
-
-  /* ===== RETURNS OTHER ===== */
 
   // COMPUTE
   define(leaf, 'compute', function () {

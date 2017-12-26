@@ -107,11 +107,104 @@ test('data listeners - remove', t => {
   t.end()
 })
 
-test('data listeners - branches', t => {
-  const master = create()
-  const branch1 = master.create()
-  const branch2 = branch1.create()
-  const branch3 = branch1.create()
+test('data listeners - add remove key', t => {
+  const master = create({
+    id: 'master',
+    list: {}
+  })
+  const branch1 = master.create({ id: 'branch1' })
+  const branch2 = branch1.create({ id: 'branch2' })
+  const branch3 = branch1.create({ id: 'branch3' })
+
+  const masterFire = []
+  const branch1Fire = []
+  const branch2Fire = []
+  const branch3Fire = []
+
+  const mlist = master.get('list')
+  const list1 = branch1.get('list')
+  const list2 = branch2.get('list')
+  const list3 = branch3.get('list')
+
+  mlist.on('data', (type, stamp, item) => {
+    masterFire.push(`${item.root().get('id').compute()}-${type}-${item.map(i => i.compute()).join('-')}`)
+  })
+
+  list1.on('data', (type, stamp, item) => {
+    branch1Fire.push(`${item.root().get('id').compute()}-${type}-${item.map(i => i.compute()).join('-')}`)
+  })
+
+  list2.on('data', (type, stamp, item) => {
+    branch2Fire.push(`${item.root().get('id').compute()}-${type}-${item.map(i => i.compute()).join('-')}`)
+  })
+
+  list3.on('data', (type, stamp, item) => {
+    branch3Fire.push(`${item.root().get('id').compute()}-${type}-${item.map(i => i.compute()).join('-')}`)
+  })
+
+  mlist.set({
+    first: 1,
+    second: 2
+  })
+
+  list1.set({
+    third: 3
+  })
+
+  t.same(
+    masterFire,
+    [ 'master-add-key-1-2' ],
+    'masterFire = [ master-add-key-1-2 ]'
+  )
+  t.same(
+    branch1Fire,
+    [ 'branch1-add-key-1-2', 'branch1-add-key-3-1-2' ],
+    'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-3-1-2 ]'
+  )
+  t.same(
+    branch2Fire,
+    [ 'branch2-add-key-1-2', 'branch2-add-key-3-1-2' ],
+    'branch2Fire = [ branch2-add-key-1-2, branch2-add-key-3-1-2 ]'
+  )
+  t.same(
+    branch3Fire,
+    [ 'branch3-add-key-1-2', 'branch3-add-key-3-1-2' ],
+    'branch3Fire = [ branch3-add-key-1-2, branch3-add-key-3-1-2 ]'
+  )
+
+  mlist.set({
+    third: 3
+  })
+
+  t.same(
+    masterFire,
+    [ 'master-add-key-1-2', 'master-add-key-1-2-3' ],
+    'masterFire = [ master-add-key-1-2, master-add-key-1-2-3 ]'
+  )
+  t.same(
+    branch1Fire,
+    [ 'branch1-add-key-1-2', 'branch1-add-key-3-1-2' ],
+    'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-3-1-2 ]'
+  )
+  t.same(
+    branch2Fire,
+    [ 'branch2-add-key-1-2', 'branch2-add-key-3-1-2' ],
+    'branch2Fire = [ branch2-add-key-1-2, branch2-add-key-3-1-2 ]'
+  )
+  t.same(
+    branch3Fire,
+    [ 'branch3-add-key-1-2', 'branch3-add-key-3-1-2' ],
+    'branch3Fire = [ branch3-add-key-1-2, branch3-add-key-3-1-2 ]'
+  )
+
+  list1.set({
+    third: null
+  })
+
+  console.log(masterFire)
+  console.log(branch1Fire)
+  console.log(branch2Fire)
+  console.log(branch3Fire)
 
   t.end()
 })

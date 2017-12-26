@@ -48,6 +48,7 @@ const cleanBranchRef = (branches, id, rF) =>
         const index = branch.leaves[id].rF.indexOf(rF)
         if (~index) {
           branch.leaves[id].rF.splice(index, 1)
+          return
         }
       }
     }
@@ -93,6 +94,8 @@ const setReferenceByLeaf = (branch, leaf, val, stamp) => {
 
 const cleanBranchKeys = (branches, leaf, id, keys, stamp) =>
   branches.forEach(branch => {
+    let keysNext = keys
+
     if (branch.leaves[id] === null) {
       return
     } else if (branch.leaves[id]) {
@@ -101,7 +104,7 @@ const cleanBranchKeys = (branches, leaf, id, keys, stamp) =>
         branch.leaves[id].keys = branch.leaves[id].keys.filter(key => {
           const index = keys.indexOf(key)
           if (~index) {
-            keys.splice(index, 1)
+            keysNext.splice(index, 1)
           } else {
             return true
           }
@@ -116,8 +119,8 @@ const cleanBranchKeys = (branches, leaf, id, keys, stamp) =>
       emit(branch, leaf, 'data', 'add-key', stamp)
     }
 
-    if (branch.branches.length && keys.length) {
-      cleanBranchKeys(branch.branches, leaf, id, keys, stamp)
+    if (branch.branches.length && keysNext.length) {
+      cleanBranchKeys(branch.branches, leaf, id, keysNext, stamp)
     }
   })
 

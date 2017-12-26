@@ -396,68 +396,66 @@ test('references - key swapping', t => {
     'list of movies is corect on branch4'
   )
 
-  /*
   t.equals(
-    branch1.get(['movies', '0', 'favourite', 'compute']), void 0,
+    branch1.get([ 'movies', '0', 'favourite' ]), void 0,
     'branch1 movieA favourite undefined'
   )
   t.equals(
-    branch1.get(['movies', '1', 'progress', 'compute']), 0.1,
+    branch1.get([ 'movies', '1', 'progress' ]).compute(), 0.1,
     'branch1 movieB progress 0.1'
   )
   t.equals(
-    branch1.get(['movies', '2', 'progress', 'compute']), 0.2,
+    branch1.get([ 'movies', '2', 'progress' ]).compute(), 0.2,
     'branch1 movieC progress 0.2'
   )
   t.equals(
-    branch2.get(['movies', '0', 'favourite', 'compute']), void 0,
+    branch2.get([ 'movies', '0', 'favourite' ]), void 0,
     'branch2 movieA favourite undefined'
   )
   t.equals(
-    branch2.get(['movies', '1', 'favourite', 'compute']), true,
+    branch2.get([ 'movies', '1', 'favourite' ]).compute(), true,
     'branch2 movieB favourite true'
   )
   t.equals(
-    branch2.get(['movies', '2', 'favourite', 'compute']), true,
+    branch2.get([ 'movies', '2', 'favourite']).compute(), true,
     'branch2 movieC favourite true'
   )
   t.equals(
-    branch2.get(['movies', '2', 'progress', 'compute']), 0.4,
+    branch2.get([ 'movies', '2', 'progress' ]).compute(), 0.4,
     'branch2 movieC progress 0.4'
   )
   t.equals(
-    branch3.get(['movies', '0', 'favourite', 'compute']), true,
+    branch3.get([ 'movies', '0', 'favourite' ]).compute(), true,
     'branch3 movieA favourite true'
   )
   t.equals(
-    branch3.get(['movies', '1', 'progress', 'compute']), 0.1,
+    branch3.get([ 'movies', '1', 'progress' ]).compute(), 0.1,
     'branch3 movieB progress 0.1'
   )
   t.equals(
-    branch3.get(['movies', '1', 'favourite', 'compute']), void 0,
+    branch3.get([ 'movies', '1', 'favourite' ]), void 0,
     'branch3 movieB favourite undefined'
   )
   t.equals(
-    branch3.get(['movies', '2', 'progress', 'compute']), 0.3,
+    branch3.get([ 'movies', '2', 'progress' ]).compute(), 0.3,
     'branch3 movieC progress 0.3'
   )
   t.equals(
-    branch3.get(['movies', '2', 'favourite', 'compute']), true,
+    branch3.get([ 'movies', '2', 'favourite' ]).compute(), true,
     'branch3 movieC favourite true'
   )
   t.equals(
-    branch4.get(['movies', '0', 'favourite', 'compute']), true,
+    branch4.get([ 'movies', '0', 'favourite' ]).compute(), true,
     'branch4 movieA favourite true'
   )
   t.equals(
-    branch4.get(['movies', '1', 'favourite', 'compute']), false,
+    branch4.get([ 'movies', '1', 'favourite' ]).compute(), false,
     'branch4 movieB favourite false'
   )
   t.equals(
-    branch4.get(['movies', '2', 'progress', 'compute']), 0.3,
+    branch4.get([ 'movies', '2', 'progress' ]).compute(), 0.3,
     'branch4 movieC progress 0.3'
   )
-  */
 
   t.end()
 })

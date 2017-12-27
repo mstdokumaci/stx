@@ -497,3 +497,25 @@ test('reference from another branch', t => {
 
   t.end()
 })
+
+test('ignore same reference in branch', t => {
+  const master = create({
+    real1: 'thing1',
+    real2: 'thing2',
+    pointer: [ '@', 'real1' ]
+  })
+
+  const branch1 = master.create({
+    pointer: [ '@', 'real1' ]
+  })
+
+  master.get('pointer').set([ '@', 'real2' ])
+
+  t.equals(
+    branch1.get('pointer').compute(),
+    'thing2',
+    'branch1.pointer.compute() = thing2'
+  )
+
+  t.end()
+})

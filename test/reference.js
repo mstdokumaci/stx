@@ -459,3 +459,41 @@ test('references - key swapping', t => {
 
   t.end()
 })
+
+test('reference from another branch', t => {
+  const master1 = create({
+    deep: {
+      real: 'thing'
+    }
+  })
+
+  try {
+    const master2 = create()
+
+    master2.set({
+      pointers: {
+        pointer1: master1.get('deep')
+      }
+    })
+  } catch (error) {
+    t.equals(error.message, 'Reference must be in same branch', 'Reference must be in same branch')
+  }
+
+  const branch1 = master1.create({
+    deep: null
+  })
+
+  try {
+    const branch2 = branch1.create()
+
+    branch2.set({
+      pointers: {
+        pointer1: master1.get('deep')
+      }
+    })
+  } catch (error) {
+    t.equals(error.message, 'Reference must be in same branch', 'Reference must be in same branch')
+  }
+
+  t.end()
+})

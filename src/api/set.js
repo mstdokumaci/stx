@@ -80,8 +80,8 @@ const setReference = (branch, leaf, val, stamp) => {
 const setReferenceByPath = (branch, leaf, path, stamp) =>
   setReference(branch, leaf, getByPath(branch, root, path, {}, stamp), stamp)
 
-const setReferenceByLeaf = (branch, leaf, val, stamp) => {
-  const oBranch = branch
+const setReferenceByLeaf = (oBranch, leaf, val, stamp) => {
+  let branch = oBranch
   while (branch) {
     if (branch.leaves[val.id] === null) {
       throw new Error('Reference must be in same branch')

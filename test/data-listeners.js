@@ -447,10 +447,7 @@ test('data listeners - references', t => {
 })
 
 test('data listeners - reference inheritance', t => {
-  const masterFire = []
-  const branch11Fire = []
   const branch12Fire = []
-  const branch21Fire = []
   const branch22Fire = []
 
   const master = create({ id: 'master' })

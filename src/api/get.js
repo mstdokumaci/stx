@@ -14,7 +14,7 @@ const getFromLeaves = (branch, id) => {
 
 const getRtFromLeaves = (branch, id) => {
   while (branch) {
-    if (branch.leaves[id] === null || (branch.leaves[id] && branch.leaves[id].val)) {
+    if (branch.leaves[id] === null || (branch.leaves[id] && branch.leaves[id].val !== void 0)) {
       return null
     } else if (branch.leaves[id] && branch.leaves[id].rT) {
       return branch.leaves[id].rT

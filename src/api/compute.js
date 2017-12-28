@@ -28,10 +28,7 @@ const compute = (branch, id) => {
       if (leaf.val !== void 0) {
         return leaf.val
       } else if (leaf.rT) {
-        const val = compute(oBranch, leaf.rT)
-        if (val !== void 0) {
-          return val
-        }
+        return compute(oBranch, leaf.rT)
       }
     }
     branch = branch.inherits

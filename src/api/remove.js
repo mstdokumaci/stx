@@ -1,6 +1,6 @@
 import { getFromLeaves } from './get'
 import { emit } from './listeners'
-import { setVal } from './set'
+import { addBranchLeaf } from './set'
 
 const removeListeners = (branch, id) => {
   delete branch.listeners[id]
@@ -39,7 +39,7 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rF, stamp) =>
         const addKeys = keys.filter(keyId => branch.leaves[keyId])
         if (addKeys.length) {
           if (!branch.leaves[id]) {
-            setVal(branch, leaf, void 0, stamp)
+            addBranchLeaf(branch, leaf, stamp)
           }
           branch.leaves[id].keys = branch.leaves[id].keys
             ? branch.leaves[id].keys.concat(addKeys) : addKeys
@@ -49,7 +49,7 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rF, stamp) =>
       }
       if (branch.leaves[id]) {
         if (parent) {
-          const parentLeaf = setVal(branch, getFromLeaves(branch, parent), void 0, stamp)
+          const parentLeaf = addBranchLeaf(branch, getFromLeaves(branch, parent), stamp)
           if (parentLeaf.keys) {
             parentLeaf.keys.push(id)
           } else {

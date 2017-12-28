@@ -14,7 +14,7 @@ const respectOverrides = (branches, id, parent) =>
     }
   })
 
-const addLeaf = (struct, id, parent, key) => {
+const addOwnLeaf = (struct, id, parent, key, stamp) => {
   struct.leaves[id] = { struct, id, parent, key }
   if (struct.branches.length) {
     respectOverrides(struct.branches, id, parent)
@@ -22,21 +22,19 @@ const addLeaf = (struct, id, parent, key) => {
   return struct.leaves[id]
 }
 
+const addBranchLeaf = (branch, fromLeaf, stamp) => {
+  return fromLeaf.struct === branch ? fromLeaf
+    : addOwnLeaf(branch, fromLeaf.id, fromLeaf.parent, fromLeaf.key, stamp)
+}
+
 const setVal = (branch, leaf, val, stamp) => {
-  if (val === leaf.val && val !== void 0) {
-    return leaf
-  }
-  if (leaf.struct !== branch) {
-    leaf = addLeaf(branch, leaf.id, leaf.parent, leaf.key)
-    if (val !== void 0) {
-      set(branch, leaf, val, stamp)
-    }
-  } else if (val !== void 0) {
+  if (val !== leaf.val && val !== void 0) {
+    leaf = addBranchLeaf(branch, leaf, stamp)
     leaf.val = val
+
     removeReference(branch, leaf, stamp)
     emit(branch, leaf, 'data', 'set', stamp)
   }
-  return leaf
 }
 
 const cleanBranchRf = (branches, id, rF) =>
@@ -79,7 +77,7 @@ const setReference = (branch, leaf, val, stamp) => {
 
   removeReference(branch, leaf)
 
-  leaf = setVal(branch, leaf, void 0, stamp)
+  leaf = addBranchLeaf(branch, leaf, stamp)
   leaf.val = void 0
   leaf.rT = val.id
 
@@ -162,13 +160,13 @@ const setKeys = (branch, leaf, val, stamp) => {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
         keys.push(subLeafId)
-        const subLeaf = addLeaf(branch, subLeafId, leaf.id, keyId)
+        const subLeaf = addOwnLeaf(branch, subLeafId, leaf.id, keyId, stamp)
         set(branch, subLeaf, val[key], stamp)
       }
     }
   }
   if (keys.length) {
-    leaf = setVal(branch, leaf, void 0, stamp)
+    leaf = addBranchLeaf(branch, leaf, stamp)
     leaf.keys = leaf.keys ? leaf.keys.concat(keys) : keys
     cleanBranchKeys(branch.branches, leaf, leaf.id, keys, stamp)
     emit(branch, leaf, 'data', 'add-key', stamp)
@@ -195,4 +193,4 @@ const set = (branch, leaf, val, stamp) => {
   }
 }
 
-export { set, setVal }
+export { set, addBranchLeaf }

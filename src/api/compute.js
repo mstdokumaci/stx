@@ -15,7 +15,10 @@ const getValOrRef = (branch, id) => {
   }
 }
 
-const origin = (branch, leaf) => getFromLeaves(branch, getRefFromLeaves(branch, leaf.id)) || leaf
+const origin = (branch, leaf) => {
+  const originLeaf = getFromLeaves(branch, getRefFromLeaves(branch, leaf.id))
+  return originLeaf ? origin(branch, originLeaf) : leaf
+}
 
 const compute = (branch, id) => {
   const oBranch = branch

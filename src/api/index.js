@@ -5,7 +5,8 @@ import { getFromLeaves, getApi } from './get'
 import { origin, compute } from './compute'
 import { forEach, map, filter, find, reduce } from './array'
 import { path, inspect, serialize } from './serialize'
-import { on, off, emit } from './listeners/index'
+import { on, off } from './listeners/listen'
+import { emit } from './listeners/emit'
 
 const define = (obj, key, val) => {
   Object.defineProperty(obj, key, { value: val, configurable: true })

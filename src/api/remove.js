@@ -1,5 +1,5 @@
 import { getFromLeaves } from './get'
-import { emit } from './listeners/index'
+import { emit } from './listeners/emit'
 import { addBranchLeaf } from './set'
 
 const removeListeners = (branch, id) => {

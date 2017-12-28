@@ -2,7 +2,7 @@ import { addToStrings } from '../cache'
 import { root, keyToId } from '../id'
 import { getFromLeaves, getByPath } from './get'
 import { remove, removeReference } from './remove'
-import { emit } from './listeners/index'
+import { emit } from './listeners/emit'
 
 const respectOverrides = (branches, id, parent) =>
   branches.forEach(branch => {

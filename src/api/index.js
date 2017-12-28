@@ -5,7 +5,7 @@ import { getFromLeaves, getApi } from './get'
 import { origin, compute } from './compute'
 import { forEach, map, filter, find, reduce } from './array'
 import { path, inspect, serialize } from './serialize'
-import { listen, emit, unListen } from './listeners'
+import { on, off, emit } from './listeners/index'
 
 const define = (obj, key, val) => {
   Object.defineProperty(obj, key, { value: val, configurable: true })
@@ -106,13 +106,13 @@ const defineApi = leaf => {
 
   // ON
   define(leaf, 'on', function (event, cb, id) {
-    listen(this.branch, this.leaf, event, cb, id)
+    on(this.branch, this.leaf, event, cb, id)
     return this
   })
 
   // OFF
   define(leaf, 'off', function (event, id) {
-    unListen(this.branch, this.leaf, event, id)
+    off(this.branch, this.leaf, event, id)
     return this
   })
 

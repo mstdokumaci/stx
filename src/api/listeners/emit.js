@@ -1,29 +1,5 @@
-import { getFromLeaves } from './get'
-import { Leaf } from '../index'
-
-let lastId = 0
-
-const listen = (branch, leaf, event, cb, id) => {
-  if (!id) {
-    id = lastId++
-  }
-
-  const listeners = branch.listeners
-
-  if (!listeners[leaf.id]) {
-    listeners[leaf.id] = { [ event ]: {} }
-  } else if (!listeners[leaf.id][event]) {
-    listeners[leaf.id][event] = {}
-  }
-
-  listeners[leaf.id][event][id] = cb
-}
-
-const unListen = (branch, leaf, event, id) => {
-  if (branch.listeners[leaf.id] && branch.listeners[leaf.id][event] && id) {
-    delete branch.listeners[leaf.id][event][id]
-  }
-}
+import { Leaf } from '../../index'
+import { getFromLeaves } from '../get'
 
 const emitBranches = (branches, leaf, event, val, stamp) =>
   branches.forEach(branch => {
@@ -96,4 +72,4 @@ const emit = (branch, leaf, event, val, stamp, isRef) => {
   }
 }
 
-export { listen, unListen, emit }
+export { emit }

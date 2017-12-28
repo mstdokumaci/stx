@@ -445,3 +445,84 @@ test('data listeners - references', t => {
 
   t.end()
 })
+
+test('data listeners - reference inheritance', t => {
+  const masterFire = []
+  const branch11Fire = []
+  const branch12Fire = []
+  const branch21Fire = []
+  const branch22Fire = []
+
+  const master = create({ id: 'master' })
+
+  const branch11 = master.create({ id: 'branch11' })
+  const branch12 = branch11.create({ id: 'branch12' })
+  const branch21 = master.create({ id: 'branch21' })
+  const branch22 = branch21.create({ id: 'branch22' })
+
+  branch11.set({
+    deep: {
+      real: 11
+    }
+  })
+
+  branch12.set({
+    pointers: {
+      pointer1: [ '@', 'deep' ]
+    }
+  })
+
+  branch21.set({
+    deep: {
+      real: 21
+    }
+  })
+
+  branch22.set({
+    pointers: {
+      pointer2: [ '@', 'deep' ]
+    }
+  })
+
+  branch12.get([ 'pointers', 'pointer1' ]).on('data', (type, stamp, item) => {
+    const serialize = item.origin().map((i, key) => `${key}-${i.compute()}`).join('-')
+    branch12Fire.push(`${item.root().get('id').compute()}-${type}-${serialize}`)
+  })
+
+  branch22.get([ 'pointers', 'pointer2' ]).on('data', (type, stamp, item) => {
+    const serialize = item.origin().map((i, key) => `${key}-${i.compute()}`).join('-')
+    branch22Fire.push(`${item.root().get('id').compute()}-${type}-${serialize}`)
+  })
+
+  branch11.get('deep').set({
+    real2: 11
+  })
+
+  master.set({
+    deep: {
+      real3: 0
+    },
+    pointers: {
+      pointer2: [ '@', 'deep' ]
+    }
+  })
+
+  t.same(
+    branch12Fire,
+    [
+      'branch12-add-key-real-11-real2-11',
+      'branch12-add-key-real-11-real2-11-real3-0'
+    ],
+    'branch12Fire = correct'
+  )
+
+  t.same(
+    branch22Fire,
+    [
+      'branch22-add-key-real-21-real3-0'
+    ],
+    'branch22Fire = correct'
+  )
+
+  t.end()
+})

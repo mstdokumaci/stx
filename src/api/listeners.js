@@ -51,7 +51,7 @@ const emitBranches = (branches, leaf, event, val, stamp) =>
   })
 
 const emitReferences = (oBranch, leaf, event, val, stamp) => {
-  let branch = leaf.struct
+  let branch = oBranch
   const id = leaf.id
 
   while (branch) {

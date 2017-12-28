@@ -39,7 +39,7 @@ const setVal = (branch, leaf, val, stamp) => {
   return leaf
 }
 
-const cleanBranchRef = (branches, id, rF) =>
+const cleanBranchRf = (branches, id, rF) =>
   branches.forEach(branch => {
     if (branch.leaves[id] === null) {
       return
@@ -54,7 +54,21 @@ const cleanBranchRef = (branches, id, rF) =>
     }
 
     if (branch.branches.length) {
-      cleanBranchRef(branch.branches, id, rF)
+      cleanBranchRf(branch.branches, id, rF)
+    }
+  })
+
+const cleanBranchRt = (branches, id) =>
+  branches.forEach(branch => {
+    if (branch.leaves[id] === null) {
+      return
+    } else if (branch.leaves[id]) {
+      delete branch.leaves[id].rT
+      return
+    }
+
+    if (branch.branches.length) {
+      cleanBranchRt(branch.branches, id)
     }
   })
 
@@ -62,19 +76,28 @@ const setReference = (branch, leaf, val, stamp) => {
   if (leaf.rT === val.id) {
     return
   }
+
   removeReference(branch, leaf)
+
   leaf = setVal(branch, leaf, void 0, stamp)
   leaf.val = void 0
   leaf.rT = val.id
+
   if (val.rF) {
     val.rF.push(leaf.id)
   } else {
     val.rF = [ leaf.id ]
   }
+
   if (val.struct.branches.length) {
-    cleanBranchRef(val.struct.branches, val.id, leaf.id)
+    cleanBranchRf(val.struct.branches, val.id, leaf.id)
   }
+
   emit(branch, leaf, 'data', 'set', stamp)
+
+  if (branch.branches.length) {
+    cleanBranchRt(branch.branches, leaf.id)
+  }
 }
 
 const setReferenceByPath = (branch, leaf, path, stamp) =>

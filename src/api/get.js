@@ -12,7 +12,7 @@ const getFromLeaves = (branch, id) => {
   }
 }
 
-const getRefFromLeaves = (branch, id) => {
+const getRtFromLeaves = (branch, id) => {
   while (branch) {
     if (branch.leaves[id] === null || (branch.leaves[id] && branch.leaves[id].val)) {
       return null
@@ -29,7 +29,7 @@ const getByKey = (branch, id, key, val, stamp, inReference) => {
   if (subLeaf) {
     return subLeaf
   } else {
-    const rT = getRefFromLeaves(branch, id)
+    const rT = getRtFromLeaves(branch, id)
     if (rT) {
       const originSubLeaf = getByKey(branch, rT, key, val, stamp, true)
       if (originSubLeaf) {
@@ -69,7 +69,7 @@ const getByPath = (branch, id, path, val, stamp, inReference) => {
     return subLeaf
   } else {
     while (i--) {
-      const rT = getRefFromLeaves(branch, ids[i])
+      const rT = getRtFromLeaves(branch, ids[i])
       if (rT) {
         const originSubLeaf = getByPath(branch, rT, path.slice(i), val, stamp, true)
         if (originSubLeaf) {
@@ -91,4 +91,4 @@ const getApi = (branch, id, path, val, stamp) => {
   }
 }
 
-export { getFromLeaves, getRefFromLeaves, getByPath, getApi }
+export { getFromLeaves, getRtFromLeaves, getByPath, getApi }

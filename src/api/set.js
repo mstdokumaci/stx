@@ -78,7 +78,7 @@ const setReference = (branch, leaf, val, stamp) => {
   removeReference(branch, leaf)
 
   leaf = addBranchLeaf(branch, leaf, stamp)
-  leaf.val = void 0
+  delete leaf.val
   leaf.rT = val.id
 
   if (val.rF) {
@@ -167,7 +167,7 @@ const setKeys = (branch, leaf, val, stamp) => {
   }
   if (keys.length) {
     leaf = addBranchLeaf(branch, leaf, stamp)
-    leaf.keys = leaf.keys ? leaf.keys.concat(keys) : keys
+    leaf.keys = (leaf.keys || []).concat(keys)
     cleanBranchKeys(branch.branches, leaf, leaf.id, keys, stamp)
     emit(branch, leaf, 'data', 'add-key', stamp)
   }

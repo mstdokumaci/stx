@@ -1,4 +1,4 @@
-import { getFromLeaves } from './get'
+import { getFromLeaves, getRefFromLeaves } from './get'
 
 const getValOrRef = (branch, id) => {
   const oBranch = branch
@@ -15,7 +15,7 @@ const getValOrRef = (branch, id) => {
   }
 }
 
-const origin = (branch, leaf) => getFromLeaves(branch, leaf.rT) || leaf
+const origin = (branch, leaf) => getFromLeaves(branch, getRefFromLeaves(branch, leaf.id)) || leaf
 
 const compute = (branch, id) => {
   const oBranch = branch

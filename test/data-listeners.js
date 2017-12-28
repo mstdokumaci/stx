@@ -497,6 +497,7 @@ test('data listeners - reference inheritance', t => {
 
   master.set({
     deep: {
+      real: 0,
       real3: 0
     },
     pointers: {
@@ -504,11 +505,19 @@ test('data listeners - reference inheritance', t => {
     }
   })
 
+  branch21.get([ 'deep', 'real' ]).set(null)
+
+  branch21.get([ 'deep', 'real' ]).set(null)
+
+  master.get('pointers').set({
+    pointer3: [ '@', 'deep', 'real' ]
+  })
+
   t.same(
     branch12Fire,
     [
       'branch12-add-key-real-11-real2-11',
-      'branch12-add-key-real-11-real2-11-real3-0'
+      'branch12-add-key-real2-11-real-11-real3-0'
     ],
     'branch12Fire = correct'
   )
@@ -516,9 +525,22 @@ test('data listeners - reference inheritance', t => {
   t.same(
     branch22Fire,
     [
-      'branch22-add-key-real-21-real3-0'
+      'branch22-add-key-real-21-real3-0',
+      'branch22-remove-key-real-0-real3-0'
     ],
     'branch22Fire = correct'
+  )
+
+  t.same(
+    branch22.get([ 'pointers', 'pointer2' ]).serialize(),
+    [ '@', 'deep' ],
+    'points'
+  )
+
+  t.same(
+    branch22.get([ 'pointers', 'pointer2' ]).origin().serialize(),
+    { real3: 0 },
+    'branch22.pointers.pointer2.serialize() = { real3: 0 }'
   )
 
   t.end()

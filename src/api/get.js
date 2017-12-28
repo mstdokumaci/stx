@@ -91,4 +91,4 @@ const getApi = (branch, id, path, val, stamp) => {
   }
 }
 
-export { getFromLeaves, getByPath, getApi }
+export { getFromLeaves, getRefFromLeaves, getByPath, getApi }

@@ -510,8 +510,13 @@ test('data listeners - reference inheritance', t => {
   branch21.get([ 'deep', 'real' ]).set(null)
 
   master.get('pointers').set({
-    pointer3: [ '@', 'deep', 'real' ]
+    pointer3: [ '@', 'deep', 'real' ],
+    pointer4: {}
   })
+
+  branch21.get([ 'pointers', 'pointer4' ]).set(null)
+
+  master.get([ 'pointers', 'pointer4' ]).set([ '@', 'pointers', 'pointer2' ])
 
   t.same(
     branch12Fire,
@@ -534,13 +539,19 @@ test('data listeners - reference inheritance', t => {
   t.same(
     branch22.get([ 'pointers', 'pointer2' ]).serialize(),
     [ '@', 'deep' ],
-    'points'
+    'branch22.pointers.pointer2.serialize() = [ @, deep ]'
   )
 
   t.same(
     branch22.get([ 'pointers', 'pointer2' ]).origin().serialize(),
     { real3: 0 },
     'branch22.pointers.pointer2.serialize() = { real3: 0 }'
+  )
+
+  t.equals(
+    branch22.get([ 'pointers', 'pointer4' ]),
+    void 0,
+    'branch22.pointers.pointer4 = undefined'
   )
 
   t.end()

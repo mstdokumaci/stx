@@ -184,3 +184,42 @@ test('remove override', t => {
 
   t.end()
 })
+
+test('remove- transfer keys', t => {
+  const master = create({
+    content: {
+      first: 1,
+      second: 2,
+      third: 3,
+      fourth: 4
+    }
+  })
+
+  const branch1 = master.create({
+    content: {
+      second: 21,
+      third: 31
+    }
+  })
+
+  const branch2 = branch1.create({
+    content: {
+      fourth: 42
+    }
+  })
+
+  master.get('content').set(null)
+
+  t.same(
+    branch1.get('content').serialize(),
+    { second: 21, third: 31 },
+    'branch1.content.serialize() = { second: 21, third: 31 }'
+  )
+  t.same(
+    branch2.get('content').serialize(),
+    { second: 21, third: 31, fourth: 42 },
+    'branch2.content.serialize() = { second: 21, third: 31, fourth: 42 }'
+  )
+
+  t.end()
+})

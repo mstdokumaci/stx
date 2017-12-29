@@ -556,3 +556,108 @@ test('data listeners - reference inheritance', t => {
 
   t.end()
 })
+
+test('data listeners - versatile references in branches', t => {
+  const master = create({
+    id: 'master',
+    content: {
+      first: 1,
+      second: 2,
+      third: 3,
+      fourth: 4
+    },
+    pointers: {
+      love: [ '@', 'content', 'second' ],
+      hate: [ '@', 'content', 'third' ]
+    }
+  })
+
+  const branch11 = master.create({
+    id: 'branch11',
+    pointers: {
+      love: [ '@', 'content', 'first' ],
+      hate: [ '@', 'content', 'second' ]
+    }
+  })
+  const branch12 = branch11.create({
+    id: 'branch12',
+    pointers: {
+      hate: [ '@', 'content', 'third' ]
+    }
+  })
+  const branch21 = master.create({
+    id: 'branch21',
+    pointers: {
+      love: [ '@', 'content', 'fourth' ],
+      hate: [ '@', 'content', 'second' ]
+    }
+  })
+  const branch22 = branch21.create({
+    id: 'branch12',
+    pointers: {
+      love: [ '@', 'content', 'second' ],
+      hate: [ '@', 'content', 'first' ]
+    }
+  })
+
+  const masterFire = []
+  const branch11Fire = []
+  const branch12Fire = []
+  const branch21Fire = []
+  const branch22Fire = []
+
+  master.get([ 'pointers', 'love' ]).on('data', (type, stamp, item) => {
+    masterFire.push(`${item.root().get('id').compute()}-love-${type}-${item.compute()}`)
+  })
+
+  master.get([ 'pointers', 'hate' ]).on('data', (type, stamp, item) => {
+    masterFire.push(`${item.root().get('id').compute()}-hate-${type}-${item.compute()}`)
+  })
+
+  branch11.get([ 'pointers', 'love' ]).on('data', (type, stamp, item) => {
+    branch11Fire.push(`${item.root().get('id').compute()}-love-${type}-${item.compute()}`)
+  })
+
+  branch11.get([ 'pointers', 'hate' ]).on('data', (type, stamp, item) => {
+    branch11Fire.push(`${item.root().get('id').compute()}-hate-${type}-${item.compute()}`)
+  })
+
+  branch12.get([ 'pointers', 'love' ]).on('data', (type, stamp, item) => {
+    branch12Fire.push(`${item.root().get('id').compute()}-love-${type}-${item.compute()}`)
+  })
+
+  branch12.get([ 'pointers', 'hate' ]).on('data', (type, stamp, item) => {
+    branch12Fire.push(`${item.root().get('id').compute()}-hate-${type}-${item.compute()}`)
+  })
+
+  branch21.get([ 'pointers', 'love' ]).on('data', (type, stamp, item) => {
+    branch21Fire.push(`${item.root().get('id').compute()}-love-${type}-${item.compute()}`)
+  })
+
+  branch21.get([ 'pointers', 'hate' ]).on('data', (type, stamp, item) => {
+    branch21Fire.push(`${item.root().get('id').compute()}-hate-${type}-${item.compute()}`)
+  })
+
+  branch22.get([ 'pointers', 'love' ]).on('data', (type, stamp, item) => {
+    branch22Fire.push(`${item.root().get('id').compute()}-love-${type}-${item.compute()}`)
+  })
+
+  branch22.get([ 'pointers', 'hate' ]).on('data', (type, stamp, item) => {
+    branch22Fire.push(`${item.root().get('id').compute()}-hate-${type}-${item.compute()}`)
+  })
+
+  master.get('content').set({
+    first: '1-1',
+    second: '2-1',
+    third: '3-1',
+    fourth: '4-1'
+  })
+
+  console.log(masterFire)
+  console.log(branch11Fire)
+  console.log(branch12Fire)
+  console.log(branch21Fire)
+  console.log(branch22Fire)
+
+  t.end()
+})

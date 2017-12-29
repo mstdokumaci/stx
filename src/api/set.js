@@ -81,19 +81,25 @@ const setReference = (branch, leaf, val, stamp) => {
   delete leaf.val
   leaf.rT = val.id
 
+  let cleanBranches = true
+
   if (val.rF) {
-    val.rF.push(leaf.id)
+    if (~val.rF.indexOf(leaf.id)) {
+      cleanBranches = false
+    } else {
+      val.rF.push(leaf.id)
+    }
   } else {
     val.rF = [ leaf.id ]
   }
 
-  if (val.struct.branches.length) {
+  if (cleanBranches && val.struct.branches.length) {
     cleanBranchRf(val.struct.branches, val.id, leaf.id)
   }
 
   emit(branch, leaf, 'data', 'set', stamp)
 
-  if (branch.branches.length) {
+  if (cleanBranches && branch.branches.length) {
     cleanBranchRt(branch.branches, leaf.id)
   }
 }

@@ -77,8 +77,11 @@ test('listeners - off', t => {
   })
 
   master.on('success', (val, stamp, item) =>
-    masterFire.push(`${item.get('id').compute()}-${val}`),
+    masterFire.push(`success-${item.get('id').compute()}-${val}`),
     'listener1'
+  )
+  master.on('fail', (val, stamp, item) =>
+    masterFire.push(`fail-${item.get('id').compute()}-${val}`)
   )
   branch1.on('success', (val, stamp, item) =>
     branch1Fire.push(`${item.get('id').compute()}-${val}`)
@@ -86,12 +89,13 @@ test('listeners - off', t => {
 
   master.off('success', 'listener1')
   master.emit('success', 'value1')
+  master.emit('fail', 'value1')
   branch1.emit('success', 'value2')
 
   t.same(
     masterFire,
-    [ ],
-    'masterFire = [ ]'
+    [ 'fail-master-value1' ],
+    'masterFire = [ fail-master-value1 ]'
   )
   t.same(
     branch1Fire,
@@ -113,8 +117,8 @@ test('listeners - off', t => {
 
   t.same(
     masterFire,
-    [ 'master-value3' ],
-    'masterFire = [ master-value3 ]'
+    [ 'fail-master-value1', 'master-value3' ],
+    'masterFire = [ fail-master-value1, master-value3 ]'
   )
   t.same(
     branch1Fire,

@@ -324,15 +324,18 @@ test('data listeners - references', t => {
   })
 
   const branch1 = master.create({
-    id: 'branch1'
+    id: 'branch1',
+    pointers: {
+      pointer4: ['@', 'pointers', 'pointer1']
+    }
   })
 
-  master.get(['pointers', 'pointer1']).on('data', (val, stamp, item) => {
-    masterFire.push(`${item.root().get('id').compute()}-${val}-${item.compute()}`)
+  master.get(['pointers', 'pointer1']).on('data', (type, stamp, item) => {
+    masterFire.push(`${item.root().get('id').compute()}-${type}-${item.compute()}`)
   })
 
-  branch1.get(['pointers', 'pointer1']).on('data', (val, stamp, item) => {
-    branch1Fire.push(`${item.root().get('id').compute()}-${val}-${item.compute()}`)
+  branch1.get(['pointers', 'pointer1']).on('data', (type, stamp, item) => {
+    branch1Fire.push(`${item.root().get('id').compute()}-${type}-${item.compute()}`)
   })
 
   master.set({
@@ -352,19 +355,18 @@ test('data listeners - references', t => {
     'branch1Fire = [ branch1-set-updated-thing ]'
   )
 
-  master.get(['pointers', 'pointer2']).on('data', (val, stamp, item) => {
-    masterFire.push(`${item.root().get('id').compute()}-${val}-${item.get('real').compute()}`)
+  master.get(['pointers', 'pointer2']).on('data', (type, stamp, item) => {
+    masterFire.push(`${item.root().get('id').compute()}-${type}-${item.get('real').compute()}`)
   }, 'listener1')
 
-  branch1.get(['pointers', 'pointer2']).on('data', (val, stamp, item) => {
-    branch1Fire.push(`${item.root().get('id').compute()}-${val}-${item.get('real').compute()}`)
+  branch1.get(['pointers', 'pointer2']).on('data', (type, stamp, item) => {
+    branch1Fire.push(`${item.root().get('id').compute()}-${type}-${item.get('real').compute()}`)
   }, 'listener1')
 
   const branch2 = branch1.create({
     id: 'branch2',
     pointers: {
-      pointer3: ['@', 'pointers', 'pointer2'],
-      pointer4: ['@', 'pointers', 'pointer1']
+      pointer3: ['@', 'pointers', 'pointer2']
     }
   })
 

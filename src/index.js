@@ -11,7 +11,8 @@ const create = function (val, stamp, inherits) {
   const struct = {
     leaves: {},
     branches: [],
-    listeners: {}
+    listeners: {},
+    rF: {}
   }
   if (inherits) {
     struct.inherits = inherits

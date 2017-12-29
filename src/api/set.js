@@ -30,43 +30,25 @@ const addBranchLeaf = (branch, fromLeaf, stamp) => {
 const setVal = (branch, leaf, val, stamp) => {
   if (val !== leaf.val && val !== void 0) {
     leaf = addBranchLeaf(branch, leaf, stamp)
-    leaf.val = val
 
     removeReference(branch, leaf, stamp)
+    leaf.val = val
+
     emit(branch, leaf, 'data', 'set', stamp)
   }
 }
 
-const cleanBranchRf = (branches, id, rF) =>
+const cleanBranchRt = (branches, id, rT) =>
   branches.forEach(branch => {
     if (branch.leaves[id] === null) {
       return
-    } else if (branch.leaves[id]) {
-      if (branch.leaves[id].rF) {
-        const index = branch.leaves[id].rF.indexOf(rF)
-        if (~index) {
-          branch.leaves[id].rF.splice(index, 1)
-          return
-        }
-      }
-    }
-
-    if (branch.branches.length) {
-      cleanBranchRf(branch.branches, id, rF)
-    }
-  })
-
-const cleanBranchRt = (branches, id) =>
-  branches.forEach(branch => {
-    if (branch.leaves[id] === null) {
-      return
-    } else if (branch.leaves[id]) {
+    } else if (branch.leaves[id] && branch.leaves[id].rT === rT) {
       delete branch.leaves[id].rT
       return
     }
 
     if (branch.branches.length) {
-      cleanBranchRt(branch.branches, id)
+      cleanBranchRt(branch.branches, id, rT)
     }
   })
 
@@ -75,32 +57,18 @@ const setReference = (branch, leaf, val, stamp) => {
     return
   }
 
-  removeReference(branch, leaf)
-
   leaf = addBranchLeaf(branch, leaf, stamp)
+
+  removeReference(branch, leaf)
   delete leaf.val
+
   leaf.rT = val.id
-
-  let cleanBranches = true
-
-  if (val.rF) {
-    if (~val.rF.indexOf(leaf.id)) {
-      cleanBranches = false
-    } else {
-      val.rF.push(leaf.id)
-    }
-  } else {
-    val.rF = [ leaf.id ]
-  }
-
-  if (cleanBranches && val.struct.branches.length) {
-    cleanBranchRf(val.struct.branches, val.id, leaf.id)
-  }
+  branch.rF[val.id] = (branch.rF[val.id] || []).concat(leaf.id)
 
   emit(branch, leaf, 'data', 'set', stamp)
 
-  if (cleanBranches && branch.branches.length) {
-    cleanBranchRt(branch.branches, leaf.id)
+  if (branch.branches.length) {
+    cleanBranchRt(branch.branches, leaf.id, val.id)
   }
 }
 

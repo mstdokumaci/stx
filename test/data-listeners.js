@@ -655,6 +655,71 @@ test('data listeners - versatile references in branches', t => {
     fourth: '4-1'
   })
 
+  t.same(
+    masterFire,
+    [ 'master-love-set-2-1', 'master-hate-set-3-1' ],
+    'masterFire = [ master-love-set-2-1, master-hate-set-3-1 ]'
+  )
+  t.same(
+    branch11Fire,
+    [ 'branch11-love-set-1-1', 'branch11-hate-set-2-1' ],
+    'branch11Fire = [ branch11-love-set-1-1, branch11-hate-set-2-1 ]'
+  )
+  t.same(
+    branch12Fire,
+    [ 'branch12-love-set-1-1', 'branch12-hate-set-3-1' ],
+    'branch12Fire = [ branch12-love-set-1-1, branch12-hate-set-3-1 ]'
+  )
+  t.same(
+    branch21Fire,
+    [ 'branch21-hate-set-2-1', 'branch21-love-set-4-1' ],
+    'branch21Fire = [ branch21-hate-set-2-1, branch21-love-set-4-1 ]'
+  )
+  t.same(
+    branch22Fire,
+    [ 'branch12-hate-set-1-1', 'branch12-love-set-2-1' ],
+    'branch22Fire = [ branch12-hate-set-1-1, branch12-love-set-2-1 ]'
+  )
+
+  masterFire.length = 0
+  branch11Fire.length = 0
+  branch12Fire.length = 0
+  branch21Fire.length = 0
+  branch22Fire.length = 0
+
+  master.get(['pointers', 'love']).set([ '@', 'content', 'first' ])
+  master.get(['pointers', 'hate']).set([ '@', 'content', 'second' ])
+  branch11.get(['pointers', 'love']).set([ '@', 'content', 'third' ])
+  branch12.get(['pointers', 'love']).set([ '@', 'content', 'fourth' ])
+  branch21.get(['pointers', 'hate']).set([ '@', 'content', 'third' ])
+  branch22.get(['pointers', 'hate']).set([ '@', 'content', 'third' ])
+
+  t.same(
+    masterFire,
+    [ 'master-love-set-1-1', 'master-hate-set-2-1' ],
+    'masterFire = [ master-love-set-1-1, master-hate-set-2-1 ]'
+  )
+  t.same(
+    branch11Fire,
+    [ 'branch11-love-set-3-1' ],
+    'branch11Fire = [ branch11-love-set-3-1 ]'
+  )
+  t.same(
+    branch12Fire,
+    [ 'branch12-love-set-3-1', 'branch12-love-set-4-1' ],
+    'branch12Fire = [ branch12-love-set-3-1, branch12-hate-set-4-1 ]'
+  )
+  t.same(
+    branch21Fire,
+    [ 'branch21-hate-set-3-1' ],
+    'branch21Fire = [ branch21-hate-set-3-1 ]'
+  )
+  t.same(
+    branch22Fire,
+    [ 'branch12-hate-set-3-1' ],
+    'branch22Fire = [ branch12-hate-set-1-1 ]'
+  )
+
   console.log(masterFire)
   console.log(branch11Fire)
   console.log(branch12Fire)

@@ -99,7 +99,24 @@ const emitOwnReferences = (oBranch, leaf, event, val, stamp, references) => {
       return
     } else if (branch.rF[leaf.id]) {
       branch.rF[leaf.id].forEach(rF => {
-        if (!~fired.indexOf(rF)) {
+        if (
+          !(
+            ~fired.indexOf(rF) ||
+            (
+              branch !== oBranch &&
+              (
+                oBranch.leaves[rF] === null ||
+                (
+                  oBranch.leaves[rF] &&
+                  (
+                    oBranch.leaves[rF].val !== void 0 ||
+                    oBranch.leaves[rF].rT !== void 0
+                  )
+                )
+              )
+            )
+          )
+        ) {
           fired.push(rF)
           references.push(leaf.id)
 

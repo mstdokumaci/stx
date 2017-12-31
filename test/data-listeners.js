@@ -595,7 +595,7 @@ test('data listeners - versatile references in branches', t => {
     }
   })
   const branch22 = branch21.create({
-    id: 'branch12',
+    id: 'branch22',
     pointers: {
       love: [ '@', 'content', 'second' ],
       hate: [ '@', 'content', 'first' ]
@@ -677,8 +677,8 @@ test('data listeners - versatile references in branches', t => {
   )
   t.same(
     branch22Fire,
-    [ 'branch12-hate-set-1-1', 'branch12-love-set-2-1' ],
-    'branch22Fire = [ branch12-hate-set-1-1, branch12-love-set-2-1 ]'
+    [ 'branch22-hate-set-1-1', 'branch22-love-set-2-1' ],
+    'branch22Fire = [ branch22-hate-set-1-1, branch22-love-set-2-1 ]'
   )
 
   masterFire.length = 0
@@ -707,7 +707,7 @@ test('data listeners - versatile references in branches', t => {
   t.same(
     branch12Fire,
     [ 'branch12-love-set-3-1', 'branch12-love-set-4-1' ],
-    'branch12Fire = [ branch12-love-set-3-1, branch12-hate-set-4-1 ]'
+    'branch12Fire = [ branch12-love-set-3-1, branch12-love-set-4-1 ]'
   )
   t.same(
     branch21Fire,
@@ -716,13 +716,42 @@ test('data listeners - versatile references in branches', t => {
   )
   t.same(
     branch22Fire,
-    [ 'branch12-hate-set-3-1' ],
-    'branch22Fire = [ branch12-hate-set-1-1 ]'
+    [ 'branch22-hate-set-3-1' ],
+    'branch22Fire = [ branch22-hate-set-1-1 ]'
   )
 
-  console.log(masterFire)
-  console.log(branch11Fire)
-  console.log(branch12Fire)
+  masterFire.length = 0
+  branch11Fire.length = 0
+  branch12Fire.length = 0
+  branch21Fire.length = 0
+  branch22Fire.length = 0
+
+  branch11.get('content').set({
+    fourth: 411,
+    third: null
+  })
+
+  branch21.get('content').set({
+    first: null,
+    second: 221
+  })
+
+  t.same(
+    masterFire,
+    [],
+    'masterFire = []'
+  )
+  t.same(
+    branch11Fire,
+    [ 'branch11-love-remove-3-1' ],
+    'branch11Fire = [ branch11-love-remove-3-1 ]'
+  )
+  t.same(
+    branch12Fire,
+    [ 'branch12-love-set-411', 'branch12-hate-remove-3-1' ],
+    'branch12Fire = [ branch12-love-set-411, branch12-hate-remove-3-1 ]'
+  )
+
   console.log(branch21Fire)
   console.log(branch22Fire)
 

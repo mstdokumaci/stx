@@ -326,7 +326,8 @@ test('data listeners - references', t => {
   const branch1 = master.create({
     id: 'branch1',
     pointers: {
-      pointer4: ['@', 'pointers', 'pointer1']
+      pointer4: ['@', 'pointers', 'pointer1'],
+      pointer5: ['@', 'pointers', 'pointer4']
     }
   })
 
@@ -334,7 +335,7 @@ test('data listeners - references', t => {
     masterFire.push(`${item.root().get('id').compute()}-${type}-${item.compute()}`)
   })
 
-  branch1.get(['pointers', 'pointer1']).on('data', (type, stamp, item) => {
+  branch1.get(['pointers', 'pointer5']).on('data', (type, stamp, item) => {
     branch1Fire.push(`${item.root().get('id').compute()}-${type}-${item.compute()}`)
   })
 

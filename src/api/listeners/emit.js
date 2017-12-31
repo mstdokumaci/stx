@@ -55,7 +55,7 @@ const emitBranchReferences = (branch, leaf, event, val, stamp, references) =>
 
     emitOwn(branch, branch.leaves[rF], event, val, stamp)
 
-    if (branch.rF[branch.leaves[rF].id]) {
+    if (branch.rF[rF]) {
       emitBranchReferences(branch, branch.leaves[rF], event, val, stamp, references)
     }
 

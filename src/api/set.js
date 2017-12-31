@@ -42,9 +42,12 @@ const cleanBranchRt = (branches, id, rT) =>
   branches.forEach(branch => {
     if (branch.leaves[id] === null) {
       return
-    } else if (branch.leaves[id] && branch.leaves[id].rT === rT) {
-      delete branch.leaves[id].rT
-      return
+    } else if (branch.leaves[id]) {
+      if (branch.leaves[id].rT === rT) {
+        removeReference(branch, branch.leaves[id])
+      } else if (branch.leaves[id].rT !== void 0 || branch.leaves[id].val !== void 0) {
+        return
+      }
     }
 
     if (branch.branches.length) {

@@ -751,9 +751,16 @@ test('data listeners - versatile references in branches', t => {
     [ 'branch12-love-set-411', 'branch12-hate-remove-3-1' ],
     'branch12Fire = [ branch12-love-set-411, branch12-hate-remove-3-1 ]'
   )
-
-  console.log(branch21Fire)
-  console.log(branch22Fire)
+  t.same(
+    branch21Fire,
+    [],
+    'branch21Fire = []'
+  )
+  t.same(
+    branch22Fire,
+    [ 'branch22-love-set-221' ],
+    'branch22Fire = [ branch22-love-set-221 ]'
+  )
 
   t.end()
 })

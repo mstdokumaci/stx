@@ -9,11 +9,14 @@ test('listeners - on and emit', t => {
     id: 'master',
     first: {
       id: 1
-    }
+    },
+    pointer1: {},
+    pointer2: [ '@', 'pointer1' ]
   })
 
   const branch1 = master.create({
-    id: 'branch1'
+    id: 'branch1',
+    pointer1: [ '@', 'first', 'id' ]
   })
 
   master.on('success', (val, stamp, item) =>
@@ -43,6 +46,9 @@ test('listeners - on and emit', t => {
   branch1.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
     branch1Fire.push(`${item.root().get('id').compute()}-${val}`)
   )
+  branch1.get([ 'pointer2' ]).on('success', (val, stamp, item) =>
+    branch1Fire.push(`${item.root().get('id').compute()}-${val}`)
+  )
 
   master.get([ 'first', 'id' ]).emit('success', 'value3')
   branch1.get([ 'first', 'id' ]).emit('success', 'value4')
@@ -54,8 +60,15 @@ test('listeners - on and emit', t => {
   )
   t.same(
     branch1Fire,
-    [ 'branch1-value1', 'branch1-value2', 'branch1-value3', 'branch1-value4' ],
-    'branch1Fire = [ branch1-value1, branch1-value2, branch1-value3, branch1-value4 ]'
+    [
+      'branch1-value1',
+      'branch1-value2',
+      'branch1-value3',
+      'branch1-value3',
+      'branch1-value4',
+      'branch1-value4'
+    ],
+    'branch1Fire = correct'
   )
 
   t.end()

@@ -88,6 +88,7 @@ test('listeners - off', t => {
   )
 
   master.off('success', 'listener1')
+  master.off('success', 'listener2')
   master.emit('success', 'value1')
   master.emit('fail', 'value1')
   branch1.emit('success', 'value2')

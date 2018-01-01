@@ -264,6 +264,14 @@ test('root operations', t => {
     'root does not have parent'
   )
 
+  master.set(null)
+
+  t.same(
+    master.serialize(),
+    {},
+    'remove on root works'
+  )
+
   t.end()
 })
 

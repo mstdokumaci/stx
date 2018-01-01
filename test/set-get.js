@@ -269,3 +269,38 @@ test('create from leaf', t => {
 
   t.end()
 })
+
+test('do not set in reference get', t => {
+  const master = create({
+    key1: {
+      key2: {
+        key3: 'thing'
+      }
+    },
+    pointer: [ '@', 'key1' ]
+  })
+
+  master.get([ 'pointer', 'key2', 'key31' ], 'thing2')
+  master.get([ 'pointer', 'key22', 'key32' ], 'thing3')
+
+  t.same(
+    master.serialize(),
+    {
+      key1: {
+        key2: {
+          key3: 'thing',
+          key31: 'thing2'
+        }
+      },
+      pointer: {
+        key22: {
+          key32: 'thing3'
+        },
+        val: [ '@', 'key1' ]
+      }
+    },
+    'master.serialize() = correct'
+  )
+
+  t.end()
+})

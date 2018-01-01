@@ -253,6 +253,20 @@ test('interference', t => {
   t.end()
 })
 
+test('root operations', t => {
+  const master = create({
+    real: 'thing'
+  })
+
+  t.equals(
+    master.parent(),
+    void 0,
+    'root does not have parent'
+  )
+
+  t.end()
+})
+
 test('create from leaf', t => {
   const master = create({
     deep: {

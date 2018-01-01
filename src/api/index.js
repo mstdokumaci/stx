@@ -54,10 +54,7 @@ const defineApi = leaf => {
 
   // ORIGIN
   define(leaf, 'origin', function () {
-    const originLeaf = origin(this.branch, this.leaf)
-    if (originLeaf) {
-      return new Leaf(this.branch, originLeaf)
-    }
+    return new Leaf(this.branch, origin(this.branch, this.leaf))
   })
 
   // COMPUTE

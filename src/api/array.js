@@ -67,7 +67,7 @@ const find = (branch, leaf, cb) => {
   const found = children(branch, leaf, subLeaf => {
     return cb(new Leaf(branch, subLeaf), getString(subLeaf.key))
   })
-  if (found) {
+  if (!Array.isArray(found)) {
     return new Leaf(branch, found)
   }
 }

@@ -266,6 +266,11 @@ test('array api - find', t => {
     'master.find() = second'
   )
   t.equals(
+    branch1.find(item => item.get('favourite').compute()),
+    void 0,
+    'branch1.find() = undefined'
+  )
+  t.equals(
     branch1.find(item => item.get('name').compute() === 'third').get('name').compute(),
     'third',
     'branch1.find() = third'

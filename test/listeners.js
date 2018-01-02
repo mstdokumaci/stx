@@ -166,6 +166,9 @@ test('listeners - remove', t => {
   master.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
     masterFire.push(`${item.root().get('id').compute()}-${val}`)
   )
+  master.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
+    masterFire.push(`${item.root().get('id').compute()}-${val}`)
+  )
   branch1.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
     branch1Fire.push(`${item.root().get('id').compute()}-${val}`)
   )
@@ -183,8 +186,8 @@ test('listeners - remove', t => {
 
   t.same(
     masterFire,
-    [ 'master-value1', 'master-value4' ],
-    'masterFire = [ master-value1, master-value4 ]'
+    [ 'master-value1', 'master-value1', 'master-value4', 'master-value4' ],
+    'masterFire = correct'
   )
   t.same(
     branch1Fire,

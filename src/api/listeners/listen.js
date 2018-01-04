@@ -1,8 +1,9 @@
-let lastId = 0
+let listenerLastId = 0
+let subscriptionLastId = 0
 
 const on = (branch, leaf, event, cb, id) => {
   if (!id) {
-    id = lastId++
+    id = listenerLastId++
   }
 
   const listeners = branch.listeners
@@ -22,4 +23,24 @@ const off = (branch, leaf, event, id) => {
   }
 }
 
-export { on, off }
+const subscribe = (branch, leaf, cb, id) => {
+  if (!id) {
+    id = subscriptionLastId++
+  }
+
+  const subscriptions = branch.subscriptions
+
+  if (!subscriptions[leaf.id]) {
+    subscriptions[leaf.id] = {}
+  }
+
+  subscriptions[leaf.id][id] = cb
+}
+
+const unsubscribe = (branch, leaf, id) => {
+  if (branch.subscriptions[leaf.id] && id) {
+    delete branch.subscriptions[leaf.id][id]
+  }
+}
+
+export { on, off, subscribe, unsubscribe }

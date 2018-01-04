@@ -5,7 +5,7 @@ import { getFromLeaves, getApi } from './get'
 import { origin, compute } from './compute'
 import { forEach, map, filter, find, reduce } from './array'
 import { path, inspect, serialize } from './serialize'
-import { on, off } from './listeners/listen'
+import { on, off, subscribe, unsubscribe } from './listeners/listen'
 import { emit } from './listeners/emit'
 
 const define = (obj, key, val) => {
@@ -111,6 +111,18 @@ const defineApi = leaf => {
   // OFF
   define(leaf, 'off', function (event, id) {
     off(this.branch, this.leaf, event, id)
+    return this
+  })
+
+  // SUBSCRIBE
+  define(leaf, 'subscribe', function (cb, id) {
+    subscribe(this.branch, this.leaf, cb, id)
+    return this
+  })
+
+  // UNSUBSCRIBE
+  define(leaf, 'unsubscribe', function (id) {
+    unsubscribe(this.branch, this.leaf, id)
     return this
   })
 

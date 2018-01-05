@@ -1,7 +1,7 @@
 import { root } from './id'
 import { defineApi } from './api/index'
 import { set } from './api/set'
-import { createStamp} from './stamp'
+import { createStamp } from './stamp'
 
 const Leaf = function (branch, leaf) {
   this.branch = branch

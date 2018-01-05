@@ -26,7 +26,7 @@ test('subscriptions - deep field references', t => {
 
   const l2 = (list, item) => {
     const path = [ item.root().get('id').compute() ].concat(item.path()).join('-')
-    list.push(`${path}-${item.get('deeper' ).compute()}`)
+    list.push(`${path}-${item.get('deeper').compute()}`)
   }
 
   const l3 = (list, item) => {

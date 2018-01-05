@@ -1,3 +1,5 @@
+import { Leaf } from '../../index'
+
 let listenerLastId = 0
 let subscriptionLastId = 0
 
@@ -35,6 +37,7 @@ const subscribe = (branch, leaf, cb, id) => {
   }
 
   subscriptions[leaf.id].listeners[id] = cb
+  cb(new Leaf(branch, leaf))
 }
 
 const unsubscribe = (branch, leaf, id) => {

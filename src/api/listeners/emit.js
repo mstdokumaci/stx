@@ -17,6 +17,8 @@ const subscriptions = (branch, leaf, stamp) => {
     }
     if (parent.parent) {
       parent = getFromLeaves(branch, parent.parent)
+    } else {
+      return
     }
   }
 }

@@ -1,4 +1,25 @@
 import { Leaf } from '../../index'
+import { getFromLeaves } from '../get'
+
+const subscriptions = (branch, leaf, stamp) => {
+  const subscriptions = branch.subscriptions
+  const listeners = subscriptions.listeners
+  let parent = leaf
+  while (parent) {
+    if (subscriptions.stamp === stamp) {
+      return
+    }
+    subscriptions.stamp = stamp
+    if (listeners[parent.id]) {
+      for (const id in listeners[parent.id]) {
+        listeners[parent.id][id](new Leaf(branch, parent))
+      }
+    }
+    if (parent.parent) {
+      parent = getFromLeaves(branch, parent.parent)
+    }
+  }
+}
 
 const emitOwn = (branch, leaf, event, val, stamp) => {
   const listeners = branch.listeners
@@ -7,6 +28,10 @@ const emitOwn = (branch, leaf, event, val, stamp) => {
     for (const id in listeners[leaf.id][event]) {
       listeners[leaf.id][event][id](val, stamp, new Leaf(branch, leaf))
     }
+  }
+
+  if (event === 'data') {
+    subscriptions(branch, leaf, stamp)
   }
 }
 

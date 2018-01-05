@@ -2,17 +2,17 @@ import { Leaf } from '../../index'
 import { getFromLeaves } from '../get'
 
 const subscriptions = (branch, leaf, stamp) => {
-  const subscriptions = branch.subscriptions
-  const listeners = subscriptions.listeners
   let parent = leaf
   while (parent) {
-    if (subscriptions.stamp === stamp) {
-      return
-    }
-    subscriptions.stamp = stamp
-    if (listeners[parent.id]) {
-      for (const id in listeners[parent.id]) {
-        listeners[parent.id][id](new Leaf(branch, parent))
+    if (branch.subscriptions[parent.id]) {
+      if (branch.subscriptions[parent.id].stamp === stamp) {
+        return
+      }
+      branch.subscriptions[parent.id].stamp = stamp
+      if (branch.subscriptions[parent.id].listeners) {
+        for (const id in branch.subscriptions[parent.id].listeners) {
+          branch.subscriptions[parent.id].listeners[id](new Leaf(branch, parent))
+        }
       }
     }
     if (parent.parent) {

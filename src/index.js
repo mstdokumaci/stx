@@ -12,10 +12,7 @@ const create = function (val, stamp, inherits) {
     leaves: {},
     branches: [],
     listeners: {},
-    subscriptions: {
-      stamp: 0,
-      listeners: {}
-    },
+    subscriptions: {},
     rF: {}
   }
   if (inherits) {

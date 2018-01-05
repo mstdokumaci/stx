@@ -28,18 +28,18 @@ const subscribe = (branch, leaf, cb, id) => {
     id = subscriptionLastId++
   }
 
-  const listeners = branch.subscriptions.listeners
+  const subscriptions = branch.subscriptions
 
-  if (!listeners[leaf.id]) {
-    listeners[leaf.id] = {}
+  if (!subscriptions[leaf.id]) {
+    subscriptions[leaf.id] = { stamp: 0, listeners: {} }
   }
 
-  listeners[leaf.id][id] = cb
+  subscriptions[leaf.id].listeners[id] = cb
 }
 
 const unsubscribe = (branch, leaf, id) => {
-  if (branch.subscriptions.listeners[leaf.id] && id) {
-    delete branch.subscriptions.listeners[leaf.id][id]
+  if (branch.subscriptions[leaf.id] && id) {
+    delete branch.subscriptions[leaf.id].listeners[id]
   }
 }
 

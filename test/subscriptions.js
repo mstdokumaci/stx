@@ -1,7 +1,7 @@
 const test = require('tape')
 const { create } = require('../dist/index')
 
-test('subscriptions - deep field references', t => {
+test('subscriptions - deep fields', t => {
   const masterFire = []
   const branchFire = []
 
@@ -92,7 +92,7 @@ test('subscriptions - deep field references', t => {
 
   branch.set({
     deep: {
-      real2: 'thing3'
+      val: 'thing3'
     },
     deep2: 'thing4'
   })

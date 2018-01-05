@@ -33,16 +33,16 @@ const subscribe = (branch, leaf, cb, id) => {
   const subscriptions = branch.subscriptions
 
   if (!subscriptions[leaf.id]) {
-    subscriptions[leaf.id] = { stamp: 0, listeners: {} }
+    subscriptions[leaf.id] = {}
   }
 
-  subscriptions[leaf.id].listeners[id] = cb
+  subscriptions[leaf.id][id] = cb
   cb(new Leaf(branch, leaf))
 }
 
 const unsubscribe = (branch, leaf, id) => {
   if (branch.subscriptions[leaf.id] && id) {
-    delete branch.subscriptions[leaf.id].listeners[id]
+    delete branch.subscriptions[leaf.id][id]
   }
 }
 

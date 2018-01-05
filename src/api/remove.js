@@ -56,8 +56,8 @@ const removeFromParent = (branch, parent, id, stamp) => {
   if (parent) {
     const index = parent.keys.indexOf(id)
     if (~index) {
-      emit(branch, parent, 'data', 'remove-key', stamp)
       parent.keys.splice(index, 1)
+      emit(branch, parent, 'data', 'remove-key', stamp)
       return parent.id
     }
   }

@@ -15,7 +15,7 @@ const respectOverrides = (branches, id, parent) =>
   })
 
 const addOwnLeaf = (struct, id, parent, key, stamp) => {
-  struct.leaves[id] = { struct, id, parent, key }
+  struct.leaves[id] = { struct, id, parent, key, stamp, subscriptionStamp: 0 }
   if (struct.branches.length) {
     respectOverrides(struct.branches, id, parent)
   }
@@ -33,6 +33,7 @@ const setVal = (branch, leaf, val, stamp) => {
 
     removeReference(branch, leaf, stamp)
     leaf.val = val
+    leaf.stamp = stamp
 
     emit(branch, leaf, 'data', 'set', stamp)
   }
@@ -66,6 +67,7 @@ const setReference = (branch, leaf, val, stamp) => {
   delete leaf.val
 
   leaf.rT = val.id
+  leaf.stamp = stamp
   branch.rF[val.id] = (branch.rF[val.id] || []).concat(leaf.id)
 
   emit(branch, leaf, 'data', 'set', stamp)
@@ -145,6 +147,7 @@ const setKeys = (branch, leaf, val, stamp) => {
   if (keys.length) {
     leaf = addBranchLeaf(branch, leaf, stamp)
     leaf.keys = (leaf.keys || []).concat(keys)
+    leaf.stamp = stamp
     cleanBranchKeys(branch.branches, leaf, leaf.id, keys, stamp)
     emit(branch, leaf, 'data', 'add-key', stamp)
   }

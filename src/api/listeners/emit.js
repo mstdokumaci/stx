@@ -40,22 +40,20 @@ const emitReferenceSubscriptions = (oBranch, leaf, stamp) => {
 }
 
 const subscriptions = (branch, leaf, stamp) => {
-  let parent = leaf
-  while (parent) {
-    if (branch.subscriptions[parent.id]) {
-      if (branch.subscriptions[parent.id].stamp === stamp) {
-        return
-      }
-      branch.subscriptions[parent.id].stamp = stamp
-      if (branch.subscriptions[parent.id].listeners) {
-        for (const id in branch.subscriptions[parent.id].listeners) {
-          branch.subscriptions[parent.id].listeners[id](new Leaf(branch, parent))
-        }
+  while (leaf) {
+    if (leaf.subscriptionStamp === stamp) {
+      return
+    }
+    leaf.subscriptionStamp = stamp
+
+    if (branch.subscriptions[leaf.id]) {
+      for (const id in branch.subscriptions[leaf.id]) {
+        branch.subscriptions[leaf.id][id](new Leaf(branch, leaf))
       }
     }
-    emitReferenceSubscriptions(branch, parent, stamp)
-    if (parent.parent) {
-      parent = getFromLeaves(branch, parent.parent)
+    emitReferenceSubscriptions(branch, leaf, stamp)
+    if (leaf.parent) {
+      leaf = getFromLeaves(branch, leaf.parent)
     } else {
       return
     }

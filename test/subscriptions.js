@@ -79,6 +79,41 @@ test('subscriptions - deep field references', t => {
     'branchFire = correct'
   )
 
+  masterFire.length = 0
+  branchFire.length = 0
+
+  branch.set({
+    deep: {
+      real: {
+        deeper2: 'thing2'
+      }
+    }
+  })
+
+  branch.set({
+    deep: {
+      real2: 'thing3'
+    },
+    deep2: 'thing4'
+  })
+
+  t.same(
+    masterFire,
+    [],
+    'masterFire = []'
+  )
+  t.same(
+    branchFire,
+    [
+      'branch-deep-real-override',
+      'branch-deep-override',
+      'branch-override',
+      'branch-deep-override',
+      'branch-override'
+    ],
+    'branchFire = correct'
+  )
+
   t.end()
 })
 

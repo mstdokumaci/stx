@@ -1,5 +1,6 @@
 import { create, Leaf } from '../index'
 import { root } from '../id'
+import { createStamp } from '../stamp'
 import { set } from './set'
 import { getFromLeaves, getApi } from './get'
 import { origin, compute } from './compute'
@@ -18,6 +19,10 @@ const defineApi = leaf => {
 
   // CREATE
   define(leaf, 'create', function (val, stamp) {
+    if (!stamp) {
+      stamp = createStamp()
+    }
+
     if (this.leaf.id === root) {
       return create(val, stamp, this.branch)
     } else {
@@ -27,12 +32,20 @@ const defineApi = leaf => {
 
   // SET
   define(leaf, 'set', function (val, stamp) {
+    if (!stamp) {
+      stamp = createStamp()
+    }
+
     set(this.branch, this.leaf, val, stamp)
     return this
   })
 
   // GET
   define(leaf, 'get', function (path, val, stamp) {
+    if (!stamp) {
+      stamp = createStamp()
+    }
+
     const subLeaf = getApi(this.branch, this.leaf.id, path, val, stamp)
     if (subLeaf) {
       return new Leaf(this.branch, subLeaf)
@@ -128,6 +141,10 @@ const defineApi = leaf => {
 
   // EMIT
   define(leaf, 'emit', function (event, val, stamp) {
+    if (!stamp) {
+      stamp = createStamp()
+    }
+
     emit(this.branch, this.leaf, event, val, stamp)
     return this
   })

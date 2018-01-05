@@ -1,6 +1,44 @@
 import { Leaf } from '../../index'
 import { getFromLeaves } from '../get'
 
+const emitReferenceSubscriptions = (oBranch, leaf, stamp) => {
+  const fired = []
+  let branch = oBranch
+  while (branch) {
+    if (branch.leaves[leaf.id] === null) {
+      return
+    } else if (branch.rF[leaf.id]) {
+      branch.rF[leaf.id].forEach(rF => {
+        if (
+          !(
+            ~fired.indexOf(rF) ||
+            (
+              branch !== oBranch &&
+              (
+                oBranch.leaves[rF] === null ||
+                (
+                  oBranch.leaves[rF] &&
+                  (
+                    oBranch.leaves[rF].val !== void 0 ||
+                    oBranch.leaves[rF].rT !== void 0
+                  )
+                )
+              )
+            )
+          )
+        ) {
+          fired.push(rF)
+
+          subscriptions(oBranch, branch.leaves[rF], stamp)
+          emitReferenceSubscriptions(oBranch, branch.leaves[rF], stamp)
+        }
+      })
+    }
+
+    branch = branch.inherits
+  }
+}
+
 const subscriptions = (branch, leaf, stamp) => {
   let parent = leaf
   while (parent) {
@@ -15,6 +53,7 @@ const subscriptions = (branch, leaf, stamp) => {
         }
       }
     }
+    emitReferenceSubscriptions(branch, parent, stamp)
     if (parent.parent) {
       parent = getFromLeaves(branch, parent.parent)
     } else {

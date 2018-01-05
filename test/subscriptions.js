@@ -118,6 +118,9 @@ test('subscriptions - deep field references', t => {
 })
 
 test('subscriptions - deep field references', t => {
+  const masterFire = []
+  const branchFire = []
+
   const master = create({
     id: 'master',
     deep: {
@@ -133,54 +136,23 @@ test('subscriptions - deep field references', t => {
     },
     otherDeep: {
       deeper: {
-        field: 'is a thing'
+        field: 'thing'
       }
     }
   })
 
-  master.get([ 'pointers', 'pointer2' ]).subscribe(item => {
-    console.log(item.root().get('id').compute(), item.path())
-  })
+  const fire = (list, item) => {
+    const path = [ item.root().get('id').compute() ].concat(item.path()).join('-')
+    list.push(`${path}-${item.get([ 'deeper', 'pointer1', 'deeper', 'field' ]).compute()}`)
+  }
 
-  master.get([ 'pointers', 'pointer3' ]).subscribe(item => {
-    console.log(item.root().get('id').compute(), item.path())
-  })
+  master.get([ 'pointers', 'pointer2' ]).subscribe(item => fire(masterFire, item))
+  master.get([ 'pointers', 'pointer3' ]).subscribe(item => fire(masterFire, item))
 
   const branch = master.create({ id: 'branch' })
 
-  branch.get([ 'pointers', 'pointer2' ]).subscribe(item => {
-    console.log(item.root().get('id').compute(), item.path())
-    /*
-    if (type === 'new') {
-      t.equals(
-        val.get(['deeper', 'pointer1', 'deeper', 'field', 'compute']), 'is a thing',
-        'pointer2 fired for original'
-      )
-    } else if (type === 'update') {
-      t.equals(
-        val.get(['deeper', 'pointer1', 'deeper', 'field', 'compute']), 'override',
-        'pointer2 fired for override'
-      )
-    }
-    */
-  })
-
-  branch.get([ 'pointers', 'pointer3' ]).subscribe(item => {
-    console.log(item.root().get('id').compute(), item.path())
-    /*
-    if (type === 'new') {
-      t.equals(
-        val.get(['deeper', 'pointer1', 'deeper', 'field', 'compute']), 'is a thing',
-        'pointer3 fired for original'
-      )
-    } else if (type === 'update') {
-      t.equals(
-        val.get(['deeper', 'pointer1', 'deeper', 'field', 'compute']), 'override',
-        'pointer3 fired for override'
-      )
-    }
-    */
-  })
+  branch.get([ 'pointers', 'pointer2' ]).subscribe(item => fire(branchFire, item))
+  branch.get([ 'pointers', 'pointer3' ]).subscribe(item => fire(branchFire, item))
 
   branch.set({
     otherDeep: {
@@ -189,6 +161,25 @@ test('subscriptions - deep field references', t => {
       }
     }
   })
+
+  t.same(
+    masterFire,
+    [
+      'master-pointers-pointer2-thing',
+      'master-pointers-pointer3-thing'
+    ],
+    'masterFire = correct'
+  )
+  t.same(
+    branchFire,
+    [
+      'branch-pointers-pointer2-thing',
+      'branch-pointers-pointer3-thing',
+      'branch-pointers-pointer2-override',
+      'branch-pointers-pointer3-override'
+    ],
+    'branchFire = correct'
+  )
 
   t.end()
 })

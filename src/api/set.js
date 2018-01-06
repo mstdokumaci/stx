@@ -2,7 +2,7 @@ import { addToStrings } from '../cache'
 import { root, keyToId } from '../id'
 import { getFromLeaves, getByPath } from './get'
 import { remove, removeReference } from './remove'
-import { addDataEvent } from './listeners/emit'
+import { addDataEvent, addAfterEmitEvent } from './listeners/emit'
 
 const respectOverrides = (branches, id, parent) =>
   branches.forEach(branch => {
@@ -45,7 +45,7 @@ const cleanBranchRt = (branches, id, rT) =>
       return
     } else if (branch.leaves[id]) {
       if (branch.leaves[id].rT === rT) {
-        setTimeout(() => removeReference(branch, branch.leaves[id]))
+        addAfterEmitEvent(removeReference.bind(null, branch, branch.leaves[id]))
       } else if (branch.leaves[id].rT !== void 0 || branch.leaves[id].val !== void 0) {
         return
       }

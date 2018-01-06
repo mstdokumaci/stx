@@ -228,14 +228,18 @@ const emit = (branch, leaf, event, val, stamp, references = []) => {
 }
 
 const dataEvents = []
+const afterEmitEvents = []
 
 const addDataEvent = (branch, leaf, val, stamp) => {
   dataEvents.push([ branch, leaf, 'data', val, stamp ])
 }
 
 const emitDataEvents = () => {
-  let eventsToFire = dataEvents.splice(0)
-  eventsToFire.forEach(event => emit(...event))
+  const afterEmitEventsToRun = afterEmitEvents.splice(0)
+  dataEvents.splice(0).forEach(event => emit(...event))
+  afterEmitEventsToRun.forEach(event => event())
 }
 
-export { emit, addDataEvent, emitDataEvents }
+const addAfterEmitEvent = (cb) => afterEmitEvents.push(cb)
+
+export { emit, addDataEvent, emitDataEvents, addAfterEmitEvent }

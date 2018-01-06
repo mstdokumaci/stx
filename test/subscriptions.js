@@ -143,16 +143,18 @@ test('subscriptions - deep field references', t => {
 
   const fire = (list, item) => {
     const path = [ item.root().get('id').compute() ].concat(item.path()).join('-')
-    list.push(`${path}-${item.get([ 'deeper', 'pointer1', 'deeper', 'field' ]).compute()}`)
+    list.push(
+      `${path}-${item.get([ 'deeper', 'pointer1', 'deeper', 'field' ]).compute()}`
+    )
   }
 
-  master.get([ 'pointers', 'pointer2' ]).subscribe(item => fire(masterFire, item))
+  master.get([ 'pointers', 'pointer2' ]).subscribe(item => fire(masterFire, item), 's1')
   master.get([ 'pointers', 'pointer3' ]).subscribe(item => fire(masterFire, item))
 
   const branch = master.create({ id: 'branch' })
 
   branch.get([ 'pointers', 'pointer2' ]).subscribe(item => fire(branchFire, item))
-  branch.get([ 'pointers', 'pointer3' ]).subscribe(item => fire(branchFire, item))
+  branch.get([ 'pointers', 'pointer3' ]).subscribe(item => fire(branchFire, item), 's1')
 
   branch.set({
     otherDeep: {
@@ -207,6 +209,53 @@ test('subscriptions - deep field references', t => {
       'branch-pointers-pointer3-override'
     ],
     'branchFire = correct'
+  )
+
+  masterFire.length = 0
+  branchFire.length = 0
+
+  master.get([ 'pointers', 'pointer2' ]).unsubscribe('s1')
+  branch.get([ 'pointers', 'pointer3' ]).unsubscribe('s1')
+
+  master.set({
+    otherDeep: {
+      deeper: {
+        field: 'update'
+      }
+    }
+  })
+
+  t.same(
+    masterFire,
+    [ 'master-pointers-pointer3-update' ],
+    'masterFire = [ master-pointers-pointer3-update ]'
+  )
+  t.same(
+    branchFire,
+    [],
+    'branchFire = []'
+  )
+
+  masterFire.length = 0
+  branchFire.length = 0
+
+  master.set({
+    otherDeep: {
+      deeper: {
+        field3: 'thing3'
+      }
+    }
+  })
+
+  t.same(
+    masterFire,
+    [ 'master-pointers-pointer3-update' ],
+    'masterFire = [ master-pointers-pointer3-update ]'
+  )
+  t.same(
+    branchFire,
+    [ 'branch-pointers-pointer2-override' ],
+    'branchFire = [ branch-pointers-pointer2-override ]'
   )
 
   t.end()

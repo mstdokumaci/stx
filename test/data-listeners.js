@@ -749,8 +749,8 @@ test('data listeners - versatile references in branches', t => {
   )
   t.same(
     branch12Fire,
-    [ 'branch12-love-set-411', 'branch12-hate-remove-3-1' ],
-    'branch12Fire = [ branch12-love-set-411, branch12-hate-remove-3-1 ]'
+    [ 'branch12-hate-remove-3-1', 'branch12-love-set-411' ],
+    'branch12Fire = [ branch12-hate-remove-3-1, branch12-love-set-411 ]'
   )
   t.same(
     branch21Fire,

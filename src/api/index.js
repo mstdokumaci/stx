@@ -43,13 +43,15 @@ const defineApi = leaf => {
 
   // GET
   define(leaf, 'get', function (path, val, stamp) {
-    if (!stamp) {
+    if (!stamp && val !== void 0) {
       stamp = createStamp()
     }
 
     const subLeaf = getApi(this.branch, this.leaf.id, path, val, stamp)
     if (subLeaf) {
-      emitDataEvents(this.branch, stamp)
+      if (stamp) {
+        emitDataEvents(this.branch, stamp)
+      }
       return new Leaf(this.branch, subLeaf)
     }
   })

@@ -39,7 +39,7 @@ const emitReferenceSubscriptions = (oBranch, leaf, stamp, subs) => {
 }
 
 const subscriptions = (branch, leaf, stamp, subs) => {
-  const oLeaf = leaf
+  const parent = leaf.parent
   while (leaf) {
     if (subs[leaf.id]) {
       if (~subs[leaf.id].indexOf(branch)) {
@@ -57,7 +57,7 @@ const subscriptions = (branch, leaf, stamp, subs) => {
       }
     }
 
-    if (leaf !== oLeaf) {
+    if (leaf.parent !== parent) {
       emitReferenceSubscriptions(branch, leaf, stamp, subs)
     }
 

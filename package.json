@@ -3,9 +3,6 @@
   "version": "0.1.1",
   "description": "a blazing fast state manager with network sync out of the box",
   "main": "dist/index.js",
-  "browser": {
-    "./dist/index.js": "./dist/index.browser.js"
-  },
   "scripts": {
     "build": "rollup src/index.js --o dist/index.js --f cjs",
     "budo": "budo test/index.js",

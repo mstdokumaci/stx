@@ -227,7 +227,7 @@ const emit = (branch, leaf, event, val, stamp, references = []) => {
 const dataEvents = []
 
 const addDataEvent = (branch, leaf, val, stamp) => {
-  dataEvents.push([ branch, leaf, 'data', val, stamp])
+  dataEvents.push([ branch, leaf, 'data', val, stamp ])
 }
 
 const emitDataEvents = () => {

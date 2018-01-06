@@ -28,7 +28,6 @@ const emitReferenceSubscriptions = (oBranch, leaf, stamp) => {
           )
         ) {
           fired.push(rF)
-
           subscriptions(oBranch, branch.leaves[rF], stamp)
           emitReferenceSubscriptions(oBranch, branch.leaves[rF], stamp)
         }
@@ -44,6 +43,7 @@ const subscriptions = (branch, leaf, stamp) => {
     if (leaf.subscriptionStamp === stamp) {
       return
     }
+
     leaf.subscriptionStamp = stamp
 
     if (branch.subscriptions[leaf.id]) {
@@ -51,7 +51,9 @@ const subscriptions = (branch, leaf, stamp) => {
         branch.subscriptions[leaf.id][id](new Leaf(branch, leaf))
       }
     }
+
     emitReferenceSubscriptions(branch, leaf, stamp)
+
     if (leaf.parent) {
       leaf = getFromLeaves(branch, leaf.parent)
     } else {
@@ -222,4 +224,15 @@ const emit = (branch, leaf, event, val, stamp, references = []) => {
   }
 }
 
-export { emit }
+const dataEvents = []
+
+const addDataEvent = (branch, leaf, val, stamp) => {
+  dataEvents.push([ branch, leaf, 'data', val, stamp])
+}
+
+const emitDataEvents = () => {
+  let eventsToFire = dataEvents.splice(0)
+  eventsToFire.forEach(event => emit(...event))
+}
+
+export { emit, addDataEvent, emitDataEvents }

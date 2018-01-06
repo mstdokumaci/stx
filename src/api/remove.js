@@ -1,5 +1,5 @@
 import { getFromLeaves } from './get'
-import { emit } from './listeners/emit'
+import { emit, addDataEvent } from './listeners/emit'
 import { addBranchLeaf } from './set'
 
 const removeListeners = (branch, id) => {
@@ -41,7 +41,7 @@ const removeFromBranches = (branches, leaf, id, parent, keys, stamp) =>
         }
       } else {
         if (parent) {
-          emit(branch, getFromLeaves(branch, parent), 'data', 'remove-key', stamp)
+          addDataEvent(branch, getFromLeaves(branch, parent), 'remove-key', stamp)
         }
         removeListeners(branch, id)
       }
@@ -57,7 +57,7 @@ const removeFromParent = (branch, parent, id, stamp) => {
     const index = parent.keys.indexOf(id)
     if (~index) {
       parent.keys.splice(index, 1)
-      emit(branch, parent, 'data', 'remove-key', stamp)
+      addDataEvent(branch, parent, 'remove-key', stamp)
       return parent.id
     }
   }
@@ -77,7 +77,7 @@ const removeOwn = (branch, leaf, stamp, ignoreParent) => {
 const removeInherited = (branch, leaf, stamp, ignoreParent) => {
   if (!ignoreParent) {
     const parentLeaf = getFromLeaves(leaf.struct, leaf.parent)
-    emit(branch, parentLeaf, 'data', 'remove-key', stamp)
+    addDataEvent(branch, parentLeaf, 'remove-key', stamp)
   }
 
   if (branch.branches.length) {

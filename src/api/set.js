@@ -2,7 +2,7 @@ import { addToStrings } from '../cache'
 import { root, keyToId } from '../id'
 import { getFromLeaves, getByPath } from './get'
 import { remove, removeReference } from './remove'
-import { emit } from './listeners/emit'
+import { addDataEvent } from './listeners/emit'
 
 const respectOverrides = (branches, id, parent) =>
   branches.forEach(branch => {
@@ -35,7 +35,7 @@ const setVal = (branch, leaf, val, stamp) => {
     leaf.val = val
     leaf.stamp = stamp
 
-    emit(branch, leaf, 'data', 'set', stamp)
+    addDataEvent(branch, leaf, 'set', stamp)
   }
 }
 
@@ -45,7 +45,7 @@ const cleanBranchRt = (branches, id, rT) =>
       return
     } else if (branch.leaves[id]) {
       if (branch.leaves[id].rT === rT) {
-        removeReference(branch, branch.leaves[id])
+        setTimeout(() => removeReference(branch, branch.leaves[id]))
       } else if (branch.leaves[id].rT !== void 0 || branch.leaves[id].val !== void 0) {
         return
       }
@@ -70,7 +70,7 @@ const setReference = (branch, leaf, val, stamp) => {
   leaf.stamp = stamp
   branch.rF[val.id] = (branch.rF[val.id] || []).concat(leaf.id)
 
-  emit(branch, leaf, 'data', 'set', stamp)
+  addDataEvent(branch, leaf, 'set', stamp)
 
   if (branch.branches.length) {
     cleanBranchRt(branch.branches, leaf.id, val.id)
@@ -111,13 +111,13 @@ const cleanBranchKeys = (branches, leaf, id, keys, stamp) =>
           }
         })
         if (branch.leaves[id].keys.length === firstLength) {
-          emit(branch, leaf, 'data', 'add-key', stamp)
+          addDataEvent(branch, leaf, 'add-key', stamp)
         }
       } else {
-        emit(branch, leaf, 'data', 'add-key', stamp)
+        addDataEvent(branch, leaf, 'add-key', stamp)
       }
     } else {
-      emit(branch, leaf, 'data', 'add-key', stamp)
+      addDataEvent(branch, leaf, 'add-key', stamp)
     }
 
     if (branch.branches.length && keysNext.length) {
@@ -149,7 +149,7 @@ const setKeys = (branch, leaf, val, stamp) => {
     leaf.keys = (leaf.keys || []).concat(keys)
     leaf.stamp = stamp
     cleanBranchKeys(branch.branches, leaf, leaf.id, keys, stamp)
-    emit(branch, leaf, 'data', 'add-key', stamp)
+    addDataEvent(branch, leaf, 'add-key', stamp)
   }
 }
 

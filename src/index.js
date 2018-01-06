@@ -2,6 +2,7 @@ import { root } from './id'
 import { defineApi } from './api/index'
 import { set } from './api/set'
 import { createStamp } from './stamp'
+import { emitDataEvents } from './api/listeners/emit'
 
 const Leaf = function (branch, leaf) {
   this.branch = branch
@@ -25,6 +26,7 @@ const create = function (val, stamp, inherits) {
     struct
   }
   set(struct, rootLeaf, val, stamp)
+  emitDataEvents()
   return new Leaf(struct, rootLeaf)
 }
 

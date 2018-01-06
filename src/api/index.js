@@ -7,7 +7,7 @@ import { origin, compute } from './compute'
 import { forEach, map, filter, find, reduce } from './array'
 import { path, inspect, serialize } from './serialize'
 import { on, off, subscribe, unsubscribe } from './listeners/listen'
-import { emit } from './listeners/emit'
+import { emit, emitDataEvents } from './listeners/emit'
 
 const define = (obj, key, val) => {
   Object.defineProperty(obj, key, { value: val, configurable: true })
@@ -37,6 +37,7 @@ const defineApi = leaf => {
     }
 
     set(this.branch, this.leaf, val, stamp)
+    emitDataEvents()
     return this
   })
 
@@ -48,6 +49,7 @@ const defineApi = leaf => {
 
     const subLeaf = getApi(this.branch, this.leaf.id, path, val, stamp)
     if (subLeaf) {
+      emitDataEvents()
       return new Leaf(this.branch, subLeaf)
     }
   })

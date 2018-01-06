@@ -26,7 +26,7 @@ const create = function (val, stamp, inherits) {
     struct
   }
   set(struct, rootLeaf, val, stamp)
-  emitDataEvents()
+  emitDataEvents(struct, stamp)
   return new Leaf(struct, rootLeaf)
 }
 

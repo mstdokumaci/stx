@@ -37,7 +37,7 @@ const defineApi = leaf => {
     }
 
     set(this.branch, this.leaf, val, stamp)
-    emitDataEvents()
+    emitDataEvents(this.branch, stamp)
     return this
   })
 
@@ -49,7 +49,7 @@ const defineApi = leaf => {
 
     const subLeaf = getApi(this.branch, this.leaf.id, path, val, stamp)
     if (subLeaf) {
-      emitDataEvents()
+      emitDataEvents(this.branch, stamp)
       return new Leaf(this.branch, subLeaf)
     }
   })

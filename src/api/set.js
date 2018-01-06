@@ -35,7 +35,7 @@ const setVal = (branch, leaf, val, stamp) => {
     leaf.val = val
     leaf.stamp = stamp
 
-    addDataEvent(branch, leaf, 'set', stamp)
+    addDataEvent(void 0, leaf, 'set')
   }
 }
 
@@ -70,7 +70,7 @@ const setReference = (branch, leaf, val, stamp) => {
   leaf.stamp = stamp
   branch.rF[val.id] = (branch.rF[val.id] || []).concat(leaf.id)
 
-  addDataEvent(branch, leaf, 'set', stamp)
+  addDataEvent(void 0, leaf, 'set')
 
   if (branch.branches.length) {
     cleanBranchRt(branch.branches, leaf.id, val.id)
@@ -111,13 +111,13 @@ const cleanBranchKeys = (branches, leaf, id, keys, stamp) =>
           }
         })
         if (branch.leaves[id].keys.length === firstLength) {
-          addDataEvent(branch, leaf, 'add-key', stamp)
+          addDataEvent(branch, leaf, 'add-key')
         }
       } else {
-        addDataEvent(branch, leaf, 'add-key', stamp)
+        addDataEvent(branch, leaf, 'add-key')
       }
     } else {
-      addDataEvent(branch, leaf, 'add-key', stamp)
+      addDataEvent(branch, leaf, 'add-key')
     }
 
     if (branch.branches.length && keysNext.length) {
@@ -149,7 +149,7 @@ const setKeys = (branch, leaf, val, stamp) => {
     leaf.keys = (leaf.keys || []).concat(keys)
     leaf.stamp = stamp
     cleanBranchKeys(branch.branches, leaf, leaf.id, keys, stamp)
-    addDataEvent(branch, leaf, 'add-key', stamp)
+    addDataEvent(void 0, leaf, 'add-key')
   }
 }
 

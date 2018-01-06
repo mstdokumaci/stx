@@ -39,6 +39,7 @@ const emitReferenceSubscriptions = (oBranch, leaf, stamp) => {
 }
 
 const subscriptions = (branch, leaf, stamp) => {
+  const oLeaf = leaf
   while (leaf) {
     if (leaf.subscriptionStamp === stamp) {
       return
@@ -52,7 +53,9 @@ const subscriptions = (branch, leaf, stamp) => {
       }
     }
 
-    emitReferenceSubscriptions(branch, leaf, stamp)
+    if (leaf !== oLeaf) {
+      emitReferenceSubscriptions(branch, leaf, stamp)
+    }
 
     if (leaf.parent) {
       leaf = getFromLeaves(branch, leaf.parent)

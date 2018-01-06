@@ -181,5 +181,33 @@ test('subscriptions - deep field references', t => {
     'branchFire = correct'
   )
 
+  masterFire.length = 0
+  branchFire.length = 0
+
+  master.set({
+    otherDeep: {
+      deeper: {
+        field2: 'thing2'
+      }
+    }
+  })
+
+  t.same(
+    masterFire,
+    [
+      'master-pointers-pointer2-thing',
+      'master-pointers-pointer3-thing'
+    ],
+    'masterFire = correct'
+  )
+  t.same(
+    branchFire,
+    [
+      'branch-pointers-pointer2-override',
+      'branch-pointers-pointer3-override'
+    ],
+    'branchFire = correct'
+  )
+
   t.end()
 })

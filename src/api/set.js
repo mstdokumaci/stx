@@ -15,7 +15,7 @@ const respectOverrides = (branches, id, parent) =>
   })
 
 const addOwnLeaf = (struct, id, parent, key, stamp) => {
-  struct.leaves[id] = { struct, id, parent, key, stamp, subscriptionStamp: 0 }
+  struct.leaves[id] = { struct, id, parent, key, stamp }
   if (struct.branches.length) {
     respectOverrides(struct.branches, id, parent)
   }

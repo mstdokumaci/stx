@@ -163,7 +163,7 @@ const emitOwnBranches = (branches, leaf, event, val, stamp, references, subs) =>
     }
   })
 
-const emitOwnReferences = (oBranch, leaf, event, val, stamp, references, subs) => {
+const emitOwnReferences = (oBranch, leaf, event, val, stamp, references, subs, isVal) => {
   const fired = []
   let branch = oBranch
   while (branch) {
@@ -194,19 +194,10 @@ const emitOwnReferences = (oBranch, leaf, event, val, stamp, references, subs) =
 
           emitOwn(oBranch, branch.leaves[rF], event, val, stamp, subs)
           emitOwnReferences(
-            oBranch, branch.leaves[rF], event, val, stamp, references, subs
+            oBranch, branch.leaves[rF], event, val, stamp, references, subs, isVal
           )
 
-          if (
-            oBranch.branches.length &&
-            !(
-              event === 'data' &&
-              (
-                val === 'add-key' ||
-                val === 'remove-key'
-              )
-            )
-          ) {
+          if (oBranch.branches.length && isVal) {
             emitReferenceBranches(
               oBranch.branches, branch.leaves[rF], event, val, stamp, references, subs
             )
@@ -219,21 +210,12 @@ const emitOwnReferences = (oBranch, leaf, event, val, stamp, references, subs) =
   }
 }
 
-const emit = (branch, leaf, event, val, stamp, subs = {}) => {
+const emit = (branch, leaf, event, val, stamp, subs = {}, isVal = true) => {
   const references = []
   emitOwn(branch, leaf, event, val, stamp, subs)
-  emitOwnReferences(branch, leaf, event, val, stamp, references, subs)
+  emitOwnReferences(branch, leaf, event, val, stamp, references, subs, isVal)
 
-  if (
-    branch.branches.length &&
-    !(
-      event === 'data' &&
-      (
-        val === 'add-key' ||
-        val === 'remove-key'
-      )
-    )
-  ) {
+  if (branch.branches.length && isVal) {
     emitOwnBranches(branch.branches, leaf, event, val, stamp, references, subs)
   }
 }
@@ -251,7 +233,16 @@ const emitDataEvents = (branch, stamp) => {
   const subs = {}
   const afterEmitEventsToRun = afterEmitEvents.splice(0)
   dataEvents.splice(0).forEach(event =>
-    emit(event[0] || branch, event[1], 'data', event[2], stamp, subs))
+    emit(
+      event[0] || branch,
+      event[1],
+      'data',
+      event[2],
+      stamp,
+      subs,
+      event[2] !== 'add-key' && event[2] !== 'remove-key'
+    )
+  )
   afterEmitEventsToRun.forEach(event => event())
 }
 

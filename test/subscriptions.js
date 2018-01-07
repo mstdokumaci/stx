@@ -264,7 +264,7 @@ test('subscriptions - deep field references', t => {
   t.end()
 })
 
-test('references - circular subscription', t => {
+test('subscriptions - circular references', t => {
   const master = create({
     id: 'master',
     list: {

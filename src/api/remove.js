@@ -2,8 +2,9 @@ import { getFromLeaves } from './get'
 import { emit, addDataEvent } from './listeners/emit'
 import { addBranchLeaf } from './set'
 
-const removeListeners = (branch, id) => {
+const removeListenersAndSubscriptions = (branch, id) => {
   delete branch.listeners[id]
+  delete branch.subscriptions[id]
 }
 
 const removeReference = (struct, leaf) => {
@@ -43,7 +44,7 @@ const removeFromBranches = (branches, leaf, id, parent, keys, stamp) =>
         if (parent) {
           addDataEvent(branch, getFromLeaves(branch, parent), 'remove-key')
         }
-        removeListeners(branch, id)
+        removeListenersAndSubscriptions(branch, id)
       }
     }
 
@@ -108,7 +109,7 @@ const remove = (branch, leaf, stamp, ignoreParent) => {
 
   removeChildren(branch, leaf, stamp)
   removeReference(branch, leaf, stamp)
-  removeListeners(branch, leaf.id)
+  removeListenersAndSubscriptions(branch, leaf.id)
 }
 
 export { remove, removeReference }

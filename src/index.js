@@ -15,8 +15,8 @@ const create = function (val, stamp, inherits) {
   }
 
   const struct = {
-    leaves: {},
     branches: [],
+    leaves: {},
     listeners: {},
     subscriptions: {},
     rF: {}

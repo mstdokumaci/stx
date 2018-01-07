@@ -2,7 +2,6 @@ import { Leaf } from '../../index'
 import { getFromLeaves } from '../get'
 
 const emitReferenceSubscriptions = (oBranch, leaf, stamp, subs) => {
-  const fired = []
   let branch = oBranch
   while (branch) {
     if (branch.leaves[leaf.id] === null) {
@@ -10,24 +9,18 @@ const emitReferenceSubscriptions = (oBranch, leaf, stamp, subs) => {
     } else if (branch.rF[leaf.id]) {
       branch.rF[leaf.id].forEach(rF => {
         if (
+          branch === oBranch ||
           !(
-            ~fired.indexOf(rF) ||
+            oBranch.leaves[rF] === null ||
             (
-              branch !== oBranch &&
+              oBranch.leaves[rF] &&
               (
-                oBranch.leaves[rF] === null ||
-                (
-                  oBranch.leaves[rF] &&
-                  (
-                    oBranch.leaves[rF].val !== void 0 ||
-                    oBranch.leaves[rF].rT !== void 0
-                  )
-                )
+                oBranch.leaves[rF].val !== void 0 ||
+                oBranch.leaves[rF].rT !== void 0
               )
             )
           )
         ) {
-          fired.push(rF)
           subscriptions(oBranch, branch.leaves[rF], stamp, subs)
           emitReferenceSubscriptions(oBranch, branch.leaves[rF], stamp, subs)
         }
@@ -95,7 +88,6 @@ const emitReferenceBranches = (branches, leaf, event, val, stamp, references, su
         )
       ) ||
       (
-        event === 'data' &&
         references.find(rT => (
           branch.leaves[rT] === null ||
           (
@@ -166,7 +158,6 @@ const emitOwnBranches = (branches, leaf, event, val, stamp, references, subs) =>
   })
 
 const emitOwnReferences = (oBranch, leaf, event, val, stamp, references, subs, isVal) => {
-  const fired = []
   let branch = oBranch
   while (branch) {
     if (branch.leaves[leaf.id] === null) {
@@ -174,25 +165,21 @@ const emitOwnReferences = (oBranch, leaf, event, val, stamp, references, subs, i
     } else if (branch.rF[leaf.id]) {
       branch.rF[leaf.id].forEach(rF => {
         if (
+          branch === oBranch ||
           !(
-            ~fired.indexOf(rF) ||
+            oBranch.leaves[rF] === null ||
             (
-              branch !== oBranch &&
+              oBranch.leaves[rF] &&
               (
-                oBranch.leaves[rF] === null ||
-                (
-                  oBranch.leaves[rF] &&
-                  (
-                    oBranch.leaves[rF].val !== void 0 ||
-                    oBranch.leaves[rF].rT !== void 0
-                  )
-                )
+                oBranch.leaves[rF].val !== void 0 ||
+                oBranch.leaves[rF].rT !== void 0
               )
             )
           )
         ) {
-          fired.push(rF)
-          references.push(leaf.id)
+          if (event === 'data') {
+            references.push(leaf.id)
+          }
 
           emitOwn(oBranch, branch.leaves[rF], event, val, stamp, subs, isVal)
           emitOwnReferences(

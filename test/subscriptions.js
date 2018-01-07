@@ -260,3 +260,132 @@ test('subscriptions - deep field references', t => {
 
   t.end()
 })
+
+test('references - circular subscription', t => {
+  const master = create({
+    id: 'master',
+    list: {
+      i1: {
+        id: 'i1',
+        items: {
+          sub1: ['@', 'list', 'i1'],
+          sub2: ['@', 'list', 'i2'],
+          sub3: ['@', 'list', 'i3']
+        }
+      },
+      i2: {
+        id: 'i2',
+        items: {
+          sub2: ['@', 'list', 'i2'],
+          sub4: ['@', 'list', 'i4']
+        },
+        other: 'master'
+      },
+      i3: {
+        id: 'i3',
+        items: {
+          sub2: ['@', 'list', 'i2'],
+          sub4: ['@', 'list', 'i4']
+        }
+      },
+      i4: {
+        id: 'i4',
+        f1: 'v1'
+      }
+    },
+    ref: {}
+  })
+
+  master.get('ref').subscribe(item => {
+    if (item.get('id') === void 0) {
+      t.pass('master initial fire')
+    } else {
+      t.fail('master should not fire for branch')
+    }
+  })
+
+  const branch1 = master.create()
+  const branch2 = master.create()
+
+  branch1.get('ref').subscribe(item => {
+    if (item.get('id') === void 0) {
+      t.pass('branch1 initial fire')
+    } else if (item.get('id').compute() === 'i1') {
+      t.equals(
+        item.get([ 'items', 'sub1', 'bf1' ]).compute(), false,
+        'branch1 i1 bf1 fired for false'
+      )
+      t.equals(
+        item.get([ 'items', 'sub2', 'bf2' ]).compute(), false,
+        'branch1 i1 sub2 bf2 fired for false'
+      )
+    } else if (item.get('id').compute() === 'i3') {
+      t.equals(
+        item.get([ 'items', 'sub2', 'bf2' ]).compute(), false,
+        'branch1 i3 sub2 bf2 fired for false'
+      )
+      t.equals(
+        item.get([ 'items', 'sub4', 'sub', 'bf4' ]).compute(), true,
+        'branch1 i3 sub4 sub bf4 fired for false'
+      )
+      t.equals(
+        item.get([ 'items', 'sub4', 'f1' ]).compute(), 'v1',
+        'branch1 i3 sub4 f1 fired for v1'
+      )
+    }
+  })
+
+  branch2.get('ref').subscribe(item => {
+    if (item.get('id') === void 0) {
+      t.pass('branch2 initial fire')
+    } else if (item.get('id').compute() === 'i2') {
+      t.equals(
+        item.get([ 'items', 'sub3', 'bf3' ]).compute(), false,
+        'branch2 i2 sub3 bf3 fired for false'
+      )
+      t.equals(
+        item.get([ 'items', 'sub4', 'f1' ]).compute(), true,
+        'branch2 i2 sub4 f1 fired for true'
+      )
+    } else if (item.get('id').compute() === 'i3') {
+      t.equals(
+        item.get([ 'items', 'sub2', 'items', 'sub3', 'bf3' ]).compute(), false,
+        'branch2 i3 sub2 items sub3 bf3 fired for false'
+      )
+      t.equals(
+        item.get([ 'items', 'sub4', 'f1' ]).compute(), true,
+        'branch2 i3 sub4 f1 fired for true'
+      )
+    }
+  })
+
+  branch1.set({
+    id: 'branch1',
+    list: {
+      i1: { items: { sub1: { bf1: false } }, bf1: false },
+      i2: { bf2: false },
+      i4: { sub: { bf4: true } }
+    },
+    ref: ['@', 'list', 'i1']
+  })
+
+  branch2.set({
+    id: 'branch2',
+    list: {
+      i2: { items: { sub3: ['@', 'list', 'i3'] } },
+      i3: { items: { sub2: { bf3: false } }, bf3: false },
+      i4: { f1: true }
+    },
+    ref: ['@', 'list', 'i2']
+  })
+
+  branch1.set({
+    ref: ['@', 'list', 'i3']
+  })
+
+  branch2.set({
+    ref: ['@', 'list', 'i3']
+  })
+
+  t.end()
+})

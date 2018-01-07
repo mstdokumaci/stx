@@ -19,10 +19,6 @@ const defineApi = leaf => {
 
   // CREATE
   define(leaf, 'create', function (val, stamp) {
-    if (!stamp) {
-      stamp = createStamp()
-    }
-
     if (this.leaf.id === root) {
       return create(val, stamp, this.branch)
     } else {

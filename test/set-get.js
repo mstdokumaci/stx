@@ -1,5 +1,5 @@
 const test = require('tape')
-const { create } = require('../')
+const { create, createStamp } = require('../')
 
 test('set - get - references', t => {
   const master = create()
@@ -143,6 +143,7 @@ test('set - get - references', t => {
 
 test('set - get - arrays', t => {
   const master = create()
+  const stamp = createStamp()
 
   master.set({
     deep: {
@@ -152,7 +153,7 @@ test('set - get - arrays', t => {
       pointer1: [ '@', 'deep', 'real' ],
       pointer2: [ '@', 'pointers', 'pointer1' ]
     }
-  })
+  }, stamp)
 
   t.same(
     master.get([ 'pointers', 'pointer1' ]).compute(),
@@ -219,11 +220,12 @@ test('set - get - arrays', t => {
 })
 
 test('interference', t => {
+  const stamp = createStamp()
   const master = create({
     deep: {
       real: 'thing'
     }
-  })
+  }, stamp)
 
   const branch1 = master.create()
   const branch2 = branch1.create()

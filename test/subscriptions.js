@@ -37,6 +37,7 @@ test('subscriptions - deep fields', t => {
   master.subscribe(item => l0(masterFire, item))
   master.get('deep').subscribe(item => l1(masterFire, item))
   master.get([ 'deep', 'real' ]).subscribe(item => l2(masterFire, item))
+  master.get([ 'deep', 'real' ]).subscribe(item => l2(masterFire, item))
   master.get([ 'deep', 'real', 'deeper' ]).subscribe(item => l3(masterFire, item))
 
   const branch = master.create({ id: 'branch' })
@@ -59,6 +60,7 @@ test('subscriptions - deep fields', t => {
     [
       'master-thing',
       'master-deep-thing',
+      'master-deep-real-thing',
       'master-deep-real-thing',
       'master-deep-real-deeper-thing'
     ],
@@ -216,6 +218,7 @@ test('subscriptions - deep field references', t => {
 
   master.get([ 'pointers', 'pointer2' ]).unsubscribe('s1')
   branch.get([ 'pointers', 'pointer3' ]).unsubscribe('s1')
+  branch.get([ 'pointers', 'pointer3' ]).unsubscribe('s3')
 
   master.set({
     otherDeep: {

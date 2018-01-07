@@ -10,6 +10,10 @@ const Leaf = function (branch, leaf) {
 }
 
 const create = function (val, stamp, inherits) {
+  if (!stamp) {
+    stamp = createStamp()
+  }
+
   const struct = {
     leaves: {},
     branches: [],

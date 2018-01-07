@@ -218,7 +218,7 @@ test('subscriptions - deep field references', t => {
 
   master.get([ 'pointers', 'pointer2' ]).unsubscribe('s1')
   branch.get([ 'pointers', 'pointer3' ]).unsubscribe('s1')
-  branch.get([ 'pointers', 'pointer3' ]).unsubscribe('s3')
+  branch.get([ 'pointers', 'pointer3' ]).unsubscribe()
 
   master.set({
     otherDeep: {

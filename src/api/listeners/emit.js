@@ -96,7 +96,7 @@ const emitReferenceBranches = (branches, leaf, event, val, stamp, references, su
       ) ||
       (
         event === 'data' &&
-        references.filter(rT => (
+        references.find(rT => (
           branch.leaves[rT] === null ||
           (
             branch.leaves[rT] &&
@@ -105,7 +105,7 @@ const emitReferenceBranches = (branches, leaf, event, val, stamp, references, su
               branch.leaves[rT].rT !== void 0
             )
           )
-        )).length
+        ))
       )
     ) {
       return

@@ -35,13 +35,13 @@ const subscriptions = (branch, leaf, stamp, subs) => {
   const parent = leaf.parent
   while (leaf) {
     if (subs[leaf.id]) {
-      if (~subs[leaf.id].indexOf(branch)) {
+      if (leaf.struct === branch || ~subs[leaf.id].indexOf(branch)) {
         return
       } else {
         subs[leaf.id].push(branch)
       }
     } else {
-      subs[leaf.id] = [ branch ]
+      subs[leaf.id] = leaf.struct === branch ? [] : [ branch ]
     }
 
     if (branch.subscriptions[leaf.id]) {

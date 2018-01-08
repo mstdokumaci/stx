@@ -1,6 +1,8 @@
 import { root } from './id'
 import { defineApi } from './api/index'
 import { set } from './api/set'
+import { createStamp } from './stamp'
+import { emitDataEvents } from './api/listeners/emit'
 
 const Leaf = function (branch, leaf) {
   this.branch = branch
@@ -8,10 +10,15 @@ const Leaf = function (branch, leaf) {
 }
 
 const create = function (val, stamp, inherits) {
+  if (!stamp) {
+    stamp = createStamp()
+  }
+
   const struct = {
-    leaves: {},
     branches: [],
+    leaves: {},
     listeners: {},
+    subscriptions: {},
     rF: {}
   }
   if (inherits) {
@@ -23,9 +30,10 @@ const create = function (val, stamp, inherits) {
     struct
   }
   set(struct, rootLeaf, val, stamp)
+  emitDataEvents(struct, stamp)
   return new Leaf(struct, rootLeaf)
 }
 
 defineApi(Leaf.prototype)
 
-export { create, Leaf }
+export { create, Leaf, createStamp }

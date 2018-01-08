@@ -1,5 +1,5 @@
 const test = require('tape')
-const { create } = require('../dist/index')
+const { create, createStamp } = require('../dist/index')
 
 test('listeners - on and emit', t => {
   const masterFire = []
@@ -182,7 +182,8 @@ test('listeners - remove', t => {
 
   branch1.get('first').set(null)
 
-  master.get([ 'first', 'id' ]).emit('success', 'value4')
+  const stamp = createStamp()
+  master.get([ 'first', 'id' ]).emit('success', 'value4', stamp)
 
   t.same(
     masterFire,

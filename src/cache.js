@@ -14,9 +14,7 @@ const getArray = id => {
 }
 
 const addToStrings = (id, str) => {
-  if (strings[id]) {
-    return true
-  } else {
+  if (!strings[id]) {
     strings[id] = str
   }
 }

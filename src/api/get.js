@@ -3,9 +3,7 @@ import { set } from './set'
 
 const getFromLeaves = (branch, id) => {
   while (branch) {
-    if (branch.leaves[id] === null) {
-      return null
-    } else if (branch.leaves[id]) {
+    if (branch.leaves[id] === null || branch.leaves[id]) {
       return branch.leaves[id]
     }
     branch = branch.inherits

@@ -246,8 +246,8 @@ test('data listeners - add remove key', t => {
   )
   t.same(
     branch1Fire,
-    [ 'branch1-add-key-1-2', 'branch1-add-key-31-1-2', 'branch1-remove-key-1-2-3' ],
-    'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-31-1-2, branch1-remove-key-1-2-3 ]'
+    [ 'branch1-add-key-1-2', 'branch1-add-key-31-1-2', 'branch1-remove-key-1-2' ],
+    'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-31-1-2, branch1-remove-key-1-2 ]'
   )
   t.same(
     branch2Fire,
@@ -260,7 +260,7 @@ test('data listeners - add remove key', t => {
       'branch3-add-key-1-2',
       'branch3-add-key-31-1-2',
       'branch3-add-key-43-53-1-2-3',
-      'branch3-remove-key-43-53-1-2-3'
+      'branch3-remove-key-43-53-1-2'
     ],
     'branch3Fire = correct'
   )
@@ -279,7 +279,7 @@ test('data listeners - add remove key', t => {
     [
       'branch1-add-key-1-2',
       'branch1-add-key-31-1-2',
-      'branch1-remove-key-1-2-3',
+      'branch1-remove-key-1-2',
       'branch1-add-key-51-1-2'
     ],
     'branch1Fire = correct'
@@ -299,7 +299,7 @@ test('data listeners - add remove key', t => {
       'branch3-add-key-1-2',
       'branch3-add-key-31-1-2',
       'branch3-add-key-43-53-1-2-3',
-      'branch3-remove-key-43-53-1-2-3'
+      'branch3-remove-key-43-53-1-2'
     ],
     'branch3Fire = correct'
   )
@@ -534,7 +534,7 @@ test('data listeners - reference inheritance', t => {
     branch22Fire,
     [
       'branch22-add-key-real-21-real3-0',
-      'branch22-remove-key-real-0-real3-0'
+      'branch22-remove-key-real3-0'
     ],
     'branch22Fire = correct'
   )
@@ -749,8 +749,8 @@ test('data listeners - versatile references in branches', t => {
   )
   t.same(
     branch12Fire,
-    [ 'branch12-love-set-411', 'branch12-hate-remove-3-1' ],
-    'branch12Fire = [ branch12-love-set-411, branch12-hate-remove-3-1 ]'
+    [ 'branch12-hate-remove-3-1', 'branch12-love-set-411' ],
+    'branch12Fire = [ branch12-hate-remove-3-1, branch12-love-set-411 ]'
   )
   t.same(
     branch21Fire,

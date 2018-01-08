@@ -2,7 +2,7 @@ import { addToStrings } from '../cache'
 import { root, keyToId } from '../id'
 import { getFromLeaves, getByPath } from './get'
 import { remove, removeReference } from './remove'
-import { emit } from './listeners/emit'
+import { addDataEvent, addAfterEmitEvent } from './listeners/emit'
 
 const respectOverrides = (branches, id, parent) =>
   branches.forEach(branch => {
@@ -15,7 +15,7 @@ const respectOverrides = (branches, id, parent) =>
   })
 
 const addOwnLeaf = (struct, id, parent, key, stamp) => {
-  struct.leaves[id] = { struct, id, parent, key }
+  struct.leaves[id] = { struct, id, parent, key, stamp }
   if (struct.branches.length) {
     respectOverrides(struct.branches, id, parent)
   }
@@ -33,8 +33,9 @@ const setVal = (branch, leaf, val, stamp) => {
 
     removeReference(branch, leaf, stamp)
     leaf.val = val
+    leaf.stamp = stamp
 
-    emit(branch, leaf, 'data', 'set', stamp)
+    addDataEvent(void 0, leaf, 'set')
   }
 }
 
@@ -44,7 +45,7 @@ const cleanBranchRt = (branches, id, rT) =>
       return
     } else if (branch.leaves[id]) {
       if (branch.leaves[id].rT === rT) {
-        removeReference(branch, branch.leaves[id])
+        addAfterEmitEvent(removeReference.bind(null, branch, branch.leaves[id]))
       } else if (branch.leaves[id].rT !== void 0 || branch.leaves[id].val !== void 0) {
         return
       }
@@ -66,9 +67,10 @@ const setReference = (branch, leaf, val, stamp) => {
   delete leaf.val
 
   leaf.rT = val.id
+  leaf.stamp = stamp
   branch.rF[val.id] = (branch.rF[val.id] || []).concat(leaf.id)
 
-  emit(branch, leaf, 'data', 'set', stamp)
+  addDataEvent(void 0, leaf, 'set')
 
   if (branch.branches.length) {
     cleanBranchRt(branch.branches, leaf.id, val.id)
@@ -109,13 +111,13 @@ const cleanBranchKeys = (branches, leaf, id, keys, stamp) =>
           }
         })
         if (branch.leaves[id].keys.length === firstLength) {
-          emit(branch, leaf, 'data', 'add-key', stamp)
+          addDataEvent(branch, leaf, 'add-key')
         }
       } else {
-        emit(branch, leaf, 'data', 'add-key', stamp)
+        addDataEvent(branch, leaf, 'add-key')
       }
     } else {
-      emit(branch, leaf, 'data', 'add-key', stamp)
+      addDataEvent(branch, leaf, 'add-key')
     }
 
     if (branch.branches.length && keysNext.length) {
@@ -145,8 +147,9 @@ const setKeys = (branch, leaf, val, stamp) => {
   if (keys.length) {
     leaf = addBranchLeaf(branch, leaf, stamp)
     leaf.keys = (leaf.keys || []).concat(keys)
+    leaf.stamp = stamp
     cleanBranchKeys(branch.branches, leaf, leaf.id, keys, stamp)
-    emit(branch, leaf, 'data', 'add-key', stamp)
+    addDataEvent(void 0, leaf, 'add-key')
   }
 }
 

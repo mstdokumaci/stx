@@ -1,12 +1,13 @@
 import { create, Leaf } from '../index'
 import { root } from '../id'
+import { createStamp } from '../stamp'
 import { set } from './set'
 import { getFromLeaves, getApi } from './get'
 import { origin, compute } from './compute'
 import { forEach, map, filter, find, reduce } from './array'
 import { path, inspect, serialize } from './serialize'
-import { on, off } from './listeners/listen'
-import { emit } from './listeners/emit'
+import { on, off, subscribe, unsubscribe } from './listeners/listen'
+import { emit, emitDataEvents } from './listeners/emit'
 
 const define = (obj, key, val) => {
   Object.defineProperty(obj, key, { value: val, configurable: true })
@@ -27,14 +28,26 @@ const defineApi = leaf => {
 
   // SET
   define(leaf, 'set', function (val, stamp) {
+    if (!stamp) {
+      stamp = createStamp()
+    }
+
     set(this.branch, this.leaf, val, stamp)
+    emitDataEvents(this.branch, stamp)
     return this
   })
 
   // GET
   define(leaf, 'get', function (path, val, stamp) {
+    if (!stamp && val !== void 0) {
+      stamp = createStamp()
+    }
+
     const subLeaf = getApi(this.branch, this.leaf.id, path, val, stamp)
     if (subLeaf) {
+      if (stamp) {
+        emitDataEvents(this.branch, stamp)
+      }
       return new Leaf(this.branch, subLeaf)
     }
   })
@@ -114,8 +127,24 @@ const defineApi = leaf => {
     return this
   })
 
+  // SUBSCRIBE
+  define(leaf, 'subscribe', function (cb, id) {
+    subscribe(this.branch, this.leaf, cb, id)
+    return this
+  })
+
+  // UNSUBSCRIBE
+  define(leaf, 'unsubscribe', function (id) {
+    unsubscribe(this.branch, this.leaf, id)
+    return this
+  })
+
   // EMIT
   define(leaf, 'emit', function (event, val, stamp) {
+    if (!stamp) {
+      stamp = createStamp()
+    }
+
     emit(this.branch, this.leaf, event, val, stamp)
     return this
   })

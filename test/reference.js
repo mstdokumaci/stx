@@ -495,6 +495,66 @@ test('references - from another branch', t => {
     t.equals(error.message, 'Reference must be in same branch', 'Reference must be in same branch')
   }
 
+  try {
+    const master3 = create({
+      deep: {
+        real: 'thing3'
+      },
+      pointers: {
+        pointer1: [ '@', 'deep', 'real' ]
+      }
+    })
+
+    master3.set({
+      pointers: {
+        pointer1: master1.get('deep')
+      }
+    })
+  } catch (error) {
+    t.equals(error.message, 'Reference must be in same branch', 'Reference must be in same branch')
+  }
+
+  const branch3 = master1.create({
+    deep: null
+  })
+
+  try {
+    const branch4 = branch3.create({
+      deep: {
+        real: 'thing3'
+      },
+      pointers: {
+        pointer1: [ '@', 'deep', 'real' ]
+      }
+    })
+
+    branch4.set({
+      pointers: {
+        pointer1: master1.get('deep')
+      }
+    })
+  } catch (error) {
+    t.equals(error.message, 'Reference must be in same branch', 'Reference must be in same branch')
+  }
+
+  const branch5 = master1.create({
+    pointers: {
+      pointer1: [ '@', 'deep' ]
+    }
+  })
+
+  branch5.set({
+    pointers: {
+      pointer1: master1.get([ 'deep', 'real' ])
+    }
+  })
+
+  t.equals(
+    branch5.get([ 'pointers', 'pointer1' ]).compute(),
+    'thing',
+    'branch5.pointers.pointer1.compute() = thing'
+  )
+
   t.end()
 })
 

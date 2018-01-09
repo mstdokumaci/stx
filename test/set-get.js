@@ -13,7 +13,8 @@ test('set - get - references', t => {
       pointer2: [ '@', 'deep', 'real' ],
       pointer3: [ '@', 'pointers', 'pointer1' ],
       pointer4: [ '@', 'pointers', 'pointer2' ]
-    }
+    },
+    dummy: void 0
   })
 
   t.equals(
@@ -152,7 +153,8 @@ test('set - get - arrays', t => {
     pointers: {
       pointer1: [ '@', 'deep', 'real' ],
       pointer2: [ '@', 'pointers', 'pointer1' ]
-    }
+    },
+    dummy: null
   }, stamp)
 
   t.same(

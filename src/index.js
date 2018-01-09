@@ -4,9 +4,9 @@ import { set } from './api/set'
 import { createStamp } from './stamp'
 import { emitDataEvents } from './api/listeners/emit'
 
-const Leaf = function (branch, leaf) {
+const Leaf = function (branch, id) {
   this.branch = branch
-  this.leaf = leaf
+  this.id = id
 }
 
 const create = function (val, stamp, inherits) {
@@ -25,7 +25,7 @@ const create = function (val, stamp, inherits) {
     branch.inherits = inherits
     inherits.branches.push(branch)
   }
-  const rootLeaf = branch.leaves[root] = { id: root }
+  const rootLeaf = branch.leaves[root] = {}
   set(branch, rootLeaf, val, stamp)
   emitDataEvents(branch, stamp)
   return new Leaf(branch, rootLeaf)

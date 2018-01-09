@@ -4,11 +4,12 @@ import { children } from './array'
 import { root } from '../id'
 import { getFromLeaves } from './get'
 
-const path = (branch, leaf) => {
+const path = (branch, id) => {
   const path = []
-  while (leaf && leaf.id !== root) {
-    path.unshift(getString(leaf.key))
-    leaf = getFromLeaves(branch, leaf.parent)
+  while (id !== root) {
+    const leafBranch = getFromLeaves(branch, id)
+    path.unshift(getString(leafBranch[id].key))
+    id = leafBranch[id].parent
   }
   return path
 }

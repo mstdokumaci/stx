@@ -3,13 +3,12 @@ import { getString } from '../cache'
 import { getFromLeaves } from './get'
 import { compute } from './compute'
 
-const children = (oBranch, leaf, cb) => {
+const children = (oBranch, id, cb) => {
   const exists = {}
   let branch = oBranch
-  const id = leaf.id
   const subLeaves = []
   while (branch) {
-    leaf = branch.leaves[id]
+    const leaf = branch.leaves[id]
     if (leaf === null) {
       return subLeaves
     } else if (leaf && leaf.keys) {
@@ -17,20 +16,23 @@ const children = (oBranch, leaf, cb) => {
         if (exists[leafId]) {
           return
         }
-        const subLeaf = getFromLeaves(oBranch, leafId)
-        if (subLeaf) {
-          exists[leafId] = subLeaf
+        const subBranch = getFromLeaves(oBranch, leafId)
+        if (subBranch) {
+          exists[leafId] = subBranch
           if (cb) {
-            return cb(subLeaf)
+            return cb(subBranch, leafId)
           } else {
-            subLeaves.push(subLeaf)
+            subLeaves.push([ subBranch, leafId ])
           }
         } else {
           exists[leafId] = true
         }
       })
       if (found) {
-        return exists[found]
+        return {
+          branch: exists[found],
+          id: found
+        }
       }
     }
     branch = branch.inherits
@@ -38,48 +40,48 @@ const children = (oBranch, leaf, cb) => {
   return subLeaves
 }
 
-const forEach = (branch, leaf, cb) => {
-  children(branch, leaf, subLeaf => {
-    cb(new Leaf(branch, subLeaf), getString(subLeaf.key))
+const forEach = (branch, id, cb) => {
+  children(branch, id, (subBranch, id) => {
+    cb(new Leaf(branch, id), getString(subBranch[id].key))
   })
 }
 
-const map = (branch, leaf, cb) => {
+const map = (branch, id, cb) => {
   const mapped = []
-  children(branch, leaf, subLeaf => {
-    mapped.push(cb(new Leaf(branch, subLeaf), getString(subLeaf.key)))
+  children(branch, id, (subBranch, id) => {
+    mapped.push(cb(new Leaf(branch, id), getString(subBranch[id].key)))
   })
   return mapped
 }
 
-const filter = (branch, leaf, cb) => {
+const filter = (branch, id, cb) => {
   const filtered = []
-  children(branch, leaf, subLeaf => {
-    const subLeafInstance = new Leaf(branch, subLeaf)
-    if (cb(subLeafInstance, getString(subLeaf.key))) {
+  children(branch, id, (subBranch, id) => {
+    const subLeafInstance = new Leaf(branch, id)
+    if (cb(subLeafInstance, getString(subBranch[id].key))) {
       filtered.push(subLeafInstance)
     }
   })
   return filtered
 }
 
-const find = (branch, leaf, cb) => {
-  const found = children(branch, leaf, subLeaf => {
-    return cb(new Leaf(branch, subLeaf), getString(subLeaf.key))
+const find = (branch, id, cb) => {
+  const found = children(branch, id, (subBranch, id) => {
+    return cb(new Leaf(branch, id), getString(subBranch[id].key))
   })
   if (!Array.isArray(found)) {
-    return new Leaf(branch, found)
+    return new Leaf(found.branch, found.id)
   }
 }
 
-const reduce = (branch, leaf, cb, accumulator) => {
+const reduce = (branch, id, cb, accumulator) => {
   let skipFirst = accumulator === void 0
-  children(branch, leaf, subLeaf => {
+  children(branch, id, (subBranch, id) => {
     if (skipFirst) {
-      accumulator = compute(branch, subLeaf.id)
+      accumulator = compute(subBranch, id)
       skipFirst = false
     } else {
-      accumulator = cb(accumulator, new Leaf(branch, subLeaf), getString(subLeaf.key))
+      accumulator = cb(accumulator, new Leaf(branch, id), getString(subBranch[id].key))
     }
   })
   return accumulator

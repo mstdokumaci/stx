@@ -55,9 +55,8 @@ const defineApi = leaf => {
   // PARENT
   define(leaf, 'parent', function () {
     const leafBranch = getFromLeaves(this.branch, this.id)
-    const parentId = leafBranch.leaves[this.id].parent
-    if (getFromLeaves(this.branch, parentId)) {
-      return new Leaf(this.branch, parentId)
+    if (leafBranch.leaves[this.id].parent) {
+      return new Leaf(this.branch, leafBranch.leaves[this.id].parent)
     }
   })
 

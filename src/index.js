@@ -14,7 +14,7 @@ const create = function (val, stamp, inherits) {
     stamp = createStamp()
   }
 
-  const struct = {
+  const branch = {
     branches: [],
     leaves: {},
     listeners: {},
@@ -22,16 +22,13 @@ const create = function (val, stamp, inherits) {
     rF: {}
   }
   if (inherits) {
-    struct.inherits = inherits
-    inherits.branches.push(struct)
+    branch.inherits = inherits
+    inherits.branches.push(branch)
   }
-  const rootLeaf = struct.leaves[root] = {
-    id: root,
-    struct
-  }
-  set(struct, rootLeaf, val, stamp)
-  emitDataEvents(struct, stamp)
-  return new Leaf(struct, rootLeaf)
+  const rootLeaf = branch.leaves[root] = { id: root }
+  set(branch, rootLeaf, val, stamp)
+  emitDataEvents(branch, stamp)
+  return new Leaf(branch, rootLeaf)
 }
 
 defineApi(Leaf.prototype)

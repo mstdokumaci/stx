@@ -5,7 +5,7 @@ import { compute } from './compute'
 
 const children = (oBranch, leaf, cb) => {
   const exists = {}
-  let branch = leaf.struct
+  let branch = oBranch
   const id = leaf.id
   const subLeaves = []
   while (branch) {

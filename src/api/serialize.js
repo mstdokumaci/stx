@@ -17,7 +17,7 @@ const inspect = (branch, leaf) => {
   const subLeaves = children(branch, leaf)
   const start = 'Struct ' + (leaf.key ? getString(leaf.key) + ' ' : '')
   let val = getValOrRef(branch, leaf.id)
-  if (val && val.struct) {
+  if (val && val.key) {
     val = inspect(branch, val)
   }
   if (subLeaves.length) {
@@ -41,7 +41,7 @@ const inspect = (branch, leaf) => {
 
 const serialize = (branch, leaf) => {
   let val = getValOrRef(branch, leaf.id)
-  if (val && val.struct) {
+  if (val && val.key) {
     val = [ '@' ].concat(path(branch, val))
   }
   let child = false

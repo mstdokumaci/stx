@@ -7,11 +7,11 @@ const removeListenersSubscriptions = (branch, id) => {
   delete branch.subscriptions[id]
 }
 
-const removeReference = (struct, leaf) => {
+const removeReference = (branch, leaf) => {
   if (leaf.rT) {
-    struct.rF[leaf.rT].splice(struct.rF[leaf.rT].indexOf(leaf.id), 1)
-    if (!struct.rF[leaf.rT].length) {
-      delete struct.rF[leaf.rT]
+    branch.rF[leaf.rT].splice(branch.rF[leaf.rT].indexOf(leaf.id), 1)
+    if (!branch.rF[leaf.rT].length) {
+      delete branch.rF[leaf.rT]
     }
     delete leaf.rT
   }
@@ -77,7 +77,7 @@ const removeOwn = (branch, leaf, stamp, ignoreParent) => {
 
 const removeInherited = (branch, leaf, stamp, ignoreParent) => {
   if (!ignoreParent) {
-    const parentLeaf = getFromLeaves(leaf.struct, leaf.parent)
+    const parentLeaf = getFromLeaves(branch, leaf.parent)
     addDataEvent(void 0, parentLeaf, 'remove-key')
   }
 
@@ -101,7 +101,7 @@ const removeChildren = (branch, leaf, stamp) => {
 const remove = (branch, leaf, stamp, ignoreParent) => {
   emit(branch, leaf, 'data', 'remove', stamp)
 
-  if (leaf.struct === branch) {
+  if (branch.leaves[leaf.id] === leaf) {
     removeOwn(branch, leaf, stamp, ignoreParent)
   } else {
     removeInherited(branch, leaf, stamp, ignoreParent)

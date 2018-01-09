@@ -14,16 +14,16 @@ const respectOverrides = (branches, id, parent) =>
     }
   })
 
-const addOwnLeaf = (struct, id, parent, key, stamp) => {
-  struct.leaves[id] = { struct, id, parent, key, stamp }
-  if (struct.branches.length) {
-    respectOverrides(struct.branches, id, parent)
+const addOwnLeaf = (branch, id, parent, key, stamp) => {
+  branch.leaves[id] = { id, parent, key, stamp }
+  if (branch.branches.length) {
+    respectOverrides(branch.branches, id, parent)
   }
-  return struct.leaves[id]
+  return branch.leaves[id]
 }
 
 const addBranchLeaf = (branch, fromLeaf, stamp) => {
-  return fromLeaf.struct === branch ? fromLeaf
+  return branch.leaves[fromLeaf.id] === fromLeaf ? fromLeaf
     : addOwnLeaf(branch, fromLeaf.id, fromLeaf.parent, fromLeaf.key, stamp)
 }
 
@@ -85,7 +85,7 @@ const setReferenceByLeaf = (oBranch, leaf, val, stamp) => {
   while (branch) {
     if (branch.leaves[val.id] === null) {
       throw new Error('Reference must be in same branch')
-    } else if (branch === val.struct) {
+    } else if (branch.leaves[val.id] === val) {
       return setReference(oBranch, leaf, val, stamp)
     }
     branch = branch.inherits

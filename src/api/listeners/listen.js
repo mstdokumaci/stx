@@ -3,46 +3,46 @@ import { Leaf } from '../../index'
 let listenerLastId = 0
 let subscriptionLastId = 0
 
-const on = (branch, leaf, event, cb, id) => {
-  if (!id) {
-    id = listenerLastId++
+const on = (branch, id, event, cb, listenerId) => {
+  if (!listenerId) {
+    listenerId = listenerLastId++
   }
 
   const listeners = branch.listeners
 
-  if (!listeners[leaf.id]) {
-    listeners[leaf.id] = { [ event ]: {} }
-  } else if (!listeners[leaf.id][event]) {
-    listeners[leaf.id][event] = {}
+  if (!listeners[id]) {
+    listeners[id] = { [ event ]: {} }
+  } else if (!listeners[id][event]) {
+    listeners[id][event] = {}
   }
 
-  listeners[leaf.id][event][id] = cb
+  listeners[id][event][listenerId] = cb
 }
 
-const off = (branch, leaf, event, id) => {
-  if (branch.listeners[leaf.id] && branch.listeners[leaf.id][event] && id) {
-    delete branch.listeners[leaf.id][event][id]
+const off = (branch, id, event, listenerId) => {
+  if (branch.listeners[id] && branch.listeners[id][event] && listenerId) {
+    delete branch.listeners[id][event][listenerId]
   }
 }
 
-const subscribe = (branch, leaf, cb, id) => {
-  if (!id) {
-    id = subscriptionLastId++
+const subscribe = (branch, id, cb, listenerId) => {
+  if (!listenerId) {
+    listenerId = subscriptionLastId++
   }
 
   const subscriptions = branch.subscriptions
 
-  if (!subscriptions[leaf.id]) {
-    subscriptions[leaf.id] = {}
+  if (!subscriptions[id]) {
+    subscriptions[id] = {}
   }
 
-  subscriptions[leaf.id][id] = cb
-  cb(new Leaf(branch, leaf))
+  subscriptions[id][listenerId] = cb
+  cb(new Leaf(branch, id))
 }
 
-const unsubscribe = (branch, leaf, id) => {
-  if (branch.subscriptions[leaf.id] && id) {
-    delete branch.subscriptions[leaf.id][id]
+const unsubscribe = (branch, id, listenerId) => {
+  if (branch.subscriptions[id] && listenerId) {
+    delete branch.subscriptions[id][listenerId]
   }
 }
 

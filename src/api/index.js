@@ -19,7 +19,7 @@ const defineApi = leaf => {
 
   // CREATE
   define(leaf, 'create', function (val, stamp) {
-    if (this.leaf.id === root) {
+    if (this.id === root) {
       return create(val, stamp, this.branch)
     } else {
       throw new Error('Can not create from leaf')
@@ -32,7 +32,7 @@ const defineApi = leaf => {
       stamp = createStamp()
     }
 
-    set(this.branch, this.leaf, val, stamp)
+    set(this.branch, this.id, val, stamp)
     emitDataEvents(this.branch, stamp)
     return this
   })
@@ -43,99 +43,99 @@ const defineApi = leaf => {
       stamp = createStamp()
     }
 
-    const subLeaf = getApi(this.branch, this.leaf.id, path, val, stamp)
-    if (subLeaf) {
+    const subId = getApi(this.branch, this.id, path, val, stamp)
+    if (subId) {
       if (stamp) {
         emitDataEvents(this.branch, stamp)
       }
-      return new Leaf(this.branch, subLeaf)
+      return new Leaf(this.branch, subId)
     }
   })
 
   // PARENT
   define(leaf, 'parent', function () {
-    const parent = getFromLeaves(this.branch, this.leaf.parent)
-    if (parent) {
-      return new Leaf(this.branch, parent)
+    const leafBranch = getFromLeaves(this.branch, this.id)
+    if (leafBranch.leaves[this.id].parent) {
+      return new Leaf(this.branch, leafBranch.leaves[this.id].parent)
     }
   })
 
   // ROOT
   define(leaf, 'root', function () {
-    return new Leaf(this.branch, this.branch.leaves[root])
+    return new Leaf(this.branch, root)
   })
 
   // ORIGIN
   define(leaf, 'origin', function () {
-    return new Leaf(this.branch, origin(this.branch, this.leaf))
+    return new Leaf(this.branch, origin(this.branch, this.id))
   })
 
   // COMPUTE
   define(leaf, 'compute', function () {
-    return compute(this.branch, this.leaf.id)
+    return compute(this.branch, this.id)
   })
 
   // PATH
   define(leaf, 'path', function () {
-    return path(this.branch, this.leaf)
+    return path(this.branch, this.id)
   })
 
   // INSPECT
   define(leaf, 'inspect', function () {
-    return inspect(this.branch, this.leaf)
+    return inspect(this.branch, this.id)
   })
 
   // SERIALIZE
   define(leaf, 'serialize', function () {
-    return serialize(this.branch, this.leaf)
+    return serialize(this.branch, this.id)
   })
 
   // FOREACH
   define(leaf, 'forEach', function (cb) {
-    return forEach(this.branch, this.leaf, cb)
+    return forEach(this.branch, this.id, cb)
   })
 
   // MAP
   define(leaf, 'map', function (cb) {
-    return map(this.branch, this.leaf, cb)
+    return map(this.branch, this.id, cb)
   })
 
   // FILTER
   define(leaf, 'filter', function (cb) {
-    return filter(this.branch, this.leaf, cb)
+    return filter(this.branch, this.id, cb)
   })
 
   // FIND
   define(leaf, 'find', function (cb) {
-    return find(this.branch, this.leaf, cb)
+    return find(this.branch, this.id, cb)
   })
 
   // REDUCE
   define(leaf, 'reduce', function (cb, accumulator) {
-    return reduce(this.branch, this.leaf, cb, accumulator)
+    return reduce(this.branch, this.id, cb, accumulator)
   })
 
   // ON
-  define(leaf, 'on', function (event, cb, id) {
-    on(this.branch, this.leaf, event, cb, id)
+  define(leaf, 'on', function (event, cb, listenerId) {
+    on(this.branch, this.id, event, cb, listenerId)
     return this
   })
 
   // OFF
-  define(leaf, 'off', function (event, id) {
-    off(this.branch, this.leaf, event, id)
+  define(leaf, 'off', function (event, listenerId) {
+    off(this.branch, this.id, event, listenerId)
     return this
   })
 
   // SUBSCRIBE
-  define(leaf, 'subscribe', function (cb, id) {
-    subscribe(this.branch, this.leaf, cb, id)
+  define(leaf, 'subscribe', function (cb, listenerId) {
+    subscribe(this.branch, this.id, cb, listenerId)
     return this
   })
 
   // UNSUBSCRIBE
-  define(leaf, 'unsubscribe', function (id) {
-    unsubscribe(this.branch, this.leaf, id)
+  define(leaf, 'unsubscribe', function (listenerId) {
+    unsubscribe(this.branch, this.id, listenerId)
     return this
   })
 
@@ -145,7 +145,7 @@ const defineApi = leaf => {
       stamp = createStamp()
     }
 
-    emit(this.branch, this.leaf, event, val, stamp)
+    emit(this.branch, this.id, event, val, stamp)
     return this
   })
 }

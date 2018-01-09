@@ -15,27 +15,51 @@ const respectOverrides = (branches, id, parent) =>
   })
 
 const addOwnLeaf = (branch, id, parent, key, stamp) => {
-  branch.leaves[id] = { id, parent, key, stamp }
+  branch.leaves[id] = { parent, key, stamp }
   if (branch.branches.length) {
     respectOverrides(branch.branches, id, parent)
   }
   return branch.leaves[id]
 }
 
-const addBranchLeaf = (branch, fromLeaf, stamp) => {
-  return branch.leaves[fromLeaf.id] === fromLeaf ? fromLeaf
-    : addOwnLeaf(branch, fromLeaf.id, fromLeaf.parent, fromLeaf.key, stamp)
+const addBranchLeaf = (branch, id, stamp) => {
+  if (branch.leaves[id]) {
+    return branch.leaves[id]
+  } else {
+    const fromLeaf = getFromLeaves(branch, id).leaves[id]
+    return addOwnLeaf(branch, id, fromLeaf.parent, fromLeaf.key, stamp)
+  }
 }
 
-const setVal = (branch, leaf, val, stamp) => {
-  if (val !== leaf.val && val !== void 0) {
-    leaf = addBranchLeaf(branch, leaf, stamp)
+const addBranchLeafFromLeaf = (branch, id, fromLeaf, stamp) => {
+  if (branch.leaves[id]) {
+    return branch.leaves[id]
+  } else {
+    return addOwnLeaf(branch, id, fromLeaf.parent, fromLeaf.key, stamp)
+  }
+}
 
-    removeReference(branch, leaf, stamp)
+const setOwnVal = (branch, leaf, id, val, stamp) => {
+  if (val !== leaf.val && val !== void 0) {
     leaf.val = val
     leaf.stamp = stamp
 
-    addDataEvent(void 0, leaf, 'set')
+    addDataEvent(void 0, id, 'set')
+  }
+}
+
+const setVal = (branch, id, val, stamp) => {
+  let leaf = getFromLeaves(branch, id).leaves[id]
+
+  if (val !== leaf.val && val !== void 0) {
+    leaf = addBranchLeafFromLeaf(branch, id, leaf, stamp)
+
+    removeReference(branch, id, leaf.rT)
+    leaf.rT = void 0
+    leaf.val = val
+    leaf.stamp = stamp
+
+    addDataEvent(void 0, id, 'set')
   }
 }
 
@@ -45,7 +69,10 @@ const cleanBranchRt = (branches, id, rT) =>
       return
     } else if (branch.leaves[id]) {
       if (branch.leaves[id].rT === rT) {
-        addAfterEmitEvent(removeReference.bind(null, branch, branch.leaves[id]))
+        addAfterEmitEvent(() => {
+          removeReference(branch, id, rT)
+          branch.leaves[id].rT = void 0
+        })
       } else if (branch.leaves[id].rT !== void 0 || branch.leaves[id].val !== void 0) {
         return
       }
@@ -56,44 +83,74 @@ const cleanBranchRt = (branches, id, rT) =>
     }
   })
 
-const setReference = (branch, leaf, val, stamp) => {
-  if (leaf.rT === val.id) {
-    return
-  }
-
-  leaf = addBranchLeaf(branch, leaf, stamp)
-
-  removeReference(branch, leaf)
-  delete leaf.val
-
-  leaf.rT = val.id
+const setOwnReference = (branch, leaf, id, rT, stamp) => {
+  leaf.rT = rT
   leaf.stamp = stamp
-  branch.rF[val.id] = (branch.rF[val.id] || []).concat(leaf.id)
+  branch.rF[rT] = (branch.rF[rT] || []).concat(id)
 
-  addDataEvent(void 0, leaf, 'set')
+  addDataEvent(void 0, id, 'set')
 
   if (branch.branches.length) {
-    cleanBranchRt(branch.branches, leaf.id, val.id)
+    cleanBranchRt(branch.branches, id, rT)
   }
 }
 
-const setReferenceByPath = (branch, leaf, path, stamp) =>
-  setReference(branch, leaf, getByPath(branch, root, path, {}, stamp), stamp)
+const setReference = (branch, id, rT, stamp) => {
+  let leaf = getFromLeaves(branch, id).leaves[id]
 
-const setReferenceByLeaf = (oBranch, leaf, val, stamp) => {
+  if (leaf.rT === rT) {
+    return
+  }
+
+  leaf = addBranchLeafFromLeaf(branch, id, leaf, stamp)
+
+  removeReference(branch, id, leaf.rT)
+  leaf.val = void 0
+
+  leaf.rT = rT
+  leaf.stamp = stamp
+  branch.rF[rT] = (branch.rF[rT] || []).concat(id)
+
+  addDataEvent(void 0, id, 'set')
+
+  if (branch.branches.length) {
+    cleanBranchRt(branch.branches, id, rT)
+  }
+}
+
+const setOwnReferenceByPath = (branch, leaf, id, path, stamp) =>
+  setOwnReference(branch, leaf, id, getByPath(branch, root, path, {}, stamp), stamp)
+
+const setReferenceByPath = (branch, id, path, stamp) =>
+  setReference(branch, id, getByPath(branch, root, path, {}, stamp), stamp)
+
+const setOwnReferenceByLeaf = (oBranch, leaf, id, rT, stamp) => {
   let branch = oBranch
   while (branch) {
-    if (branch.leaves[val.id] === null) {
+    if (branch.leaves[rT] === null) {
       throw new Error('Reference must be in same branch')
-    } else if (branch.leaves[val.id] === val) {
-      return setReference(oBranch, leaf, val, stamp)
+    } else if (branch.leaves[rT]) {
+      return setOwnReference(oBranch, leaf, id, rT, stamp)
     }
     branch = branch.inherits
   }
   throw new Error('Reference must be in same branch')
 }
 
-const cleanBranchKeys = (branches, leaf, id, keys, stamp) =>
+const setReferenceByLeaf = (oBranch, id, rT, stamp) => {
+  let branch = oBranch
+  while (branch) {
+    if (branch.leaves[rT] === null) {
+      throw new Error('Reference must be in same branch')
+    } else if (branch.leaves[rT]) {
+      return setReference(oBranch, id, rT, stamp)
+    }
+    branch = branch.inherits
+  }
+  throw new Error('Reference must be in same branch')
+}
+
+const cleanBranchKeys = (branches, id, keys, stamp) =>
   branches.forEach(branch => {
     let keysNext = keys.slice()
 
@@ -111,65 +168,82 @@ const cleanBranchKeys = (branches, leaf, id, keys, stamp) =>
           }
         })
         if (branch.leaves[id].keys.length === firstLength) {
-          addDataEvent(branch, leaf, 'add-key')
+          addDataEvent(branch, id, 'add-key')
         }
       } else {
-        addDataEvent(branch, leaf, 'add-key')
+        addDataEvent(branch, id, 'add-key')
       }
     } else {
-      addDataEvent(branch, leaf, 'add-key')
+      addDataEvent(branch, id, 'add-key')
     }
 
     if (branch.branches.length && keysNext.length) {
-      cleanBranchKeys(branch.branches, leaf, id, keysNext, stamp)
+      cleanBranchKeys(branch.branches, id, keysNext, stamp)
     }
   })
 
-const setKeys = (branch, leaf, val, stamp) => {
+const setOwn = (branch, leaf, id, val, stamp) => {
+  if (typeof val === 'object') {
+    if (Array.isArray(val)) {
+      if (val[0] === '@') {
+        setOwnReferenceByPath(branch, leaf, id, val.slice(1), stamp)
+      } else {
+        setOwnVal(branch, leaf, id, val, stamp)
+      }
+    } else if (val.isLeaf) {
+      setOwnReferenceByLeaf(branch, leaf, id, val.id, stamp)
+    } else if (val) {
+      setKeys(branch, id, val, stamp)
+    }
+  } else {
+    setOwnVal(branch, leaf, id, val, stamp)
+  }
+}
+
+const setKeys = (branch, id, val, stamp) => {
   let keys = []
   for (let key in val) {
     if (key === 'val') {
-      set(branch, leaf, val.val, stamp)
+      set(branch, id, val.val, stamp)
     } else {
-      const subLeafId = keyToId(key, leaf.id)
-      const existing = getFromLeaves(branch, subLeafId)
-      if (existing) {
-        set(branch, existing, val[key], stamp)
+      const subLeafId = keyToId(key, id)
+      if (getFromLeaves(branch, subLeafId)) {
+        set(branch, subLeafId, val[key], stamp)
       } else if (val[key] !== null) {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
         keys.push(subLeafId)
-        const subLeaf = addOwnLeaf(branch, subLeafId, leaf.id, keyId, stamp)
-        set(branch, subLeaf, val[key], stamp)
+        const subLeaf = addOwnLeaf(branch, subLeafId, id, keyId, stamp)
+        setOwn(branch, subLeaf, subLeafId, val[key], stamp)
       }
     }
   }
   if (keys.length) {
-    leaf = addBranchLeaf(branch, leaf, stamp)
+    const leaf = addBranchLeaf(branch, id, stamp)
     leaf.keys = (leaf.keys || []).concat(keys)
     leaf.stamp = stamp
-    cleanBranchKeys(branch.branches, leaf, leaf.id, keys, stamp)
-    addDataEvent(void 0, leaf, 'add-key')
+    cleanBranchKeys(branch.branches, id, keys, stamp)
+    addDataEvent(void 0, id, 'add-key')
   }
 }
 
-const set = (branch, leaf, val, stamp) => {
+const set = (branch, id, val, stamp) => {
   if (typeof val === 'object') {
     if (!val) {
-      remove(branch, leaf, stamp)
+      remove(branch, id, stamp)
     } else if (Array.isArray(val)) {
       if (val[0] === '@') {
-        setReferenceByPath(branch, leaf, val.slice(1), stamp)
+        setReferenceByPath(branch, id, val.slice(1), stamp)
       } else {
-        setVal(branch, leaf, val, stamp)
+        setVal(branch, id, val, stamp)
       }
     } else if (val.isLeaf) {
-      setReferenceByLeaf(branch, leaf, val.leaf, stamp)
+      setReferenceByLeaf(branch, id, val.id, stamp)
     } else {
-      setKeys(branch, leaf, val, stamp)
+      setKeys(branch, id, val, stamp)
     }
   } else {
-    setVal(branch, leaf, val, stamp)
+    setVal(branch, id, val, stamp)
   }
 }
 

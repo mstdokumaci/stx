@@ -7,17 +7,17 @@ const getValOrRef = (branch, id) => {
     if (leaf) {
       if (leaf.val !== void 0) {
         return leaf.val
-      } else if (leaf.rT) {
-        return getFromLeaves(oBranch, leaf.rT)
+      } else if (leaf.rT && getFromLeaves(oBranch, leaf.rT)) {
+        return { id: leaf.rT }
       }
     }
     branch = branch.inherits
   }
 }
 
-const origin = (branch, leaf) => {
-  const originLeaf = getFromLeaves(branch, getRtFromLeaves(branch, leaf.id))
-  return originLeaf ? origin(branch, originLeaf) : leaf
+const origin = (branch, id) => {
+  const originId = getRtFromLeaves(branch, id)
+  return getFromLeaves(branch, originId) ? origin(branch, originId) : id
 }
 
 const compute = (branch, id) => {

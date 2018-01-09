@@ -3,8 +3,10 @@ import { set } from './set'
 
 const getFromLeaves = (branch, id) => {
   while (branch) {
-    if (branch.leaves[id] === null || branch.leaves[id]) {
-      return branch.leaves[id]
+    if (branch.leaves[id] === null) {
+      return
+    } else if (branch.leaves[id]) {
+      return branch
     }
     branch = branch.inherits
   }
@@ -12,10 +14,14 @@ const getFromLeaves = (branch, id) => {
 
 const getRtFromLeaves = (branch, id) => {
   while (branch) {
-    if (branch.leaves[id] === null || (branch.leaves[id] && branch.leaves[id].val !== void 0)) {
-      return null
-    } else if (branch.leaves[id] && branch.leaves[id].rT) {
-      return branch.leaves[id].rT
+    if (branch.leaves[id] === null) {
+      return
+    } else if (branch.leaves[id]) {
+      if (branch.leaves[id].rT) {
+        return branch.leaves[id].rT
+      } else if (branch.leaves[id].val !== void 0) {
+        return
+      }
     }
     branch = branch.inherits
   }
@@ -23,22 +29,20 @@ const getRtFromLeaves = (branch, id) => {
 
 const getByKey = (branch, id, key, val, stamp, inReference) => {
   const leafId = keyToId(key, id)
-  const subLeaf = getFromLeaves(branch, leafId)
-  if (subLeaf) {
-    return subLeaf
+  if (getFromLeaves(branch, leafId)) {
+    return leafId
   } else {
     const rT = getRtFromLeaves(branch, id)
     if (rT) {
-      const originSubLeaf = getByKey(branch, rT, key, val, stamp, true)
-      if (originSubLeaf) {
-        return originSubLeaf
+      const originId = getByKey(branch, rT, key, val, stamp, true)
+      if (originId) {
+        return originId
       }
     }
 
     if (!inReference && val !== void 0) {
-      const leaf = getFromLeaves(branch, id)
-      set(branch, leaf, { [ key ]: val }, stamp)
-      return branch.leaves[leafId]
+      set(branch, id, { [ key ]: val }, stamp)
+      return leafId
     }
   }
 }
@@ -51,10 +55,9 @@ const setByPath = (branch, ids, path, val, stamp, inReference) => {
       return
     }
     val = { [ path.pop() ]: val }
-    const leaf = getFromLeaves(branch, ids[i])
-    if (leaf) {
-      set(branch, leaf, val, stamp)
-      return branch.leaves[leafId]
+    if (getFromLeaves(branch, ids[i])) {
+      set(branch, ids[i], val, stamp)
+      return leafId
     }
   }
 }
@@ -62,16 +65,15 @@ const setByPath = (branch, ids, path, val, stamp, inReference) => {
 const getByPath = (branch, id, path, val, stamp, inReference) => {
   const ids = pathToIds(path, id)
   let i = ids.length - 1
-  const subLeaf = getFromLeaves(branch, ids[i])
-  if (subLeaf) {
-    return subLeaf
+  if (getFromLeaves(branch, ids[i])) {
+    return ids[i]
   } else {
     while (i--) {
       const rT = getRtFromLeaves(branch, ids[i])
       if (rT) {
-        const originSubLeaf = getByPath(branch, rT, path.slice(i), val, stamp, true)
-        if (originSubLeaf) {
-          return originSubLeaf
+        const originId = getByPath(branch, rT, path.slice(i), val, stamp, true)
+        if (originId) {
+          return originId
         }
       }
     }

@@ -83,7 +83,7 @@ const setReference = (branch, id, rT, stamp) => {
 
   leaf = addBranchLeafFromLeaf(branch, id, leaf, stamp)
 
-  removeReference(branch, id)
+  removeReference(branch, id, leaf.rT)
   leaf.val = void 0
 
   leaf.rT = rT

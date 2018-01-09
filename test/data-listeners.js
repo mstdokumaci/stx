@@ -289,7 +289,7 @@ test('data listeners - add remove key', t => {
     [
       'branch2-add-key-1-2',
       'branch2-add-key-31-1-2',
-      'branch2-add-key-51-1-2-32'
+      'branch2-add-key-32-51-1-2'
     ],
     'branch2Fire = correct'
   )

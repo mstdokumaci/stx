@@ -66,7 +66,6 @@ const removeFromParent = (branch, parent, id) => {
 
 const removeOwn = (branch, id, stamp, ignoreParent) => {
   const leaf = branch.leaves[id]
-  delete branch.leaves[id]
 
   const parent = ignoreParent ? void 0
     : removeFromParent(branch, leaf.parent, id)
@@ -75,6 +74,7 @@ const removeOwn = (branch, id, stamp, ignoreParent) => {
     removeFromBranches(branch.branches, id, parent, leaf.keys, stamp)
   }
 
+  delete branch.leaves[id]
   return leaf.rT
 }
 
@@ -105,10 +105,11 @@ const removeChildren = (branch, id, stamp) => {
 const remove = (branch, id, stamp, ignoreParent) => {
   emit(branch, id, 'data', 'remove', stamp)
 
+  removeChildren(branch, id, stamp)
+
   const rT = branch.leaves[id] ? removeOwn(branch, id, stamp, ignoreParent)
     : removeInherited(branch, id, stamp, ignoreParent)
 
-  removeChildren(branch, id, stamp)
   removeReference(branch, id, rT)
   removeListenersSubscriptions(branch, id)
 }

@@ -42,14 +42,14 @@ const children = (oBranch, id, cb) => {
 
 const forEach = (branch, id, cb) => {
   children(branch, id, (subBranch, id) => {
-    cb(new Leaf(branch, id), getString(subBranch[id].key))
+    cb(new Leaf(branch, id), getString(subBranch.leaves[id].key))
   })
 }
 
 const map = (branch, id, cb) => {
   const mapped = []
   children(branch, id, (subBranch, id) => {
-    mapped.push(cb(new Leaf(branch, id), getString(subBranch[id].key)))
+    mapped.push(cb(new Leaf(branch, id), getString(subBranch.leaves[id].key)))
   })
   return mapped
 }
@@ -58,7 +58,7 @@ const filter = (branch, id, cb) => {
   const filtered = []
   children(branch, id, (subBranch, id) => {
     const subLeafInstance = new Leaf(branch, id)
-    if (cb(subLeafInstance, getString(subBranch[id].key))) {
+    if (cb(subLeafInstance, getString(subBranch.leaves[id].key))) {
       filtered.push(subLeafInstance)
     }
   })
@@ -67,7 +67,7 @@ const filter = (branch, id, cb) => {
 
 const find = (branch, id, cb) => {
   const found = children(branch, id, (subBranch, id) => {
-    return cb(new Leaf(branch, id), getString(subBranch[id].key))
+    return cb(new Leaf(branch, id), getString(subBranch.leaves[id].key))
   })
   if (!Array.isArray(found)) {
     return new Leaf(found.branch, found.id)
@@ -81,7 +81,7 @@ const reduce = (branch, id, cb, accumulator) => {
       accumulator = compute(subBranch, id)
       skipFirst = false
     } else {
-      accumulator = cb(accumulator, new Leaf(branch, id), getString(subBranch[id].key))
+      accumulator = cb(accumulator, new Leaf(branch, id), getString(subBranch.leaves[id].key))
     }
   })
   return accumulator

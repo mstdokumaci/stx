@@ -16,7 +16,7 @@ const create = function (val, stamp, inherits) {
 
   const branch = {
     branches: [],
-    leaves: {},
+    leaves: { [ root ]: {} },
     listeners: {},
     subscriptions: {},
     rF: {}
@@ -25,10 +25,9 @@ const create = function (val, stamp, inherits) {
     branch.inherits = inherits
     inherits.branches.push(branch)
   }
-  const rootLeaf = branch.leaves[root] = {}
-  set(branch, rootLeaf, val, stamp)
+  set(branch, root, val, stamp)
   emitDataEvents(branch, stamp)
-  return new Leaf(branch, rootLeaf)
+  return new Leaf(branch, root)
 }
 
 defineApi(Leaf.prototype)

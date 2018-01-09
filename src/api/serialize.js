@@ -7,7 +7,7 @@ import { getFromLeaves } from './get'
 const path = (branch, id) => {
   const path = []
   while (id !== root) {
-    const leaf = getFromLeaves(branch, id)[id]
+    const leaf = getFromLeaves(branch, id).leaves[id]
     path.unshift(getString(leaf.key))
     id = leaf.parent
   }
@@ -15,8 +15,8 @@ const path = (branch, id) => {
 }
 
 const inspect = (branch, id) => {
+  const leaf = getFromLeaves(branch, id).leaves[id]
   const subLeaves = children(branch, id)
-  const leaf = getFromLeaves(branch, id)[id]
   const start = 'Struct ' + (leaf.key ? getString(leaf.key) + ' ' : '')
   let val = getValOrRef(branch, id)
   if (val && val.id) {
@@ -26,10 +26,12 @@ const inspect = (branch, id) => {
     let keys = []
     if (subLeaves.length > 10) {
       const len = subLeaves.length
-      keys = subLeaves.slice(0, 5).map(([ branch, id ]) => getString(branch[id].key))
+      keys = subLeaves.slice(0, 5).map(([ branch, id ]) =>
+        getString(branch.leaves[id].key)
+      )
       keys.push(`... ${len - 5} more items`)
     } else {
-      keys = subLeaves.map(([ branch, id ]) => getString(branch[id].key))
+      keys = subLeaves.map(([ branch, id ]) => getString(branch.leaves[id].key))
     }
     return val
       ? `${start}{ val: ${val}, ${keys.join(', ')} }`
@@ -50,7 +52,7 @@ const serialize = (branch, id) => {
   const result = {}
   children(branch, id, (subBranch, subId) => {
     child = true
-    result[getString(subBranch[id].key)] = serialize(branch, subId)
+    result[getString(subBranch.leaves[subId].key)] = serialize(branch, subId)
   })
   if (child) {
     if (val !== void 0) {

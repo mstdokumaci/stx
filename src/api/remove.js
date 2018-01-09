@@ -42,7 +42,7 @@ const removeFromBranches = (branches, id, parent, keys, stamp) =>
         }
       } else {
         if (parent) {
-          addDataEvent(branch, getFromLeaves(branch, parent), 'remove-key')
+          addDataEvent(branch, parent, 'remove-key')
         }
         removeListenersSubscriptions(branch, id)
       }
@@ -65,18 +65,21 @@ const removeFromParent = (branch, parent, id) => {
 }
 
 const removeOwn = (branch, id, stamp, ignoreParent) => {
+  const leaf = branch.leaves[id]
+  delete branch.leaves[id]
+
   const parent = ignoreParent ? void 0
-    : removeFromParent(branch, branch.leaves[id].parent, id, stamp)
+    : removeFromParent(branch, leaf.parent, id)
 
   if (branch.branches.length) {
-    removeFromBranches(branch.branches, id, parent, branch.leaves[id].keys, stamp)
+    removeFromBranches(branch.branches, id, parent, leaf.keys, stamp)
   }
 
-  delete branch.leaves[id]
+  return leaf.rT
 }
 
 const removeInherited = (branch, id, stamp, ignoreParent) => {
-  const leaf = getFromLeaves(branch, id)[id]
+  const leaf = getFromLeaves(branch, id).leaves[id]
 
   if (!ignoreParent) {
     addDataEvent(void 0, leaf.parent, 'remove-key')
@@ -89,25 +92,24 @@ const removeInherited = (branch, id, stamp, ignoreParent) => {
   }
 
   branch.leaves[id] = null
+
+  return leaf.rT
 }
 
 const removeChildren = (branch, id, stamp) => {
-  children(branch, id, (subBranch, id) =>
-    remove(branch, id, stamp, true)
+  children(branch, id, (subBranch, subId) =>
+    remove(branch, subId, stamp, true)
   )
 }
 
 const remove = (branch, id, stamp, ignoreParent) => {
   emit(branch, id, 'data', 'remove', stamp)
 
-  if (branch.leaves[id]) {
-    removeOwn(branch, id, stamp, ignoreParent)
-  } else {
-    removeInherited(branch, id, stamp, ignoreParent)
-  }
+  const rT = branch.leaves[id] ? removeOwn(branch, id, stamp, ignoreParent)
+    : removeInherited(branch, id, stamp, ignoreParent)
 
   removeChildren(branch, id, stamp)
-  removeReference(branch, id, stamp)
+  removeReference(branch, id, rT)
   removeListenersSubscriptions(branch, id)
 }
 

@@ -26,15 +26,16 @@ const addBranchLeaf = (branch, id, stamp) => {
   if (branch.leaves[id]) {
     return branch.leaves[id]
   } else {
-    const fromLeaf = getFromLeaves(branch, id)
-    addOwnLeaf(branch, id, fromLeaf.parent, fromLeaf.key, stamp)
+    const fromLeaf = getFromLeaves(branch, id).leaves[id]
+    return addOwnLeaf(branch, id, fromLeaf.parent, fromLeaf.key, stamp)
   }
 }
 
 const setVal = (branch, id, val, stamp) => {
-  let leaf = getFromLeaves(branch, id)[id]
+  let leaf = getFromLeaves(branch, id).leaves[id]
+
   if (val !== leaf.val && val !== void 0) {
-    leaf = addBranchLeaf(branch, leaf, stamp)
+    leaf = addBranchLeaf(branch, id, stamp)
 
     removeReference(branch, id, leaf.rT)
     leaf.rT = void 0
@@ -66,7 +67,7 @@ const cleanBranchRt = (branches, id, rT) =>
   })
 
 const setReference = (branch, id, rT, stamp) => {
-  let leaf = getFromLeaves(branch, id)[id]
+  let leaf = getFromLeaves(branch, id).leaves[id]
 
   if (leaf.rT === rT) {
     return
@@ -149,8 +150,8 @@ const setKeys = (branch, id, val, stamp) => {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
         keys.push(subLeafId)
-        const subLeaf = addOwnLeaf(branch, subLeafId, id, keyId, stamp)
-        set(branch, subLeaf, val[key], stamp)
+        addOwnLeaf(branch, subLeafId, id, keyId, stamp)
+        set(branch, subLeafId, val[key], stamp)
       }
     }
   }

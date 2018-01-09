@@ -7,8 +7,8 @@ const getValOrRef = (branch, id) => {
     if (leaf) {
       if (leaf.val !== void 0) {
         return leaf.val
-      } else if (leaf.rT) {
-        return getFromLeaves(oBranch, leaf.rT)
+      } else if (leaf.rT && getFromLeaves(oBranch, leaf.rT)) {
+        return { id: leaf.rT }
       }
     }
     branch = branch.inherits

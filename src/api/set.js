@@ -88,7 +88,7 @@ const setReference = (branch, id, rT, stamp) => {
 
   leaf.rT = rT
   leaf.stamp = stamp
-  branch.rF[rT] = (branch.rF[rT] || []).concat(leaf.id)
+  branch.rF[rT] = (branch.rF[rT] || []).concat(id)
 
   addDataEvent(void 0, id, 'set')
 

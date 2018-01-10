@@ -1,5 +1,5 @@
 const test = require('tape')
-const { create, createStamp } = require('../')
+const { create, createStamp } = require('../dist/index')
 
 test('set - get - references', t => {
   const master = create()

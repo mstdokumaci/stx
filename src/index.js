@@ -1,6 +1,6 @@
 import { root } from './id'
 import { defineApi } from './api/index'
-import { set } from './api/set'
+import { set } from './api/set/index'
 import { createStamp } from './stamp'
 import { emitDataEvents } from './api/listeners/emit'
 

@@ -3,12 +3,12 @@ import { getByPath } from '../get'
 import { remove } from '../remove'
 import { addDataEvent } from '../listeners/emit'
 import { addOwnLeaf, checkReferenceByLeaf, cleanBranchRt, setKeys } from './index'
+import { getString } from '../../cache'
 
 const setOverrideVal = (branch, leaf, id, val, stamp) => {
   if (val !== leaf.val && val !== void 0) {
     leaf = addOwnLeaf(branch, id, leaf.parent, leaf.key, stamp)
     leaf.val = val
-    leaf.stamp = stamp
 
     addDataEvent(void 0, id, 'set')
   }
@@ -22,7 +22,6 @@ const setOverrideReference = (branch, leaf, id, rT, stamp) => {
   leaf = addOwnLeaf(branch, id, leaf.parent, leaf.key, stamp)
 
   leaf.rT = rT
-  leaf.stamp = stamp
   branch.rF[rT] = (branch.rF[rT] || []).concat(id)
 
   addDataEvent(void 0, id, 'set')

@@ -357,3 +357,23 @@ test('do not set in reference get', t => {
 
   t.end()
 })
+
+test('ignore same val in branch', t => {
+  const master = create({
+    real: 'thing'
+  })
+
+  const branch1 = master.create({
+    real: 'thing'
+  })
+
+  master.get('real').set('updated')
+
+  t.equals(
+    branch1.get('real').compute(),
+    'updated',
+    'branch1.real.compute() = updated'
+  )
+
+  t.end()
+})

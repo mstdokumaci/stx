@@ -703,3 +703,29 @@ test('references - multi branch origin', t => {
 
   t.end()
 })
+
+test('references - override', t => {
+  const master = create({
+    real1: 'thing1',
+    real2: 'thing2',
+    pointer1: [ '@', 'real2' ]
+  })
+
+  const branch1 = master.create()
+
+  const branch2 = branch1.create({
+    real1: 'updated'
+  })
+
+  branch1.set({
+    pointer1: [ '@', 'real1' ]
+  })
+
+  t.equals(
+    branch2.get('pointer1').compute(),
+    'updated',
+    'branch2.pointer1.compute() = updated'
+  )
+
+  t.end()
+})

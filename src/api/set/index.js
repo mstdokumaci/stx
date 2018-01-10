@@ -3,7 +3,8 @@ import { keyToId } from '../../id'
 import { getFromLeaves } from '../get'
 import { removeReference } from '../remove'
 import { addAfterEmitEvent, addDataEvent } from '../listeners/emit'
-import { setOwnExisting, setOwnNew } from './own'
+import { setOwnNew } from './own-new'
+import { setOwnExisting } from './own-existing'
 import { setOverride } from './override'
 
 const respectOverrides = (branches, id, parent) =>

@@ -1,6 +1,6 @@
 import { Leaf } from '../index'
 import { getString } from '../cache'
-import { getFromLeaves } from './get'
+import { getBranchForId } from './get'
 import { compute } from './compute'
 
 const children = (oBranch, id, cb) => {
@@ -16,7 +16,7 @@ const children = (oBranch, id, cb) => {
         if (exists[leafId]) {
           return
         }
-        const subBranch = getFromLeaves(oBranch, leafId)
+        const subBranch = getBranchForId(oBranch, leafId)
         if (subBranch) {
           exists[leafId] = subBranch
           if (cb) {

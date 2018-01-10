@@ -1,6 +1,6 @@
 import { addToStrings } from '../../cache'
 import { keyToId } from '../../id'
-import { getFromLeaves } from '../get'
+import { getBranchForId, getFromLeaves } from '../get'
 import { removeReference } from '../remove'
 import { addAfterEmitEvent, addDataEvent } from '../listeners/emit'
 import { setOwnNew } from './own-new'
@@ -29,7 +29,7 @@ const addBranchLeaf = (branch, id, stamp) => {
   if (branch.leaves[id]) {
     return branch.leaves[id]
   } else {
-    const fromLeaf = getFromLeaves(branch, id).leaves[id]
+    const fromLeaf = getFromLeaves(branch, id)
     return addOwnLeaf(branch, id, fromLeaf.parent, fromLeaf.key, stamp)
   }
 }
@@ -106,7 +106,7 @@ const setKeys = (branch, id, val, stamp) => {
       set(branch, id, val.val, stamp)
     } else {
       const subLeafId = keyToId(key, id)
-      const subLeafBranch = getFromLeaves(branch, subLeafId)
+      const subLeafBranch = getBranchForId(branch, subLeafId)
       if (subLeafBranch) {
         if (subLeafBranch === branch) {
           setOwnExisting(
@@ -139,7 +139,7 @@ const set = (branch, id, val, stamp) => {
   if (branch.leaves[id]) {
     setOwnExisting(branch, branch.leaves[id], id, val, stamp)
   } else {
-    const leafBranch = getFromLeaves(branch.inherits, id)
+    const leafBranch = getBranchForId(branch.inherits, id)
     setOverride(branch, leafBranch.leaves[id], id, val, stamp)
   }
 }

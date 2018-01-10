@@ -1,4 +1,4 @@
-import { getFromLeaves, getRtFromLeaves } from './get'
+import { getBranchForId, getRtFromLeaves } from './get'
 
 const getValOrRef = (branch, id) => {
   const oBranch = branch
@@ -7,7 +7,7 @@ const getValOrRef = (branch, id) => {
     if (leaf) {
       if (leaf.val !== void 0) {
         return leaf.val
-      } else if (leaf.rT && getFromLeaves(oBranch, leaf.rT)) {
+      } else if (leaf.rT && getBranchForId(oBranch, leaf.rT)) {
         return { id: leaf.rT }
       }
     }
@@ -17,7 +17,7 @@ const getValOrRef = (branch, id) => {
 
 const origin = (branch, id) => {
   const originId = getRtFromLeaves(branch, id)
-  return getFromLeaves(branch, originId) ? origin(branch, originId) : id
+  return getBranchForId(branch, originId) ? origin(branch, originId) : id
 }
 
 const compute = (branch, id) => {

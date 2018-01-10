@@ -54,7 +54,7 @@ const subscriptions = (branch, id, stamp, subs) => {
       emitReferenceSubscriptions(branch, id, stamp, subs)
     }
 
-    id = getFromLeaves(branch, id).leaves[id].parent
+    id = getFromLeaves(branch, id).parent
   }
 }
 

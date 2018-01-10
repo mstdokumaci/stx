@@ -79,7 +79,7 @@ const removeOwn = (branch, id, stamp, ignoreParent) => {
 }
 
 const removeInherited = (branch, id, stamp, ignoreParent) => {
-  const leaf = getFromLeaves(branch, id).leaves[id]
+  const leaf = getFromLeaves(branch, id)
 
   if (!ignoreParent) {
     addDataEvent(void 0, leaf.parent, 'remove-key')

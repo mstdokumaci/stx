@@ -1,13 +1,13 @@
+import { root } from '../id'
 import { getString } from '../cache'
+import { getFromLeaves } from './get'
 import { getValOrRef } from './compute'
 import { children } from './array'
-import { root } from '../id'
-import { getFromLeaves } from './get'
 
 const path = (branch, id) => {
   const path = []
   while (id !== root) {
-    const leaf = getFromLeaves(branch, id).leaves[id]
+    const leaf = getFromLeaves(branch, id)
     path.unshift(getString(leaf.key))
     id = leaf.parent
   }
@@ -15,7 +15,7 @@ const path = (branch, id) => {
 }
 
 const inspect = (branch, id) => {
-  const leaf = getFromLeaves(branch, id).leaves[id]
+  const leaf = getFromLeaves(branch, id)
   const subLeaves = children(branch, id)
   const start = 'Struct ' + (leaf.key ? getString(leaf.key) + ' ' : '')
   let val = getValOrRef(branch, id)

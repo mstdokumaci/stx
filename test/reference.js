@@ -464,6 +464,9 @@ test('references - from another branch', t => {
   const master1 = create({
     deep: {
       real: 'thing'
+    },
+    pointers: {
+      pointer2: [ '@', 'deep', 'real' ]
     }
   })
 
@@ -545,7 +548,8 @@ test('references - from another branch', t => {
 
   branch5.set({
     pointers: {
-      pointer1: master1.get([ 'deep', 'real' ])
+      pointer1: master1.get([ 'pointers', 'pointer2' ]),
+      pointer2: master1.get([ 'deep', 'real' ])
     }
   })
 
@@ -553,6 +557,12 @@ test('references - from another branch', t => {
     branch5.get([ 'pointers', 'pointer1' ]).compute(),
     'thing',
     'branch5.pointers.pointer1.compute() = thing'
+  )
+
+  t.equals(
+    branch5.get([ 'pointers', 'pointer2' ]).compute(),
+    'thing',
+    'branch5.pointers.pointer2.compute() = thing'
   )
 
   t.end()

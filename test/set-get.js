@@ -6,7 +6,8 @@ test('set - get - references', t => {
 
   master.set({
     deep: {
-      real: 'thing'
+      real: 'thing',
+      dummy: void 0
     },
     pointers: {
       pointer1: [ '@', 'deep' ],
@@ -198,6 +199,32 @@ test('set - get - arrays', t => {
     }
   })
 
+  master.set({
+    deep: {
+      real: [ 2, 3, 1 ],
+      other: {}
+    }
+  })
+
+  t.same(
+    master.get([ 'pointers', 'pointer2' ]).compute(),
+    [ 2, 3, 1 ],
+    'branch1.pointers.pointer2.compute() = [ 2, 3, 1 ]'
+  )
+  t.same(
+    master.serialize(),
+    {
+      deep: {
+        other: {},
+        real: [ 2, 3, 1 ]
+      },
+      pointers: {
+        pointer1: [ '@', 'deep', 'real' ],
+        pointer2: [ '@', 'pointers', 'pointer1' ]
+      }
+    },
+    'master.serialize() = correct'
+  )
   t.same(
     branch1.get([ 'pointers', 'pointer2' ]).compute(),
     [ 3, 2, 1 ],

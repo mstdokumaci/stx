@@ -3,7 +3,6 @@ import { getByPath } from '../get'
 import { remove } from '../remove'
 import { addDataEvent } from '../listeners/emit'
 import { addOwnLeaf, checkReferenceByLeaf, cleanBranchRt, setKeys } from './index'
-import { getString } from '../../cache'
 
 const setOverrideVal = (branch, leaf, id, val, stamp) => {
   if (val !== leaf.val && val !== void 0) {

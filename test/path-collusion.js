@@ -1,5 +1,5 @@
 const test = require('tape')
-const { create } = require('../')
+const { create } = require('../dist/index')
 
 test('path collusion', t => {
   const state = create()

@@ -1,5 +1,5 @@
 import { keyToId, pathToIds } from '../id'
-import { set } from './set'
+import { setKeys } from './set/index'
 
 const getFromLeaves = (branch, id) => {
   while (branch) {
@@ -41,7 +41,7 @@ const getByKey = (branch, id, key, val, stamp, inReference) => {
     }
 
     if (!inReference && val !== void 0) {
-      set(branch, id, { [ key ]: val }, stamp)
+      setKeys(branch, id, { [ key ]: val }, stamp)
       return leafId
     }
   }
@@ -56,7 +56,7 @@ const setByPath = (branch, ids, path, val, stamp, inReference) => {
     }
     val = { [ path.pop() ]: val }
     if (getFromLeaves(branch, ids[i])) {
-      set(branch, ids[i], val, stamp)
+      setKeys(branch, ids[i], val, stamp)
       return leafId
     }
   }

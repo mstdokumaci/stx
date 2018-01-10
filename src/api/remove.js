@@ -1,6 +1,6 @@
 import { getFromLeaves } from './get'
 import { emit, addDataEvent } from './listeners/emit'
-import { addBranchLeaf } from './set'
+import { addBranchLeaf } from './set/index'
 import { children } from './array'
 
 const removeListenersSubscriptions = (branch, id) => {

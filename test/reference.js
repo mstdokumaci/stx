@@ -464,6 +464,9 @@ test('references - from another branch', t => {
   const master1 = create({
     deep: {
       real: 'thing'
+    },
+    pointers: {
+      pointer2: [ '@', 'deep', 'real' ]
     }
   })
 
@@ -545,7 +548,8 @@ test('references - from another branch', t => {
 
   branch5.set({
     pointers: {
-      pointer1: master1.get([ 'deep', 'real' ])
+      pointer1: master1.get([ 'pointers', 'pointer2' ]),
+      pointer2: master1.get([ 'deep', 'real' ])
     }
   })
 
@@ -553,6 +557,12 @@ test('references - from another branch', t => {
     branch5.get([ 'pointers', 'pointer1' ]).compute(),
     'thing',
     'branch5.pointers.pointer1.compute() = thing'
+  )
+
+  t.equals(
+    branch5.get([ 'pointers', 'pointer2' ]).compute(),
+    'thing',
+    'branch5.pointers.pointer2.compute() = thing'
   )
 
   t.end()
@@ -689,6 +699,32 @@ test('references - multi branch origin', t => {
     branch3.get('deep').serialize(),
     { real: { field: 'override 3', other: 3 } },
     'branch3.deep.serialize() = correct'
+  )
+
+  t.end()
+})
+
+test('references - override', t => {
+  const master = create({
+    real1: 'thing1',
+    real2: 'thing2',
+    pointer1: [ '@', 'real2' ]
+  })
+
+  const branch1 = master.create()
+
+  const branch2 = branch1.create({
+    real1: 'updated'
+  })
+
+  branch1.set({
+    pointer1: [ '@', 'real1' ]
+  })
+
+  t.equals(
+    branch2.get('pointer1').compute(),
+    'updated',
+    'branch2.pointer1.compute() = updated'
   )
 
   t.end()

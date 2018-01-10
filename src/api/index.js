@@ -1,7 +1,7 @@
 import { create, Leaf } from '../index'
 import { root } from '../id'
 import { createStamp } from '../stamp'
-import { set } from './set'
+import { set } from './set/index'
 import { getFromLeaves, getApi } from './get'
 import { origin, compute } from './compute'
 import { forEach, map, filter, find, reduce } from './array'

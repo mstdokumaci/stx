@@ -1,6 +1,5 @@
-import { getFromLeaves } from './get'
 import { emit, addDataEvent } from './listeners/emit'
-import { addBranchLeaf } from './set/index'
+import { addOwnLeaf, addBranchLeaf } from './set/index'
 import { children } from './array'
 
 const removeListenersSubscriptions = (branch, id) => {
@@ -17,7 +16,7 @@ const removeReference = (branch, id, rT) => {
   }
 }
 
-const removeFromBranches = (branches, id, parent, keys, stamp) =>
+const removeFromBranches = (branches, leaf, id, parent, keys, stamp) =>
   branches.forEach(branch => {
     let parentNext = parent
     let keysNext = keys
@@ -29,7 +28,7 @@ const removeFromBranches = (branches, id, parent, keys, stamp) =>
       if (keys) {
         const addKeys = keys.filter(keyId => branch.leaves[keyId])
         if (addKeys.length) {
-          const branchLeaf = addBranchLeaf(branch, id, stamp)
+          const branchLeaf = addOwnLeaf(branch, id, leaf.parent, leaf.key, stamp)
           branchLeaf.keys = (branchLeaf.keys || []).concat(addKeys)
           keysNext = keys.filter(keyId => !branch.leaves[keyId])
         }
@@ -49,7 +48,7 @@ const removeFromBranches = (branches, id, parent, keys, stamp) =>
     }
 
     if (branch.branches.length) {
-      removeFromBranches(branch.branches, id, parentNext, keysNext, stamp)
+      removeFromBranches(branch.branches, leaf, id, parentNext, keysNext, stamp)
     }
   })
 
@@ -64,30 +63,27 @@ const removeFromParent = (branch, parent, id) => {
   }
 }
 
-const removeOwn = (branch, id, stamp, ignoreParent) => {
-  const leaf = branch.leaves[id]
+const removeOwn = (branch, leaf, id, stamp, ignoreParent) => {
+  delete branch.leaves[id]
 
   const parent = ignoreParent ? void 0
     : removeFromParent(branch, leaf.parent, id)
 
   if (branch.branches.length) {
-    removeFromBranches(branch.branches, id, parent, leaf.keys, stamp)
+    removeFromBranches(branch.branches, leaf, id, parent, leaf.keys, stamp)
   }
 
-  delete branch.leaves[id]
   return leaf.rT
 }
 
-const removeInherited = (branch, id, stamp, ignoreParent) => {
-  const leaf = getFromLeaves(branch, id)
-
+const removeInherited = (branch, leaf, id, stamp, ignoreParent) => {
   if (!ignoreParent) {
     addDataEvent(void 0, leaf.parent, 'remove-key')
   }
 
   if (branch.branches.length) {
     removeFromBranches(
-      branch.branches, id, ignoreParent ? void 0 : leaf.parent, leaf.keys, stamp
+      branch.branches, leaf, id, ignoreParent ? void 0 : leaf.parent, leaf.keys, stamp
     )
   }
 
@@ -98,17 +94,17 @@ const removeInherited = (branch, id, stamp, ignoreParent) => {
 
 const removeChildren = (branch, id, stamp) => {
   children(branch, id, (subBranch, subId) =>
-    remove(branch, subId, stamp, true)
+    remove(branch, subBranch.leaves[subId], subId, stamp, true)
   )
 }
 
-const remove = (branch, id, stamp, ignoreParent) => {
+const remove = (branch, leaf, id, stamp, ignoreParent) => {
   emit(branch, id, 'data', 'remove', stamp)
 
   removeChildren(branch, id, stamp)
 
-  const rT = branch.leaves[id] ? removeOwn(branch, id, stamp, ignoreParent)
-    : removeInherited(branch, id, stamp, ignoreParent)
+  const rT = branch.leaves[id] ? removeOwn(branch, leaf, id, stamp, ignoreParent)
+    : removeInherited(branch, leaf, id, stamp, ignoreParent)
 
   removeReference(branch, id, rT)
   removeListenersSubscriptions(branch, id)

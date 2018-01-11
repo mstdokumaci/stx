@@ -139,8 +139,7 @@ const set = (branch, id, val, stamp) => {
   if (branch.leaves[id]) {
     setOwnExisting(branch, branch.leaves[id], id, val, stamp)
   } else {
-    const leafBranch = getBranchForId(branch.inherits, id)
-    setOverride(branch, leafBranch.leaves[id], id, val, stamp)
+    setOverride(branch, getFromLeaves(branch.inherits, id), id, val, stamp)
   }
 }
 

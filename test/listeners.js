@@ -14,7 +14,9 @@ test('listeners - on and emit', t => {
     pointer2: [ '@', 'pointer1' ]
   })
 
-  const branch1 = master.create({
+  const branch1 = master.create()
+
+  branch1.set({
     id: 'branch1',
     pointer1: [ '@', 'first', 'id' ]
   })

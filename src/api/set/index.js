@@ -1,7 +1,6 @@
 import { addToStrings } from '../../cache'
 import { keyToId } from '../../id'
 import { getBranchForId, getFromLeaves } from '../get'
-import { removeReference } from '../remove'
 import { addAfterEmitEvent, addDataEvent } from '../listeners/emit'
 import { setOwnNew } from './own-new'
 import { setOwnExisting } from './own-existing'
@@ -34,23 +33,37 @@ const addBranchLeaf = (branch, id, stamp) => {
   }
 }
 
-const cleanBranchRt = (branches, id, rT) =>
+const addReferenceFrom = (branch, rF, rT) => {
+  if (!branch.rF[rT]) {
+    branch.rF[rT] = {}
+  }
+  if (!branch.rF[rF]) {
+    branch.rF[rF] = {}
+  }
+  branch.rF[rT][rF] = branch.rF[rF]
+}
+
+const fixBranchReferences = (branches, rF, rT, rTold) =>
   branches.forEach(branch => {
-    if (branch.leaves[id] === null) {
+    if (branch.leaves[rF] === null) {
       return
-    } else if (branch.leaves[id]) {
-      if (branch.leaves[id].rT === rT) {
+    } else if (branch.leaves[rF]) {
+      if (branch.leaves[rF].rT === rT) {
         addAfterEmitEvent(() => {
-          removeReference(branch, id, rT)
-          branch.leaves[id].rT = void 0
+          branch.leaves[rF].rT = void 0
         })
-      } else if (branch.leaves[id].rT !== void 0 || branch.leaves[id].val !== void 0) {
+      } else if (branch.leaves[rF].rT !== void 0 || branch.leaves[rF].val !== void 0) {
         return
+      } else {
+        if (rTold) {
+          delete branch.rF[rTold][rF]
+        }
+        addReferenceFrom(branch, rF, rT)
       }
     }
 
     if (branch.branches.length) {
-      cleanBranchRt(branch.branches, id, rT)
+      fixBranchReferences(branch.branches, rF, rT)
     }
   })
 
@@ -146,8 +159,9 @@ const set = (branch, id, val, stamp) => {
 export {
   addOwnLeaf,
   addBranchLeaf,
+  addReferenceFrom,
   checkReferenceByLeaf,
-  cleanBranchRt,
+  fixBranchReferences,
   cleanBranchKeys,
   setKeys,
   set

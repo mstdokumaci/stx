@@ -1,33 +1,10 @@
 import { Leaf } from '../../index'
 import { getFromLeaves } from '../get'
 
-const emitReferenceSubscriptions = (oBranch, id, stamp, subs) => {
-  let branch = oBranch
-  while (branch) {
-    if (branch.leaves[id] === null) {
-      return
-    } else if (branch.rF[id]) {
-      branch.rF[id].forEach(rF => {
-        if (
-          branch === oBranch ||
-          !(
-            oBranch.leaves[rF] === null ||
-            (
-              oBranch.leaves[rF] &&
-              (
-                oBranch.leaves[rF].val !== void 0 ||
-                oBranch.leaves[rF].rT !== void 0
-              )
-            )
-          )
-        ) {
-          subscriptions(oBranch, rF, stamp, subs)
-          emitReferenceSubscriptions(oBranch, rF, stamp, subs)
-        }
-      })
-    }
-
-    branch = branch.inherits
+const referenceSubscriptions = (branch, ids, stamp, subs) => {
+  for (const id in ids) {
+    subscriptions(branch, id, stamp, subs)
+    referenceSubscriptions(branch, ids[id], stamp, subs)
   }
 }
 
@@ -50,8 +27,8 @@ const subscriptions = (branch, id, stamp, subs) => {
       }
     }
 
-    if (id !== oId) {
-      emitReferenceSubscriptions(branch, id, stamp, subs)
+    if (id !== oId && branch.rF[id]) {
+      referenceSubscriptions(branch, branch.rF[id], stamp, subs)
     }
 
     id = getFromLeaves(branch, id).parent
@@ -72,47 +49,7 @@ const emitOwn = (branch, id, event, val, stamp, subs, isKeys) => {
   }
 }
 
-const emitReferenceBranches = (branches, id, event, val, stamp, references, subs) =>
-  branches.forEach(branch => {
-    if (references.find(rT => (
-      branch.leaves[rT] === null ||
-      (
-        branch.leaves[rT] &&
-        (
-          branch.leaves[rT].val !== void 0 ||
-          branch.leaves[rT].rT !== void 0
-        )
-      )
-    ))) {
-      return
-    }
-
-    emitOwn(branch, id, event, val, stamp, subs)
-
-    if (branch.rF[id]) {
-      emitBranchReferences(branch, id, event, val, stamp, references, subs)
-    }
-
-    if (branch.branches.length) {
-      emitReferenceBranches(branch.branches, id, event, val, stamp, references, subs)
-    }
-  })
-
-const emitBranchReferences = (branch, id, event, val, stamp, references, subs) =>
-  branch.rF[id].forEach(rF => {
-    if (event === 'data') {
-      references.push(id)
-    }
-
-    emitOwn(branch, rF, event, val, stamp, subs)
-    emitOwnReferences(branch, rF, event, val, stamp, references, subs)
-
-    if (branch.branches.length) {
-      emitReferenceBranches(branch.branches, rF, event, val, stamp, references.concat(rF), subs)
-    }
-  })
-
-const emitOwnBranches = (branches, id, event, val, stamp, references, subs) =>
+const emitBranches = (branches, id, event, val, stamp, subs) =>
   branches.forEach(branch => {
     if (
       branch.leaves[id] === null ||
@@ -131,61 +68,30 @@ const emitOwnBranches = (branches, id, event, val, stamp, references, subs) =>
     emitOwn(branch, id, event, val, stamp, subs)
 
     if (branch.rF[id]) {
-      emitBranchReferences(branch, id, event, val, stamp, references, subs)
+      emitReferences(branch, branch.rF[id], event, val, stamp, subs)
     }
 
     if (branch.branches.length) {
-      emitOwnBranches(branch.branches, id, event, val, stamp, references, subs)
+      emitBranches(branch.branches, id, event, val, stamp, subs)
     }
   })
 
-const emitOwnReferences = (oBranch, id, event, val, stamp, references, subs, isKeys) => {
-  let branch = oBranch
-  while (branch) {
-    if (branch.leaves[id] === null) {
-      return
-    } else if (branch.rF[id]) {
-      branch.rF[id].forEach(rF => {
-        if (
-          branch === oBranch ||
-          !(
-            oBranch.leaves[rF] === null ||
-            (
-              oBranch.leaves[rF] &&
-              (
-                oBranch.leaves[rF].val !== void 0 ||
-                oBranch.leaves[rF].rT !== void 0
-              )
-            )
-          )
-        ) {
-          if (event === 'data') {
-            references.push(id)
-          }
-
-          emitOwn(oBranch, rF, event, val, stamp, subs, isKeys)
-          emitOwnReferences(oBranch, rF, event, val, stamp, references, subs, isKeys)
-
-          if (oBranch.branches.length && !isKeys) {
-            emitReferenceBranches(
-              oBranch.branches, rF, event, val, stamp, references.concat(rF), subs
-            )
-          }
-        }
-      })
-    }
-
-    branch = branch.inherits
+const emitReferences = (branch, ids, event, val, stamp, subs, isKeys) => {
+  for (const id in ids) {
+    emitOwn(branch, id, event, val, stamp, subs, isKeys)
+    emitReferences(branch, ids[id], event, val, stamp, subs, isKeys)
   }
 }
 
 const emit = (branch, id, event, val, stamp, subs = {}, isKeys) => {
-  const references = []
   emitOwn(branch, id, event, val, stamp, subs, isKeys)
-  emitOwnReferences(branch, id, event, val, stamp, references, subs, isKeys)
+
+  if (branch.rF[id]) {
+    emitReferences(branch, branch.rF[id], event, val, stamp, subs, isKeys)
+  }
 
   if (branch.branches.length && !isKeys) {
-    emitOwnBranches(branch.branches, id, event, val, stamp, references, subs)
+    emitBranches(branch.branches, id, event, val, stamp, subs)
   }
 }
 

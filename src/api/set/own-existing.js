@@ -1,12 +1,20 @@
 import { root } from '../../id'
-import { getByPath } from '../get'
-import { remove, removeReference } from '../remove'
+import { getRtFromLeaves, getByPath } from '../get'
+import { remove, removeReferenceFrom } from '../remove'
 import { addDataEvent } from '../listeners/emit'
-import { checkReferenceByLeaf, cleanBranchRt, setKeys } from './index'
+import {
+  addReferenceFrom,
+  checkReferenceByLeaf,
+  fixBranchReferences,
+  setKeys
+} from './index'
 
 const setOwnExistingVal = (branch, leaf, id, val, stamp) => {
-  removeReference(branch, id, leaf.rT)
-  leaf.rT = void 0
+  const rTold = getRtFromLeaves(branch, id)
+  if (rTold) {
+    removeReferenceFrom(branch, id, rTold)
+    leaf.rT = void 0
+  }
 
   leaf.val = val
   leaf.stamp = stamp
@@ -15,17 +23,20 @@ const setOwnExistingVal = (branch, leaf, id, val, stamp) => {
 }
 
 const setOwnExistingReference = (branch, leaf, id, rT, stamp) => {
-  removeReference(branch, id, leaf.rT)
-  leaf.val = void 0
+  const rTold = getRtFromLeaves(branch, id)
+  if (rTold) {
+    delete branch.rF[rTold][id]
+  } else {
+    leaf.val = void 0
+  }
 
   leaf.rT = rT
   leaf.stamp = stamp
-  branch.rF[rT] = (branch.rF[rT] || []).concat(id)
-
+  addReferenceFrom(branch, id, rT)
   addDataEvent(void 0, id, 'set')
 
   if (branch.branches.length) {
-    cleanBranchRt(branch.branches, id, rT)
+    fixBranchReferences(branch.branches, id, rT, rTold)
   }
 }
 

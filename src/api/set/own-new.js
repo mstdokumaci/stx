@@ -4,8 +4,9 @@ import { getByPath } from '../get'
 import { addDataEvent } from '../listeners/emit'
 import {
   addOwnLeaf,
+  addReferenceFrom,
   checkReferenceByLeaf,
-  cleanBranchRt,
+  fixBranchReferences,
   cleanBranchKeys
 } from './index'
 
@@ -19,12 +20,11 @@ const setOwnNewVal = (branch, leaf, id, val, stamp) => {
 const setOwnNewReference = (branch, leaf, id, rT, stamp) => {
   leaf.rT = rT
   leaf.stamp = stamp
-  branch.rF[rT] = (branch.rF[rT] || []).concat(id)
-
+  addReferenceFrom(branch, id, rT)
   addDataEvent(void 0, id, 'set')
 
   if (branch.branches.length) {
-    cleanBranchRt(branch.branches, id, rT)
+    fixBranchReferences(branch.branches, id, rT)
   }
 }
 

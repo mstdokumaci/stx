@@ -10,8 +10,9 @@ import {
 } from './index'
 
 const setOwnExistingVal = (branch, leaf, id, val, stamp) => {
-  if (leaf.rT) {
-    removeReferenceFrom(branch, id, leaf.rT)
+  const rTold = getRtFromLeaves(branch, id)
+  if (rTold) {
+    removeReferenceFrom(branch, id, rTold)
     leaf.rT = void 0
   }
 

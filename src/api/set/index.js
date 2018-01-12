@@ -60,6 +60,11 @@ const fixBranchReferences = (branches, rF, rT, rTold) =>
         }
         addReferenceFrom(branch, rF, rT)
       }
+    } else {
+      if (rTold) {
+        delete branch.rF[rTold][rF]
+      }
+      addReferenceFrom(branch, rF, rT)
     }
 
     if (branch.branches.length) {

@@ -12,14 +12,12 @@ const removeReferenceFrom = (branch, rF, rT) => {
 
   branch.branches.forEach(branch => {
     if (
-      !(
-        branch.leaves[rF] === null ||
+      branch.leaves[rF] !== null &&
+      (
+        !branch.leaves[rF] ||
         (
-          branch.leaves[rF] &&
-          (
-            branch.leaves[rF].val !== void 0 ||
-            branch.leaves[rF].rT !== void 0
-          )
+          branch.leaves[rF].val === void 0 &&
+          branch.leaves[rF].rT === void 0
         )
       )
     ) {

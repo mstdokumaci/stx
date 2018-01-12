@@ -12,10 +12,12 @@ import {
 
 const setOverrideVal = (branch, leaf, id, val, stamp) => {
   if (val !== leaf.val && val !== void 0) {
-    if (leaf.rT) {
-      removeReferenceFrom(branch, id, leaf.rT)
+    const rTold = getRtFromLeaves(branch, id)
+    if (rTold) {
+      removeReferenceFrom(branch, id, rTold)
       leaf.rT = void 0
     }
+
     leaf = addOwnLeaf(branch, id, leaf.parent, leaf.key, stamp)
     leaf.val = val
 

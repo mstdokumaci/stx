@@ -362,7 +362,7 @@ test('subscriptions - circular references', t => {
     if (item.get('id') === void 0) {
       branch22Fire.push('branch22.initial')
     } else if (item.get('id').compute() === 'i2') {
-      const val =item.get([ 'items', 'sub3', 'bf3' ]).compute()
+      const val = item.get([ 'items', 'sub3', 'bf3' ]).compute()
       branch22Fire.push(`branch22.i2.items.sub3.bf3=${val}`)
     } else if (item.get('id').compute() === 'i1') {
       const val = item.get([ 'items', 'sub2', 'items', 'sub3', 'bf3' ]).compute()

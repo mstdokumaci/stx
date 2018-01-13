@@ -1,41 +1,39 @@
 import { Leaf } from '../../index'
 import { getFromLeaves } from '../get'
 
-const referenceSubscriptions = (branch, ids, stamp, subs) => {
+const referenceSubscriptions = (branch, ids, stamp) => {
   for (const id in ids) {
-    subscriptions(branch, id, stamp, subs)
-    referenceSubscriptions(branch, ids[id], stamp, subs)
+    subscriptions(branch, id, stamp)
+    referenceSubscriptions(branch, ids[id], stamp)
   }
 }
 
-const subscriptions = (branch, id, stamp, subs) => {
+const subscriptions = (branch, id, stamp) => {
   const oId = id
   while (id) {
-    if (subs[id]) {
-      if (branch.leaves[id] || ~subs[id].indexOf(branch)) {
-        return
-      } else {
-        subs[id].push(branch)
-      }
+    if (!branch.subscriptions[id]) {
+      branch.subscriptions[id] = { stamp }
+    } else if (branch.subscriptions[id].stamp === stamp) {
+      return
     } else {
-      subs[id] = branch.leaves[id] ? [] : [ branch ]
+      branch.subscriptions[id].stamp = stamp
     }
 
-    if (branch.subscriptions[id]) {
-      for (const listenerId in branch.subscriptions[id]) {
-        branch.subscriptions[id][listenerId](new Leaf(branch, id))
+    if (branch.subscriptions[id].listeners) {
+      for (const listenerId in branch.subscriptions[id].listeners) {
+        branch.subscriptions[id].listeners[listenerId](new Leaf(branch, id))
       }
     }
 
     if (id !== oId && branch.rF[id]) {
-      referenceSubscriptions(branch, branch.rF[id], stamp, subs)
+      referenceSubscriptions(branch, branch.rF[id], stamp)
     }
 
     id = getFromLeaves(branch, id).parent
   }
 }
 
-const emitOwn = (branch, id, event, val, stamp, subs, isKeys) => {
+const emitOwn = (branch, id, event, val, stamp, isKeys) => {
   const listeners = branch.listeners
 
   if (listeners[id] && listeners[id][event]) {
@@ -45,11 +43,11 @@ const emitOwn = (branch, id, event, val, stamp, subs, isKeys) => {
   }
 
   if (event === 'data' && !isKeys) {
-    subscriptions(branch, id, stamp, subs)
+    subscriptions(branch, id, stamp)
   }
 }
 
-const emitBranches = (branches, id, event, val, stamp, subs) =>
+const emitBranches = (branches, id, event, val, stamp) =>
   branches.forEach(branch => {
     if (
       branch.leaves[id] === null ||
@@ -65,33 +63,33 @@ const emitBranches = (branches, id, event, val, stamp, subs) =>
       return
     }
 
-    emitOwn(branch, id, event, val, stamp, subs)
+    emitOwn(branch, id, event, val, stamp)
 
     if (branch.rF[id]) {
-      emitReferences(branch, branch.rF[id], event, val, stamp, subs)
+      emitReferences(branch, branch.rF[id], event, val, stamp)
     }
 
     if (branch.branches.length) {
-      emitBranches(branch.branches, id, event, val, stamp, subs)
+      emitBranches(branch.branches, id, event, val, stamp)
     }
   })
 
-const emitReferences = (branch, ids, event, val, stamp, subs, isKeys) => {
+const emitReferences = (branch, ids, event, val, stamp, isKeys) => {
   for (const id in ids) {
-    emitOwn(branch, id, event, val, stamp, subs, isKeys)
-    emitReferences(branch, ids[id], event, val, stamp, subs, isKeys)
+    emitOwn(branch, id, event, val, stamp, isKeys)
+    emitReferences(branch, ids[id], event, val, stamp, isKeys)
   }
 }
 
-const emit = (branch, id, event, val, stamp, subs = {}, isKeys) => {
-  emitOwn(branch, id, event, val, stamp, subs, isKeys)
+const emit = (branch, id, event, val, stamp = {}, isKeys) => {
+  emitOwn(branch, id, event, val, stamp, isKeys)
 
   if (branch.rF[id]) {
-    emitReferences(branch, branch.rF[id], event, val, stamp, subs, isKeys)
+    emitReferences(branch, branch.rF[id], event, val, stamp, isKeys)
   }
 
   if (branch.branches.length && !isKeys) {
-    emitBranches(branch.branches, id, event, val, stamp, subs)
+    emitBranches(branch.branches, id, event, val, stamp)
   }
 }
 
@@ -105,7 +103,6 @@ const addDataEvent = (branch, id, val) => {
 const addAfterEmitEvent = (cb) => afterEmitEvents.push(cb)
 
 const emitDataEvents = (branch, stamp) => {
-  const subs = {}
   const afterEmitEventsToRun = afterEmitEvents.splice(0)
   dataEvents.splice(0).forEach(event =>
     emit(
@@ -114,7 +111,6 @@ const emitDataEvents = (branch, stamp) => {
       'data',
       event[2],
       stamp,
-      subs,
       event[2] === 'add-key' || event[2] === 'remove-key'
     )
   )

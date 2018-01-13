@@ -309,6 +309,8 @@ test('subscriptions - circular references', t => {
 
   const branch1 = master.create()
   const branch2 = master.create()
+  const branch21 = branch2.create()
+  const branch22 = branch2.create()
 
   branch1.get('ref').subscribe(item => {
     if (item.get('id') === void 0) {
@@ -316,24 +318,24 @@ test('subscriptions - circular references', t => {
     } else if (item.get('id').compute() === 'i1') {
       t.equals(
         item.get([ 'items', 'sub1', 'bf1' ]).compute(), false,
-        'branch1 i1 bf1 fired for false'
+        'branch1.i1.bf1 fired for false'
       )
       t.equals(
         item.get([ 'items', 'sub2', 'bf2' ]).compute(), false,
-        'branch1 i1 sub2 bf2 fired for false'
+        'branch1.i1.sub2.bf2 fired for false'
       )
     } else if (item.get('id').compute() === 'i3') {
       t.equals(
         item.get([ 'items', 'sub2', 'bf2' ]).compute(), false,
-        'branch1 i3 sub2 bf2 fired for false'
+        'branch1.i3.sub2.bf2 fired for false'
       )
       t.equals(
         item.get([ 'items', 'sub4', 'sub', 'bf4' ]).compute(), true,
-        'branch1 i3 sub4 sub bf4 fired for false'
+        'branch1.i3.sub4.sub.bf4 fired for false'
       )
       t.equals(
         item.get([ 'items', 'sub4', 'f1' ]).compute(), 'v1',
-        'branch1 i3 sub4 f1 fired for v1'
+        'branch1.i3.sub4.f1 fired for v1'
       )
     }
   })
@@ -344,20 +346,68 @@ test('subscriptions - circular references', t => {
     } else if (item.get('id').compute() === 'i2') {
       t.equals(
         item.get([ 'items', 'sub3', 'bf3' ]).compute(), false,
-        'branch2 i2 sub3 bf3 fired for false'
+        'branch2.i2.sub3.bf3 fired for false'
       )
       t.equals(
         item.get([ 'items', 'sub4', 'f1' ]).compute(), true,
-        'branch2 i2 sub4 f1 fired for true'
+        'branch2.i2.sub4.f1 fired for true'
       )
     } else if (item.get('id').compute() === 'i3') {
       t.equals(
         item.get([ 'items', 'sub2', 'items', 'sub3', 'bf3' ]).compute(), false,
-        'branch2 i3 sub2 items sub3 bf3 fired for false'
+        'branch2.i3.sub2.items.sub3.bf3 fired for false'
       )
       t.equals(
         item.get([ 'items', 'sub4', 'f1' ]).compute(), true,
-        'branch2 i3 sub4 f1 fired for true'
+        'branch2.i3.sub4.f1 fired for true'
+      )
+    }
+  })
+
+  branch21.get('ref').subscribe(item => {
+    if (item.get('id') === void 0) {
+      t.pass('branch21 initial fire')
+    } else if (item.get('id').compute() === 'i2') {
+      t.equals(
+        item.get([ 'items', 'sub3', 'bf3' ]).compute(), false,
+        'branch21.i2.sub3.bf3 fired for false'
+      )
+      t.equals(
+        item.get([ 'items', 'sub4', 'f1' ]).compute(), true,
+        'branch21.i2.sub4.f1 fired for true'
+      )
+    } else if (item.get('id').compute() === 'i3') {
+      t.equals(
+        item.get([ 'items', 'sub2', 'items', 'sub3', 'bf3' ]).compute(), false,
+        'branch21.i3.sub2.items.sub3.bf3 fired for false'
+      )
+      t.equals(
+        item.get([ 'items', 'sub4', 'f1' ]).compute(), true,
+        'branch21.i3.sub4.f1 fired for true'
+      )
+    }
+  })
+
+  branch22.get('ref').subscribe(item => {
+    if (item.get('id') === void 0) {
+      t.pass('branch22 initial fire')
+    } else if (item.get('id').compute() === 'i2') {
+      t.equals(
+        item.get([ 'items', 'sub3', 'bf3' ]).compute(), false,
+        'branch21.i2.sub3.bf3 fired for false'
+      )
+      t.equals(
+        item.get([ 'items', 'sub4', 'f1' ]).compute(), true,
+        'branch21.i2.sub4.f1 fired for true'
+      )
+    } else if (item.get('id').compute() === 'i1') {
+      t.equals(
+        item.get([ 'items', 'sub2', 'items', 'sub3', 'bf3' ]).compute(), false,
+        'branch21.i3.sub2.items.sub3.bf3 fired for false'
+      )
+      t.equals(
+        item.get([ 'items', 'sub3', 'items', 'sub4', 'f1' ]).compute(), true,
+        'branch21.i3.sub3.items.sub4.f1 fired for true'
       )
     }
   })
@@ -380,6 +430,14 @@ test('subscriptions - circular references', t => {
       i4: { f1: true }
     },
     ref: ['@', 'list', 'i2']
+  })
+
+  branch21.set({
+    ref: [ '@', 'list', 'i3' ]
+  })
+
+  branch22.set({
+    ref: [ '@', 'list', 'i1' ]
   })
 
   branch1.set({

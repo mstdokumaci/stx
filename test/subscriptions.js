@@ -331,6 +331,8 @@ test('subscriptions - circular references', t => {
       branch1Fire.push(`branch1.i3.items.sub2.bf2=${val1}`)
       const val2 = item.get([ 'items', 'sub4', 'sub', 'bf4' ]).compute()
       branch1Fire.push(`branch1.i3.items.sub4.sub.bf4=${val2}`)
+    } else {
+      t.fail('branch1 should not fire more')
     }
   })
 
@@ -343,6 +345,8 @@ test('subscriptions - circular references', t => {
     } else if (item.get('id').compute() === 'i3') {
       const val = item.get([ 'items', 'sub2', 'items', 'sub3', 'bf3' ]).compute()
       branch2Fire.push(`branch2.i3.items.sub2.items.sub3.bf3=${val}`)
+    } else {
+      t.fail('branch2 should not fire more')
     }
   })
 
@@ -355,6 +359,8 @@ test('subscriptions - circular references', t => {
     } else if (item.get('id').compute() === 'i3') {
       const val = item.get([ 'items', 'sub4', 'f1' ]).compute()
       branch21Fire.push(`branch21.i3.items.sub4.f1=${val}`)
+    } else {
+      t.fail('branch21 should not fire more')
     }
   })
 
@@ -367,6 +373,8 @@ test('subscriptions - circular references', t => {
     } else if (item.get('id').compute() === 'i1') {
       const val = item.get([ 'items', 'sub2', 'items', 'sub3', 'bf3' ]).compute()
       branch22Fire.push(`branch22.i1.items.sub2.items.sub3.bf3=${val}`)
+    } else {
+      t.fail('branch22 should not fire more')
     }
   })
 

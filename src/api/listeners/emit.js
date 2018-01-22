@@ -1,5 +1,5 @@
 import { Leaf } from '../../index'
-import { subscriptions} from '../subscription/fire'
+import { subscriptions } from '../subscription/fire'
 
 const emitOwn = (branch, id, event, val, stamp, isKeys) => {
   const listeners = branch.listeners

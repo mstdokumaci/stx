@@ -2,7 +2,7 @@ import { Leaf } from '../../index'
 
 let listenerLastId = 0
 
-const subscribe = (branch, id, cb, listenerId) => {
+const subscribe = (branch, id, options, cb, listenerId) => {
   if (!listenerId) {
     listenerId = listenerLastId++
   }

@@ -129,8 +129,13 @@ const defineApi = leaf => {
   })
 
   // SUBSCRIBE
-  define(leaf, 'subscribe', function (cb, listenerId) {
-    subscribe(this.branch, this.id, cb, listenerId)
+  define(leaf, 'subscribe', function (options, cb, listenerId) {
+    if (typeof options === 'function') {
+      listenerId = cb
+      cb = options
+      options = {}
+    }
+    subscribe(this.branch, this.id, options, cb, listenerId)
     return this
   })
 

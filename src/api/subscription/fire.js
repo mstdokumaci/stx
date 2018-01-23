@@ -21,7 +21,7 @@ const subscriptions = (branch, id, stamp) => {
 
     if (branch.subscriptions[id].listeners) {
       for (const listenerId in branch.subscriptions[id].listeners) {
-        branch.subscriptions[id].listeners[listenerId](new Leaf(branch, id))
+        branch.subscriptions[id].listeners[listenerId].cb(new Leaf(branch, id))
       }
     }
 

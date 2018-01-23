@@ -1,12 +1,30 @@
+import { keyToId } from '../../id'
 import { Leaf } from '../../index'
 
 let listenerLastId = 0
+
+const parseOptions = (id, options, cb) => {
+  if (options.excludeKeys) {
+    if (options.keys) {
+      options.keys = options.keys.filter(key => !~options.excludeKeys.indexOf(key))
+    } else {
+      options.excludeKeys = options.excludeKeys.map(key => keyToId(key, id))
+    }
+  }
+
+  if (options.keys) {
+    options.keys = options.keys.map(key => keyToId(key, id))
+  }
+
+  options.cb = cb
+}
 
 const subscribe = (branch, id, options, cb, listenerId) => {
   if (!listenerId) {
     listenerId = listenerLastId++
   }
 
+  parseOptions(id, options, cb)
   const subscriptions = branch.subscriptions
 
   if (!subscriptions[id]) {
@@ -15,7 +33,7 @@ const subscribe = (branch, id, options, cb, listenerId) => {
     subscriptions[id].listeners = []
   }
 
-  subscriptions[id].listeners[listenerId] = cb
+  subscriptions[id].listeners[listenerId] = options
   cb(new Leaf(branch, id))
 }
 

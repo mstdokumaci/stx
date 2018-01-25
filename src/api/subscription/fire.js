@@ -1,14 +1,14 @@
 import { Leaf } from '../../index'
 import { getFromLeaves } from '../get'
 
-const referenceSubscriptions = (branch, ids, stamp) => {
+const referenceSubscriptions = (branch, ids, stamp, depth) => {
   for (const id in ids) {
     subscriptions(branch, id, stamp)
-    referenceSubscriptions(branch, ids[id], stamp)
+    referenceSubscriptions(branch, ids[id], stamp, depth)
   }
 }
 
-const subscriptions = (branch, id, stamp) => {
+const subscriptions = (branch, id, stamp, depth = 0) => {
   const oId = id
   while (id) {
     if (!branch.subscriptions[id]) {
@@ -29,10 +29,11 @@ const subscriptions = (branch, id, stamp) => {
     }
 
     if (id !== oId && branch.rF[id]) {
-      referenceSubscriptions(branch, branch.rF[id], stamp)
+      referenceSubscriptions(branch, branch.rF[id], stamp, depth)
     }
 
     id = getFromLeaves(branch, id).parent
+    depth++
   }
 }
 

@@ -3,9 +3,17 @@ import { getFromLeaves } from '../get'
 
 const checkOptions = (options, id, depth) => {
   let pass = true
+
   if (options.depth) {
     pass &= depth >= options.depth
   }
+
+  if (options.keys) {
+    pass &= ~options.keys.indexOf(id)
+  } else if (options.excludeKeys) {
+    pass &= !~options.excludeKeys.indexOf(id)
+  }
+
   return pass
 }
 
@@ -17,7 +25,7 @@ const referenceSubscriptions = (branch, ids, stamp, depth) => {
 }
 
 const subscriptions = (branch, id, stamp, depth = 0) => {
-  const oId = id
+  let previousId = id
   while (id) {
     if (!branch.subscriptions[id]) {
       branch.subscriptions[id] = { stamp }
@@ -30,16 +38,17 @@ const subscriptions = (branch, id, stamp, depth = 0) => {
     if (branch.subscriptions[id].listeners) {
       for (const listenerId in branch.subscriptions[id].listeners) {
         const options = branch.subscriptions[id].listeners[listenerId]
-        if (checkOptions(options, id, depth)) {
+        if (checkOptions(options, previousId, depth)) {
           options.cb(new Leaf(branch, id), options)
         }
       }
     }
 
-    if (id !== oId && branch.rF[id]) {
+    if (id !== previousId && branch.rF[id]) {
       referenceSubscriptions(branch, branch.rF[id], stamp, depth)
     }
 
+    previousId = id
     id = getFromLeaves(branch, id).parent
     depth++
   }

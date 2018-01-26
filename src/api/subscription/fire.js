@@ -1,6 +1,14 @@
 import { Leaf } from '../../index'
 import { getFromLeaves } from '../get'
 
+const checkOptions = (options, id, depth) => {
+  let pass = true
+  if (options.depth) {
+    pass &= depth >= options.depth
+  }
+  return pass
+}
+
 const referenceSubscriptions = (branch, ids, stamp, depth) => {
   for (const id in ids) {
     subscriptions(branch, id, stamp)
@@ -21,10 +29,10 @@ const subscriptions = (branch, id, stamp, depth = 0) => {
 
     if (branch.subscriptions[id].listeners) {
       for (const listenerId in branch.subscriptions[id].listeners) {
-        branch.subscriptions[id].listeners[listenerId].cb(
-          new Leaf(branch, id),
-          branch.subscriptions[id].listeners[listenerId]
-        )
+        const options = branch.subscriptions[id].listeners[listenerId]
+        if (checkOptions(options, id, depth)) {
+          options.cb(new Leaf(branch, id), options)
+        }
       }
     }
 

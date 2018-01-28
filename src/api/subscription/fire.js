@@ -5,7 +5,7 @@ const checkOptions = (options, id, depth) => {
   let pass = true
 
   if (options.depth) {
-    pass &= depth >= options.depth
+    pass &= depth <= options.depth
   }
 
   if (options.keys) {
@@ -48,9 +48,9 @@ const subscriptions = (branch, id, stamp, depth = 0) => {
       referenceSubscriptions(branch, branch.rF[id], stamp, depth)
     }
 
+    depth++
     previousId = id
     id = getFromLeaves(branch, id).parent
-    depth++
   }
 }
 

@@ -44,13 +44,11 @@ test('subscriptions - options', t => {
     [ 'master-first' ],
     'master.first fired for initial'
   )
-
   t.same(
     branch1Fire,
     [ 'branch1-first' ],
     'branch1.first fired for initial'
   )
-
   t.same(
     branch2Fire,
     [ 'branch2-first' ],
@@ -68,17 +66,67 @@ test('subscriptions - options', t => {
     [],
     'master.first did not fire for depth:3'
   )
-
   t.same(
     branch1Fire,
     [ 'branch1-first' ],
     'branch1.first fired for depth:3'
   )
-
   t.same(
     branch2Fire,
     [ 'branch2-first' ],
     'branch2.first fired for depth:3'
+  )
+
+  masterFire.length = 0
+  branch1Fire.length = 0
+  branch2Fire.length = 0
+
+  master.set({
+    first: {
+      second2: 'thing'
+    }
+  })
+
+  t.same(
+    masterFire,
+    [],
+    'master.first did not fire for second2'
+  )
+  t.same(
+    branch1Fire,
+    [],
+    'branch1.first did not fire for second2'
+  )
+  t.same(
+    branch2Fire,
+    [],
+    'branch2.first did not fire for second2'
+  )
+
+  masterFire.length = 0
+  branch1Fire.length = 0
+  branch2Fire.length = 0
+
+  master.set({
+    first: {
+      second3: 'thing'
+    }
+  })
+
+  t.same(
+    masterFire,
+    [],
+    'master.first did not fire for second3'
+  )
+  t.same(
+    branch1Fire,
+    [ 'branch1-first' ],
+    'branch1.first fired for second3'
+  )
+  t.same(
+    branch2Fire,
+    [],
+    'branch2.first did not fire for second3'
   )
 
   t.end()

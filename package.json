@@ -4,14 +4,13 @@
   "description": "a blazing fast state manager with network sync out of the box",
   "main": "dist/index.js",
   "scripts": {
-    "build": "rollup src/index.js --o dist/index.js --f cjs",
+    "build": "rollup src/index.js -o dist/index.js --f cjs && rollup src/index.js -o dist/browser.js --f umd -n stx",
     "budo": "budo test/index.js",
     "cover": "istanbul cover --report none --print detail test",
-    "dev": "nodemon test/index.js | tap-difflet",
+    "dev": "nodemon --watch src --watch test -x 'npm run build && npm test'",
     "pretest": "npm run build",
     "test": "node test/index.js | tap-difflet && standard",
-    "travis": "npm run build && npm run cover -s && istanbul report lcov && (cat coverage/lcov.info | coveralls) && standard",
-    "watch": "nodemon src/index.js -x 'rollup --o dist/index.js --f cjs' --ignore dist"
+    "travis": "npm run build && npm run cover -s && istanbul report lcov && (cat coverage/lcov.info | coveralls) && standard"
   },
   "repository": {
     "type": "git",
@@ -33,7 +32,9 @@
   "contributors": [
     "Mustafa Dokumacı <mustafa@foraa.com>"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "uws": "^9.0.0"
+  },
   "devDependencies": {
     "budo": "^10.0.0",
     "rollup": "latest",

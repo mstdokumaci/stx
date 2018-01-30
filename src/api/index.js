@@ -9,6 +9,7 @@ import { path, inspect, serialize } from './serialize'
 import { on, off } from './listeners/on-off'
 import { subscribe, unsubscribe } from './subscription/on-off'
 import { emit, emitDataEvents } from './listeners/emit'
+import { listen, unlisten } from './server/index'
 
 const define = (obj, key, val) => {
   Object.defineProperty(obj, key, { value: val, configurable: true })
@@ -152,6 +153,18 @@ const defineApi = leaf => {
     }
 
     emit(this.branch, this.id, event, val, stamp)
+    return this
+  })
+
+  // LISTEN
+  define(leaf, 'listen', function (port) {
+    listen(this.branch, port)
+    return this
+  })
+
+  // UNLISTEN
+  define(leaf, 'unlisten', function () {
+    unlisten(this.branch)
     return this
   })
 }

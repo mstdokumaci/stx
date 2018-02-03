@@ -129,5 +129,36 @@ test('subscriptions - options', t => {
     'branch2.first did not fire for second3'
   )
 
+  masterFire.length = 0
+  branch1Fire.length = 0
+  branch2Fire.length = 0
+
+  master.set({
+    first: {
+      second: {
+        third: {
+          val: 'thing',
+          fourth: 'updated2'
+        }
+      }
+    }
+  })
+
+  t.same(
+    masterFire,
+    [ 'master-first' ],
+    'master.first fired for depth:2'
+  )
+  t.same(
+    branch1Fire,
+    [ 'branch1-first' ],
+    'branch1.first fired for depth:2'
+  )
+  t.same(
+    branch2Fire,
+    [ 'branch2-first' ],
+    'branch2.first fired for depth:2'
+  )
+
   t.end()
 })

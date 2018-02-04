@@ -1,4 +1,4 @@
-import { Leaf } from '../../index'
+import { Leaf } from '../..'
 import { subscriptions } from '../subscription/fire'
 
 const emitOwn = (branch, id, event, val, stamp, isKeys) => {

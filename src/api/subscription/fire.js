@@ -1,4 +1,4 @@
-import { Leaf } from '../../index'
+import { Leaf } from '../..'
 import { getFromLeaves } from '../get'
 
 const checkOptions = (options, id, depth) => {

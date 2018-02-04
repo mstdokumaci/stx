@@ -1,5 +1,5 @@
 import { keyToId, pathToIds } from '../id'
-import { setKeys } from './set/index'
+import { setKeys } from './set'
 
 const getBranchForId = (branch, id) => {
   while (branch) {

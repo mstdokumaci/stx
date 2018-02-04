@@ -7,7 +7,7 @@ import {
   checkReferenceByLeaf,
   fixBranchReferences,
   setKeys
-} from './index'
+} from './'
 
 const setOwnExistingVal = (branch, leaf, id, val, stamp) => {
   const rTold = getRtFromLeaves(branch, id)

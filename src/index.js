@@ -1,6 +1,6 @@
 import { root } from './id'
-import { defineApi } from './api/index'
-import { set } from './api/set/index'
+import { defineApi } from './api'
+import { set } from './api/set'
 import { createStamp } from './stamp'
 import { emitDataEvents } from './api/listeners/emit'
 
@@ -32,8 +32,12 @@ const create = function (val, stamp, inherits) {
     leaves: { [ root ]: {} },
     listeners: {},
     subscriptions: {},
-    rF: {}
+    rF: {},
+    server: {},
+    client: {},
+    clients: {}
   }
+
   if (inherits) {
     branch.inherits = inherits
     inherits.branches.push(branch)
@@ -41,6 +45,7 @@ const create = function (val, stamp, inherits) {
       cloneIds(branch.rF, inherits.rF[id], id)
     }
   }
+
   set(branch, root, val, stamp)
   emitDataEvents(branch, stamp)
   return new Leaf(branch, root)

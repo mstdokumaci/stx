@@ -1,7 +1,7 @@
-import { create, Leaf } from '../index'
+import { create, Leaf } from '..'
 import { root } from '../id'
 import { createStamp } from '../stamp'
-import { set } from './set/index'
+import { set } from './set'
 import { getBranchForId, getApi } from './get'
 import { origin, compute } from './compute'
 import { forEach, map, filter, find, reduce } from './array'
@@ -9,7 +9,7 @@ import { path, inspect, serialize } from './serialize'
 import { on, off } from './listeners/on-off'
 import { subscribe, unsubscribe } from './subscription/on-off'
 import { emit, emitDataEvents } from './listeners/emit'
-import { listen, unlisten } from './server/index'
+import { listen } from './server'
 
 const define = (obj, key, val) => {
   Object.defineProperty(obj, key, { value: val, configurable: true })
@@ -161,12 +161,6 @@ const defineApi = leaf => {
     listen(this.branch, port)
     return this
   })
-
-  // UNLISTEN
-  define(leaf, 'unlisten', function () {
-    unlisten(this.branch)
-    return this
-  })
 }
 
-export { defineApi, set }
+export { defineApi }

@@ -1,5 +1,5 @@
 import { keyToId } from '../../id'
-import { Leaf } from '../../index'
+import { Leaf } from '../..'
 
 let listenerLastId = 0
 
@@ -29,9 +29,9 @@ const subscribe = (branch, id, options, cb, listenerId) => {
   const subscriptions = branch.subscriptions
 
   if (!subscriptions[id]) {
-    subscriptions[id] = { listeners: [] }
+    subscriptions[id] = { listeners: {} }
   } else if (!subscriptions[id].listeners) {
-    subscriptions[id].listeners = []
+    subscriptions[id].listeners = {}
   }
 
   subscriptions[id].listeners[listenerId] = options

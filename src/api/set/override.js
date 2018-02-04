@@ -8,7 +8,7 @@ import {
   checkReferenceByLeaf,
   fixBranchReferences,
   setKeys
-} from './index'
+} from './'
 
 const setOverrideVal = (branch, leaf, id, val, stamp) => {
   if (val !== leaf.val && val !== void 0) {

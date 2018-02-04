@@ -8,7 +8,7 @@ import {
   checkReferenceByLeaf,
   fixBranchReferences,
   cleanBranchKeys
-} from './index'
+} from './'
 
 const setOwnNewVal = (branch, leaf, id, val, stamp) => {
   leaf.val = val

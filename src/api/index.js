@@ -1,5 +1,6 @@
 import { create, Leaf } from '..'
 import { root } from '../id'
+import define from '../define'
 import { createStamp } from '../stamp'
 import { set } from './set'
 import { getBranchForId, getApi } from './get'
@@ -10,10 +11,6 @@ import { on, off } from './listeners/on-off'
 import { subscribe, unsubscribe } from './subscription/on-off'
 import { emit, emitDataEvents } from './listeners/emit'
 import { listen } from './server'
-
-const define = (obj, key, val) => {
-  Object.defineProperty(obj, key, { value: val, configurable: true })
-}
 
 const defineApi = leaf => {
   // ISLEAF
@@ -158,9 +155,8 @@ const defineApi = leaf => {
 
   // LISTEN
   define(leaf, 'listen', function (port) {
-    listen(this.branch, port)
-    return this
+    return listen(this.branch, port)
   })
 }
 
-export { defineApi }
+export { define, defineApi }

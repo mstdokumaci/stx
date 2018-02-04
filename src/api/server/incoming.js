@@ -1,4 +1,4 @@
-const incoming = (server, socket, master, data) => {
+const incoming = (server, socketId, socket, master, data) => {
 
 }
 

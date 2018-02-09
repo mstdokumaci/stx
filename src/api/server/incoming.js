@@ -1,5 +1,12 @@
 const switchBranch = (socket, master, branchKey) => {
+  let branch = master.branches.find(branch => branch.key === branchKey)
 
+  if (!branch) {
+    branch = master.create().branch
+    branch.key = branchKey
+  }
+
+  socket.branch = branch
 }
 
 const syncSubscriptions = (branch, subscriptions) => {
@@ -17,7 +24,7 @@ const setLeaves = (branch, leaves) => {
 const incoming = (server, socketId, socket, master, data) => {
   const { b: branchKey, s: subscriptions, e: emits, l: leaves } = data
 
-  if (branchKey !== void 0 && branchKey !== socket.branchKey) {
+  if (branchKey !== void 0 && branchKey !== socket.branch.key) {
     switchBranch(socket, master, branchKey)
   }
 

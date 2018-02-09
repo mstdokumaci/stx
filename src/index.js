@@ -32,10 +32,7 @@ const create = function (val, stamp, inherits) {
     leaves: { [ root ]: {} },
     listeners: {},
     subscriptions: {},
-    rF: {},
-    server: {},
-    client: {},
-    clients: {}
+    rF: {}
   }
 
   if (inherits) {

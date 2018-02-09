@@ -47,11 +47,10 @@ const listen = (branch, port) => {
       server.sockets[socketId] = socket
 
       if (socket.ua.platform === 'ios') {
-        socket.send(JSON.stringify([void 0, {
+        socket.send(JSON.stringify({
           stamp: createStamp(),
-          connect: true,
           heartbeat: true
-        }]))
+        }))
 
         socket.on('message', data => {
           try {
@@ -61,7 +60,7 @@ const listen = (branch, port) => {
             return e
           }
 
-          if (data[1] && data[1].heartbeat) {
+          if (data.heartbeat) {
             clearTimeout(socket.heartBeatTimeout)
             socket.heartBeatTimeout = setTimeout(() => {
               if (socket.external) {

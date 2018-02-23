@@ -60,19 +60,21 @@ const connect = (branch, url, reconnect = 50) => {
   }
 
   socket.onmessage = ({ data }) => {
-    ((
-      typeof data !== 'string' &&
+    (
       (
-        data instanceof ArrayBuffer ||
+        typeof data !== 'string' &&
         (
-          !isNode &&
+          data instanceof ArrayBuffer ||
           (
-            (('Blob' in global) && data instanceof Blob) || // eslint-disable-line
-            (('WebkitBlob' in global) && data instanceof WebkitBlob) // eslint-disable-line
+            !isNode &&
+            (
+              (('Blob' in global) && data instanceof Blob) || // eslint-disable-line
+              (('WebkitBlob' in global) && data instanceof WebkitBlob) // eslint-disable-line
+            )
           )
         )
-      )
-    ) ? receiveLarge(data) : Promise.resolve(data))
+      ) ? receiveLarge(data) : Promise.resolve(data)
+    )
       .then(data => {
         if (data) {
           try {

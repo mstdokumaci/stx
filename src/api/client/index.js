@@ -6,7 +6,7 @@ import { incoming } from './incoming'
 const isNode = typeof window === 'undefined'
 let blobArray = false
 
-const receiveLarge = (data, cb) => {
+const receiveLarge = data => new Promise(resolve => {
   if (!blobArray) blobArray = []
   blobArray.push(data)
 
@@ -22,7 +22,7 @@ const receiveLarge = (data, cb) => {
         reader.removeEventListener('loadend', onLoadEnd, false)
         if (!e.error) {
           stringArray[i] = reader.result
-          if (--done === 0) cb(stringArray.join(''))
+          if (--done === 0) resolve(stringArray.join(''))
         }
       }).bind(null, i)
 
@@ -31,8 +31,10 @@ const receiveLarge = (data, cb) => {
     }
 
     blobArray = false
+  } else {
+    resolve()
   }
-}
+})
 
 const connect = (branch, url, reconnect = 50) => {
   const socket = new WebSocket(url)
@@ -58,7 +60,7 @@ const connect = (branch, url, reconnect = 50) => {
   }
 
   socket.onmessage = ({ data }) => {
-    if (
+    ((
       typeof data !== 'string' &&
       (
         data instanceof ArrayBuffer ||
@@ -70,27 +72,19 @@ const connect = (branch, url, reconnect = 50) => {
           )
         )
       )
-    ) {
-      receiveLarge(data, data => {
-        try {
-          data = JSON.parse(data)
-          if (!data) return
-        } catch (e) {
-          return e
+    ) ? receiveLarge(data) : Promise.resolve(data))
+      .then(data => {
+        if (data) {
+          try {
+            data = JSON.parse(data)
+            if (!data) return
+          } catch (e) {
+            return e
+          }
+
+          incoming(branch, data)
         }
-
-        incoming(branch, data)
       })
-    } else {
-      try {
-        data = JSON.parse(data)
-        if (!data) return
-      } catch (e) {
-        return e
-      }
-
-      incoming(branch, data)
-    }
   }
 
   return socket

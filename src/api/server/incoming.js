@@ -1,8 +1,10 @@
+import { create } from '../..'
+
 const switchBranch = (socket, master, branchKey) => {
   let branch = master.branches.find(branch => branch.key === branchKey)
 
   if (!branch) {
-    branch = master.create().branch
+    branch = create(void 0, void 0, master).branch
     branch.key = branchKey
   }
 

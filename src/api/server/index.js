@@ -48,8 +48,8 @@ const listen = (branch, port) => {
 
       if (socket.ua.platform === 'ios') {
         socket.send(JSON.stringify({
-          stamp: createStamp(),
-          heartbeat: true
+          t: createStamp(),
+          h: true
         }))
 
         socket.on('message', data => {
@@ -75,10 +75,9 @@ const listen = (branch, port) => {
           }
         })
       } else {
-        socket.send(JSON.stringify([void 0, {
-          stamp: createStamp(),
-          connect: true
-        }]))
+        socket.send(JSON.stringify({
+          t: createStamp()
+        }))
 
         socket.on('message', (data) => {
           try {

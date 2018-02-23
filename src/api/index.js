@@ -11,6 +11,7 @@ import { on, off } from './listeners/on-off'
 import { subscribe, unsubscribe } from './subscription/on-off'
 import { emit, emitDataEvents } from './listeners/emit'
 import { listen } from './server'
+import { connect } from './client'
 
 const defineApi = leaf => {
   // ISLEAF
@@ -156,6 +157,11 @@ const defineApi = leaf => {
   // LISTEN
   define(leaf, 'listen', function (port) {
     return listen(this.branch, port)
+  })
+
+  // CONNECT
+  define(leaf, 'connect', function (url) {
+    return connect(this.branch, url)
   })
 }
 

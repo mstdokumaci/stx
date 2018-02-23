@@ -13,7 +13,8 @@
     "travis": "npm run build && npm run cover -s && istanbul report lcov && (cat coverage/lcov.info | coveralls) && standard"
   },
   "browser": {
-    "./server": "./server/browser"
+    "./server": "./server/browser",
+    "./websocket": "./websocket/browser"
   },
   "repository": {
     "type": "git",

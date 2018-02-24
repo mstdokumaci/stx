@@ -60,7 +60,7 @@ const listen = (branch, port) => {
             return e
           }
 
-          if (data.heartbeat) {
+          if (data.h) {
             clearTimeout(socket.heartBeatTimeout)
             socket.heartBeatTimeout = setTimeout(() => {
               if (socket.external) {

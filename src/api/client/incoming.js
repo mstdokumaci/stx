@@ -1,9 +1,20 @@
+const heartbeatTimeout = 3e3
+
 const adjustStamp = (branch, stamp) => {
 
 }
 
-const startHeartbeat = branch => {
+const heartbeat = branch => {
+  const socket = branch.client.socket
 
+  if (socket) {
+    if (socket.heartbeat) {
+      clearTimeout(socket.heartbeat)
+      socket.heartbeat = null
+    }
+    socket.send(JSON.stringify({ h: true }))
+    socket.heartbeat = setTimeout(() => heartbeat(branch), heartbeatTimeout)
+  }
 }
 
 const fireEmits = (branch, emits) => {
@@ -22,7 +33,7 @@ const incoming = (branch, data) => {
   }
 
   if (heartbeat) {
-    startHeartbeat(branch)
+    heartbeat(branch)
   }
 
   if (emits) {

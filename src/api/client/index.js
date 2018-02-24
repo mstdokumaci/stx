@@ -2,6 +2,7 @@ import maxSize from '../server/maxSize'
 
 import WebSocket from './websocket'
 import { incoming } from './incoming'
+import define from '../../define'
 
 const isNode = typeof window === 'undefined'
 let blobArray = false
@@ -34,6 +35,12 @@ const receiveLarge = data => new Promise(resolve => {
   } else {
     resolve()
   }
+})
+
+const socketClose = WebSocket.prototype.close
+define(WebSocket.prototype, 'close', function (code, data) {
+  this.blockReconnect = true
+  socketClose.call(this, code, data)
 })
 
 const connect = (branch, url, reconnect = 50) => {

@@ -1,10 +1,14 @@
+const defaultConfig = { offset: 0 }
+
 const setOffset = (config, stamp) => {
   config.offset = (stamp | 0) - (createStamp(config) | 0) + config.offset
   config.inProgress = false
 }
 
 const createStamp = config => {
-  if (!config) { config = { offset: 0 } }
+  if (!config) {
+    config = defaultConfig
+  }
 
   if (config.inProgress) {
     config.ms += ++config.count / 9999

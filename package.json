@@ -14,7 +14,9 @@
   },
   "browser": {
     "./server": "./server/browser",
-    "./websocket": "./websocket/browser"
+    "./src/api/server": "./src/api/server/browser",
+    "./websocket": "./websocket/browser",
+    "./src/api/client/websocket": "./src/api/client/websocket/browser"
   },
   "repository": {
     "type": "git",

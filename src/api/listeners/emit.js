@@ -49,7 +49,7 @@ const emitReferences = (branch, ids, event, val, stamp, isKeys) => {
   }
 }
 
-const emit = (branch, id, event, val, stamp = {}, isKeys) => {
+const emit = (branch, id, event, val, stamp, isKeys) => {
   emitOwn(branch, id, event, val, stamp, isKeys)
 
   if (branch.rF[id]) {

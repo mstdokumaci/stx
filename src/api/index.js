@@ -29,7 +29,7 @@ const defineApi = leaf => {
   // SET
   define(leaf, 'set', function (val, stamp) {
     if (!stamp) {
-      stamp = createStamp()
+      stamp = createStamp(this.branch.stamp)
     }
 
     set(this.branch, this.id, val, stamp)
@@ -40,7 +40,7 @@ const defineApi = leaf => {
   // GET
   define(leaf, 'get', function (path, val, stamp) {
     if (!stamp && val !== void 0) {
-      stamp = createStamp()
+      stamp = createStamp(this.branch.stamp)
     }
 
     const subId = getApi(this.branch, this.id, path, val, stamp)
@@ -147,7 +147,7 @@ const defineApi = leaf => {
   // EMIT
   define(leaf, 'emit', function (event, val, stamp) {
     if (!stamp) {
-      stamp = createStamp()
+      stamp = createStamp(this.branch.stamp)
     }
 
     emit(this.branch, this.id, event, val, stamp)

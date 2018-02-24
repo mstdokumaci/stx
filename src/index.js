@@ -23,16 +23,13 @@ const Leaf = function (branch, id) {
 }
 
 const create = function (val, stamp, inherits) {
-  if (!stamp) {
-    stamp = createStamp()
-  }
-
   const branch = {
     branches: [],
     leaves: { [ root ]: {} },
     listeners: {},
     subscriptions: {},
     rF: {},
+    stamp: { offset: 0 },
     client: {}
   }
 
@@ -42,6 +39,11 @@ const create = function (val, stamp, inherits) {
     for (const id in inherits.rF) {
       cloneIds(branch.rF, inherits.rF[id], id)
     }
+    branch.stamp = inherits.stamp
+  }
+
+  if (!stamp) {
+    stamp = createStamp(branch.stamp)
   }
 
   set(branch, root, val, stamp)

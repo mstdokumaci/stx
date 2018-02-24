@@ -1,4 +1,4 @@
-import { create, Leaf } from '..'
+import { create, Leaf } from '../'
 import { root } from '../id'
 import define from '../define'
 import { createStamp } from '../stamp'

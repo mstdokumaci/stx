@@ -44,23 +44,25 @@ define(WebSocket.prototype, 'close', function (code, data) {
 })
 
 const connect = (branch, url, reconnect = 50) => {
+  if (branch.client.reconnect) {
+    clearTimeout(branch.client.reconnect)
+    branch.client.reconnect = null
+  }
+
   const socket = new WebSocket(url)
 
-  const close = () => {
+  socket.onclose = () => {
     if (socket.heartbeat) {
       clearTimeout(socket.heartbeat)
       socket.heartbeat = null
     }
-    branch.client.connected = false
     if (!socket.blockReconnect) {
       reconnect = Math.min((reconnect * 1.5), 2000)
       branch.client.reconnect = setTimeout(connect, reconnect, branch, url, reconnect)
     }
   }
 
-  socket.onclose = close
-
-  socket.onerror = isNode ? close : socket.close.bind(socket)
+  socket.onerror = isNode ? socket.onclose : socket.close.bind(socket)
 
   socket.onopen = () => {
     branch.client.socket = socket

@@ -2,42 +2,11 @@ import { root } from '../../id'
 import { createStamp } from '../../stamp'
 import define from '../../define'
 import { emit } from '../listeners/emit'
-import maxSize from '../server/maxSize'
+import receiveLarge from './receiveLarge'
 import WebSocket from './websocket'
 import { incoming } from './incoming'
 
 const isNode = typeof window === 'undefined'
-let blobArray = false
-
-const receiveLarge = data => new Promise(resolve => {
-  if (!blobArray) blobArray = []
-  blobArray.push(data)
-
-  if (data.size < maxSize) {
-    let i = blobArray.length
-    let done = i
-    let stringArray = []
-
-    while (i--) {
-      const reader = new FileReader() // eslint-disable-line
-
-      const onLoadEnd = ((i, e) => {
-        reader.removeEventListener('loadend', onLoadEnd, false)
-        if (!e.error) {
-          stringArray[i] = reader.result
-          if (--done === 0) resolve(stringArray.join(''))
-        }
-      }).bind(null, i)
-
-      reader.addEventListener('loadend', onLoadEnd, false)
-      reader.readAsText(blobArray[i])
-    }
-
-    blobArray = false
-  } else {
-    resolve()
-  }
-})
 
 const socketClose = WebSocket.prototype.close
 define(WebSocket.prototype, 'close', function (code, data) {
@@ -87,13 +56,8 @@ const connect = (branch, url, reconnect = 50) => {
         typeof data !== 'string' &&
         (
           data instanceof ArrayBuffer ||
-          (
-            !isNode &&
-            (
-              (('Blob' in global) && data instanceof Blob) || // eslint-disable-line
-              (('WebkitBlob' in global) && data instanceof WebkitBlob) // eslint-disable-line
-            )
-          )
+          (('Blob' in global) && data instanceof Blob) || // eslint-disable-line
+          (('WebkitBlob' in global) && data instanceof WebkitBlob) // eslint-disable-line
         )
       ) ? receiveLarge(data) : Promise.resolve(data)
     )

@@ -15,16 +15,12 @@ const heartbeat = branch => {
   }
 }
 
-const fireEmits = (branch, emits) => {
-
-}
-
 const setLeaves = (branch, leaves) => {
 
 }
 
 const incoming = (branch, data) => {
-  const { t: stamp, h: heartbeat, e: emits, l: leaves } = data
+  const { t: stamp, h: heartbeat, l: leaves } = data
 
   if (stamp) {
     setOffset(branch.stamp, stamp)
@@ -32,10 +28,6 @@ const incoming = (branch, data) => {
 
   if (heartbeat) {
     heartbeat(branch)
-  }
-
-  if (emits) {
-    fireEmits(branch, emits)
   }
 
   if (leaves) {

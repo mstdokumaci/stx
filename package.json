@@ -14,6 +14,7 @@
   },
   "browser": {
     "./server": "./server/browser",
+    "./receiveLarge": "./receiveLarge/browser",
     "./websocket": "./websocket/browser"
   },
   "repository": {

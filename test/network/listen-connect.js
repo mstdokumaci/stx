@@ -6,14 +6,21 @@ test('network - listen & connect', t => {
   const server = master.listen(7070)
 
   const client = create()
-  const socket = client.connect('ws://localhost:7070')
-  socket.close()
-  t.pass('socket closed')
+  client.on('connected', val => {
+    if (val) {
+      t.pass('socket connected')
+      client.branch.client.socket.close()
+    } else {
+      t.pass('socket closed')
 
-  server.close()
-  t.pass('server closed')
+      server.close()
+      t.pass('server closed')
 
-  t.end()
+      t.end()
+    }
+  })
+
+  client.connect('ws://localhost:7070')
 })
 
 test('network - listen & reconnect', t => {
@@ -21,17 +28,30 @@ test('network - listen & reconnect', t => {
   const server1 = master.listen(7070)
 
   const client = create()
-  const socket = client.connect('ws://localhost:7070')
 
-  server1.close()
-  t.pass('server1 closed')
-  const server2 = master.listen(7070)
+  let connectCount = 0
+  let server2
 
-  socket.close()
-  t.pass('socket closed')
+  client.on('connected', val => {
+    if (val) {
+      t.pass('socket connected')
+      if (++connectCount > 1) {
+        client.branch.client.socket.close()
+      } else {
+        server1.close()
+        server2 = master.listen(7070)
+      }
+    } else {
+      t.pass('socket closed')
 
-  server2.close()
-  t.pass('server2 closed')
+      if (connectCount > 1) {
+        server2.close()
+        t.pass('server closed')
 
-  t.end()
+        t.end()
+      }
+    }
+  })
+
+  client.connect('ws://localhost:7070')
 })

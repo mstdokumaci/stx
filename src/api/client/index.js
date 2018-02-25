@@ -1,8 +1,10 @@
+import { root } from '../../id'
+import { createStamp } from '../../stamp'
+import define from '../../define'
+import { emit } from '../listeners/emit'
 import maxSize from '../server/maxSize'
-
 import WebSocket from './websocket'
 import { incoming } from './incoming'
-import define from '../../define'
 
 const isNode = typeof window === 'undefined'
 let blobArray = false
@@ -47,25 +49,36 @@ const connect = (branch, url, reconnect = 50) => {
   if (branch.client.reconnect) {
     clearTimeout(branch.client.reconnect)
     branch.client.reconnect = null
+  } else if (branch.client.socket) {
+    throw Error('Can not connect twice')
   }
 
   const socket = new WebSocket(url)
 
-  socket.onclose = () => {
+  const onClose = () => {
     if (socket.heartbeat) {
       clearTimeout(socket.heartbeat)
       socket.heartbeat = null
     }
+
+    if (branch.client.socket) {
+      branch.client.socket = null
+      emit(branch, root, 'connected', false, createStamp(branch.stamp))
+    }
+
     if (!socket.blockReconnect) {
       reconnect = Math.min((reconnect * 1.5), 2000)
       branch.client.reconnect = setTimeout(connect, reconnect, branch, url, reconnect)
     }
   }
 
-  socket.onerror = isNode ? socket.onclose : socket.close.bind(socket)
+  socket.onclose = onClose
+
+  socket.onerror = isNode ? onClose : socket.close.bind(socket)
 
   socket.onopen = () => {
     branch.client.socket = socket
+    emit(branch, root, 'connected', true, createStamp(branch.stamp))
   }
 
   socket.onmessage = ({ data }) => {
@@ -97,8 +110,6 @@ const connect = (branch, url, reconnect = 50) => {
         }
       })
   }
-
-  return socket
 }
 
 export { connect }

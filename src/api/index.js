@@ -12,6 +12,7 @@ import { subscribe, unsubscribe } from './subscription/on-off'
 import { emit, emitDataEvents } from './listeners/emit'
 import { listen } from './server'
 import { connect } from './client'
+import { drainQueue } from './client/send'
 
 const defineApi = leaf => {
   // ISLEAF
@@ -151,6 +152,12 @@ const defineApi = leaf => {
     }
 
     emit(this.branch, this.id, event, val, stamp)
+
+    if (this.branch.client.queue && event !== 'data') {
+      this.branch.client.queue.e.push([ this.id, event, val, stamp ])
+      drainQueue(this.branch)
+    }
+
     return this
   })
 

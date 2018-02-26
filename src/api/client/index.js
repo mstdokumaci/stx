@@ -2,6 +2,7 @@ import { root } from '../../id'
 import { createStamp } from '../../stamp'
 import define from '../../define'
 import { emit } from '../listeners/emit'
+import { addAllSubscriptionsToQueue } from './send'
 import receiveLarge from './receiveLarge'
 import WebSocket from './websocket'
 import { incoming } from './incoming'
@@ -35,7 +36,9 @@ const connect = (branch, url, reconnect = 50) => {
       emit(branch, root, 'connected', false, createStamp(branch.stamp))
     }
 
-    if (!socket.blockReconnect) {
+    if (socket.blockReconnect) {
+      branch.client.queue = null
+    } else {
       reconnect = Math.min((reconnect * 1.5), 2000)
       branch.client.reconnect = setTimeout(connect, reconnect, branch, url, reconnect)
     }
@@ -48,6 +51,9 @@ const connect = (branch, url, reconnect = 50) => {
   socket.onopen = () => {
     branch.client.socket = socket
     emit(branch, root, 'connected', true, createStamp(branch.stamp))
+
+    branch.client.queue = { s: [], e: [], l: [] }
+    addAllSubscriptionsToQueue(branch)
   }
 
   socket.onmessage = ({ data }) => {

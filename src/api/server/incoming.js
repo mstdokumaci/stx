@@ -1,4 +1,5 @@
 import { create } from '../..'
+import { emit } from '../listeners/emit'
 
 const switchBranch = (socket, master, branchKey) => {
   let branch = master.branches.find(branch => branch.key === branchKey)
@@ -16,7 +17,7 @@ const syncSubscriptions = (branch, subscriptions) => {
 }
 
 const fireEmits = (branch, emits) => {
-
+  emits.forEach(([ id, event, val, stamp ]) => emit(branch, id, event, val, stamp))
 }
 
 const setLeaves = (branch, leaves) => {

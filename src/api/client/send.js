@@ -17,8 +17,15 @@ const addAllSubscriptionsToQueue = branch => {
 
 const drainQueue = branch => {
   if (branch.client.socket && branch.client.socket.external) {
-    branch.client.socket.send(JSON.stringify(branch.client.queue))
-    branch.client.queue = { s: [], e: [], l: [] }
+    if (
+      branch.client.queue.b ||
+      branch.client.queue.s.length ||
+      branch.client.queue.e.length ||
+      branch.client.queue.l.length
+    ) {
+      branch.client.socket.send(JSON.stringify(branch.client.queue))
+      branch.client.queue = { s: [], e: [], l: [] }
+    }
   }
 }
 

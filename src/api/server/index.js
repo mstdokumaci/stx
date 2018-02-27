@@ -4,19 +4,10 @@ import { Server } from 'uws'
 import uid from '../../uid'
 import { createStamp } from '../../stamp'
 import define from '../../define'
+import { removeSubscriptions } from './subscriptions'
 import { incoming } from './incoming'
 
 const heartBeatTimeout = 8e3
-
-const removeSubscriptions = (branch, socketId) => {
-  for (const id in branch.subscriptions) {
-    for (const listenerId in branch.subscriptions[id].listeners) {
-      if (listenerId.indexOf(socketId) === 0) {
-        delete branch.subscriptions[id].listeners[listenerId]
-      }
-    }
-  }
-}
 
 const removeSocket = (server, socketId, socket) => {
   socket.removeAllListeners()

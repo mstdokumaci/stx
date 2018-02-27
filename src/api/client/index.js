@@ -50,9 +50,9 @@ const connect = (branch, url, reconnect = 50) => {
 
   socket.onopen = () => {
     branch.client.socket = socket
+    branch.client.queue = { s: [], e: [], l: [] }
     emit(branch, root, 'connected', true, createStamp(branch.stamp))
 
-    branch.client.queue = { s: [], e: [], l: [] }
     addAllSubscriptionsToQueue(branch)
   }
 

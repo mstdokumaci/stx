@@ -2,7 +2,7 @@ import { setOffset } from '../../stamp'
 
 const heartbeatTimeout = 3e3
 
-const heartbeat = branch => {
+const startHeartbeat = branch => {
   const socket = branch.client.socket
 
   if (socket) {
@@ -10,8 +10,9 @@ const heartbeat = branch => {
       clearTimeout(socket.heartbeat)
       socket.heartbeat = null
     }
+
     socket.send(JSON.stringify({ h: true }))
-    socket.heartbeat = setTimeout(() => heartbeat(branch), heartbeatTimeout)
+    socket.heartbeat = setTimeout(() => startHeartbeat(branch), heartbeatTimeout)
   }
 }
 
@@ -27,7 +28,7 @@ const incoming = (branch, data) => {
   }
 
   if (heartbeat) {
-    heartbeat(branch)
+    startHeartbeat(branch)
   }
 
   if (leaves) {

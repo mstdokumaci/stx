@@ -18,8 +18,9 @@ const removeSocket = (server, socketId, socket) => {
 const serverClose = Server.prototype.close
 define(Server.prototype, 'close', function (cb) {
   for (const socketId in this.sockets) {
-    removeSocket(this, socketId, this.sockets[socketId])
+    this.sockets[socketId].close()
   }
+  this.httpServer.close()
   serverClose.call(this, cb)
 })
 

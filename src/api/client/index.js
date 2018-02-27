@@ -25,7 +25,7 @@ const connect = (branch, url, reconnect = 50) => {
 
   const socket = new WebSocket(url)
 
-  const onClose = () => {
+  socket.onclose = () => {
     if (socket.heartbeat) {
       clearTimeout(socket.heartbeat)
       socket.heartbeat = null
@@ -44,9 +44,7 @@ const connect = (branch, url, reconnect = 50) => {
     }
   }
 
-  socket.onclose = onClose
-
-  socket.onerror = isNode ? onClose : socket.close.bind(socket)
+  socket.onerror = isNode ? socket.onclose : socket.close.bind(socket)
 
   socket.onopen = () => {
     branch.client.socket = socket

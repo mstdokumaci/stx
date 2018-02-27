@@ -15,12 +15,11 @@ test('network - emit', t => {
       master.get([ 'deep', 'real' ]).on('event', val => {
         t.equals(val, 'value', 'event fired on master')
         client.branch.client.socket.close()
+        server.close()
+        t.end()
       })
 
       client.get([ 'deep', 'real' ], {}).emit('event', 'value')
-    } else {
-      server.close()
-      t.end()
     }
   })
 

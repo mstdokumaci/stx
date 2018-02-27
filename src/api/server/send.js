@@ -1,4 +1,4 @@
-const sendLeaves = (socket, branch, id, keys, excludeKeys, depth, limit) => {
+const sendLeaves = (socket, branch, isMaster, id, keys, excludeKeys, depth, limit) => {
 
 }
 

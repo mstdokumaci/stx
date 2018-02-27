@@ -16,7 +16,7 @@ const switchBranch = (socketId, socket, master, branchKey) => {
   socket.branch = branch
 }
 
-const syncSubscriptions = (branch, socketId, socket, subscriptions) => {
+const syncSubscriptions = (branch, socketId, socket, isMaster, subscriptions) => {
   subscriptions.forEach(subscription => {
     const [ add, id, listenerId, keys, excludeKeys, depth, limit ] = subscription
     if (add) {
@@ -27,10 +27,10 @@ const syncSubscriptions = (branch, socketId, socket, subscriptions) => {
       }
 
       branch.subscriptions[id].listeners[`${socketId}-${listenerId}`] = sendLeaves.bind(
-        null, socket, branch, id, keys, excludeKeys, depth, limit
+        null, socket, branch, isMaster, id, keys, excludeKeys, depth, limit
       )
 
-      sendLeaves(socket, branch, id, keys, excludeKeys, depth, limit)
+      sendLeaves(socket, branch, isMaster, id, keys, excludeKeys, depth, limit)
     } else if (branch.subscriptions[id] && branch.subscriptions[id].listeners) {
       delete branch.subscriptions[id].listeners[`${socketId}-${listenerId}`]
     }
@@ -53,7 +53,9 @@ const incoming = (server, socketId, socket, master, data) => {
   }
 
   if (subscriptions) {
-    syncSubscriptions(socket.branch, socketId, socket, subscriptions)
+    syncSubscriptions(
+      socket.branch, socketId, socket, socket.branch === master, subscriptions
+    )
   }
 
   if (emits) {

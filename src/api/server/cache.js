@@ -1,4 +1,4 @@
-const cache = (socket, branch, isMaster, id, stamp) => {
+const cache = (socket, isMaster, id, stamp) => {
   if (!socket.cache) socket.cache = { master: {}, branch: {} }
 
   if (isMaster) {
@@ -10,7 +10,7 @@ const cache = (socket, branch, isMaster, id, stamp) => {
   }
 }
 
-const isCached = (socket, branch, isMaster, id, stamp) => socket.cache &&
+const isCached = (socket, isMaster, id, stamp) => socket.cache &&
   (isMaster ? socket.cache.master[id] === stamp : socket.cache.branch[id] === stamp)
 
 const reuseCache = (socket) => {

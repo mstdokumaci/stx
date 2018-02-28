@@ -1,7 +1,8 @@
 import { children } from '../array'
+import { cache, isCached } from './cache'
 
 const queueLeaves = (
-  socket, branch, isMaster, id, keys, excludeKeys, depth = Infinity, limit
+  socket, branch, master, id, keys, excludeKeys, depth = Infinity, limit
 ) => {
   if (branch.leaves[id] === null) {
     return
@@ -11,17 +12,19 @@ const queueLeaves = (
 
   if (keys) {
     keyList = keys.filter(
-      key => serializeWithAllChildren(socket, branch, key, depth - 1)
+      key => serializeWithAllChildren(socket, branch, master, key, depth - 1)
     )
   } else {
-    keyList = serializeAllChildren(socket, branch, id, depth, excludeKeys, limit)
+    keyList = serializeAllChildren(socket, branch, master, id, depth, excludeKeys, limit)
   }
 
-  serializeLeaf(socket, branch, id, keyList, depth)
+  serializeLeaf(socket, branch, master, id, keyList, depth)
+
+  drainQueue(socket)
 }
 
 const serializeAllChildren = (
-  socket, branch, id, depth, excludeKeys, limit = Infinity
+  socket, branch, master, id, depth, excludeKeys, limit = Infinity
 ) => {
   const keys = []
 
@@ -31,7 +34,7 @@ const serializeAllChildren = (
     }
 
     keys.push(leafId)
-    serializeWithAllChildren(socket, branch, leafId, depth)
+    serializeWithAllChildren(socket, branch, master, leafId, depth - 1)
 
     if (!--limit) {
       return true
@@ -41,19 +44,24 @@ const serializeAllChildren = (
   return keys
 }
 
-const serializeWithAllChildren = (socket, branch, id, depth) => {
+const serializeWithAllChildren = (socket, branch, master, id, depth) => {
   if (socket.queue.l[id] || branch.leaves[id] === null || depth < 0) {
     return
   }
 
   serializeLeaf(
-    socket, branch, id, serializeAllChildren(socket, branch, id, depth), depth
+    socket,
+    branch,
+    master,
+    id,
+    serializeAllChildren(socket, branch, master, id, depth),
+    depth
   )
 
   return true
 }
 
-const serializeLeaf = (socket, branch, id, keys, depth) => {
+const serializeLeaf = (socket, branch, master, id, keys, depth) => {
   const oBranch = branch
   let key, parent, stamp, val, rT
 
@@ -67,7 +75,7 @@ const serializeLeaf = (socket, branch, id, keys, depth) => {
           val = leaf.val
         } else if (leaf.rT) {
           rT = leaf.rT
-          serializeWithAllChildren(socket, oBranch, leaf.rT, depth)
+          serializeWithAllChildren(socket, oBranch, master, leaf.rT, depth)
         }
       }
 
@@ -86,9 +94,19 @@ const serializeLeaf = (socket, branch, id, keys, depth) => {
     branch = branch.inherits
   }
 
-  if (key) {
+  const isMaster = oBranch === master
+
+  if (key && isCached(socket, isMaster, id, stamp)) {
     socket.queue.l[id] = [ key, parent, stamp, val, rT, keys ]
+    cache(socket, isMaster, id, stamp)
   }
 }
 
-export { queueLeaves }
+const drainQueue = socket => {
+  if (socket.external && Object.keys(socket.queue.l).length) {
+    socket.send(JSON.stringify(socket.queue))
+    socket.queue = { l: {} }
+  }
+}
+
+export { queueLeaves, drainQueue }

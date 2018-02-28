@@ -1,30 +1,61 @@
-const sendLeaves = (socket, branch, isMaster, id, keys, excludeKeys, depth, limit) => {
+import { children } from '../array'
+
+const queueLeaves = (
+  socket, branch, isMaster, id, keys, excludeKeys, depth = Infinity, limit
+) => {
   if (branch.leaves[id] === null) {
     return
   }
 
-  serializeLeaf(socket, branch, id, depth)
+  let keyList
 
   if (keys) {
-    keys.forEach(key => serializeWithChildren(socket, branch, key, depth - 1))
-  } else if (limit) {
-
+    keyList = keys.filter(
+      key => serializeWithAllChildren(socket, branch, key, depth - 1)
+    )
   } else {
-
+    keyList = serializeAllChildren(socket, branch, id, depth, excludeKeys, limit)
   }
+
+  serializeLeaf(socket, branch, id, keyList, depth)
 }
 
-const serializeWithChildren = (socket, branch, id, depth) => {
-  if (branch.leaves[id] === null) {
+const serializeAllChildren = (
+  socket, branch, id, depth, excludeKeys, limit = Infinity
+) => {
+  const keys = []
+
+  children(branch, id, (subBranch, leafId) => {
+    if (excludeKeys && ~excludeKeys.indexOf(leafId)) {
+      return
+    }
+
+    keys.push(leafId)
+    serializeWithAllChildren(socket, branch, leafId, depth)
+
+    if (!--limit) {
+      return true
+    }
+  })
+
+  return keys
+}
+
+const serializeWithAllChildren = (socket, branch, id, depth) => {
+  if (socket.queue.l[id] || branch.leaves[id] === null || depth < 0) {
     return
   }
 
-  serializeLeaf(socket, branch, id, depth)
+  serializeLeaf(
+    socket, branch, id, serializeAllChildren(socket, branch, id, depth), depth
+  )
+
+  return true
 }
 
-const serializeLeaf = (socket, branch, id, depth) => {
+const serializeLeaf = (socket, branch, id, keys, depth) => {
   const oBranch = branch
-  let key, parent, stamp, val, rT, keys
+  let key, parent, stamp, val, rT
 
   while (branch) {
     const leaf = branch.leaves[id]
@@ -36,12 +67,8 @@ const serializeLeaf = (socket, branch, id, depth) => {
           val = leaf.val
         } else if (leaf.rT) {
           rT = leaf.rT
-          serializeWithChildren(socket, oBranch, leaf.rT, depth)
+          serializeWithAllChildren(socket, oBranch, leaf.rT, depth)
         }
-      }
-
-      if (leaf.keys) {
-        keys = (keys || []).concat(leaf.keys)
       }
 
       if (leaf.stamp > stamp) {
@@ -59,7 +86,9 @@ const serializeLeaf = (socket, branch, id, depth) => {
     branch = branch.inherits
   }
 
-  socket.queue.l.push([ id, key, parent, stamp, val, rT, keys ])
+  if (key) {
+    socket.queue.l[id] = [ key, parent, stamp, val, rT, keys ]
+  }
 }
 
-export { sendLeaves }
+export { queueLeaves }

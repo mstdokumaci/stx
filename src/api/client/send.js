@@ -24,7 +24,7 @@ const drainQueue = branch => {
       branch.client.queue.l.length
     ) {
       branch.client.socket.send(JSON.stringify(branch.client.queue))
-      branch.client.queue = { s: [], e: [], l: [] }
+      branch.client.queue = { s: [], e: [], l: {} }
     }
   }
 }

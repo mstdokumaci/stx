@@ -1,7 +1,7 @@
 import { create } from '../..'
 import { emit } from '../listeners/emit'
 import { removeSubscriptions } from './subscriptions'
-import { sendLeaves } from './send'
+import { queueLeaves } from './send'
 
 const switchBranch = (socketId, socket, master, branchKey) => {
   let branch = master.branches.find(branch => branch.key === branchKey)
@@ -26,11 +26,11 @@ const syncSubscriptions = (branch, socketId, socket, isMaster, subscriptions) =>
         branch.subscriptions[id].listeners = {}
       }
 
-      branch.subscriptions[id].listeners[`${socketId}-${listenerId}`] = sendLeaves.bind(
+      branch.subscriptions[id].listeners[`${socketId}-${listenerId}`] = queueLeaves.bind(
         null, socket, branch, isMaster, id, keys, excludeKeys, depth, limit
       )
 
-      sendLeaves(socket, branch, isMaster, id, keys, excludeKeys, depth, limit)
+      queueLeaves(socket, branch, isMaster, id, keys, excludeKeys, depth, limit)
     } else if (branch.subscriptions[id] && branch.subscriptions[id].listeners) {
       delete branch.subscriptions[id].listeners[`${socketId}-${listenerId}`]
     }

@@ -1,5 +1,10 @@
 import { keyToId } from '../../id'
 import { Leaf } from '../..'
+import {
+  addSubscriptionToQueue,
+  removeSubscriptionToQueue,
+  drainQueue
+} from '../client/send'
 
 let listenerLastId = 0
 
@@ -37,12 +42,20 @@ const subscribe = (branch, id, options, cb, listenerId) => {
   subscriptions[id].listeners[listenerId] = options
   cb(new Leaf(branch, id), options)
 
-  return listenerId
+  if (branch.client.queue) {
+    addSubscriptionToQueue(branch, id, listenerId)
+    drainQueue(branch)
+  }
 }
 
 const unsubscribe = (branch, id, listenerId) => {
   if (branch.subscriptions[id] && branch.subscriptions[id].listeners && listenerId) {
     delete branch.subscriptions[id].listeners[listenerId]
+
+    if (branch.client.queue) {
+      removeSubscriptionToQueue(branch, id, listenerId)
+      drainQueue(branch)
+    }
   }
 }
 

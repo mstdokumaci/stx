@@ -63,4 +63,4 @@ const setOwnExisting = (branch, leaf, id, val, stamp) => {
   }
 }
 
-export { setOwnExisting }
+export { setOwnExistingVal, setOwnExistingReference, setOwnExisting }

@@ -35,7 +35,7 @@ const subscribe = (branch, id, options, cb, listenerId) => {
   }
 
   subscriptions[id].listeners[listenerId] = options
-  cb(new Leaf(branch, id))
+  cb(new Leaf(branch, id), options)
 }
 
 const unsubscribe = (branch, id, listenerId) => {

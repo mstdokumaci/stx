@@ -71,4 +71,4 @@ const setOwnNew = (branch, leaf, id, val, stamp) => {
   }
 }
 
-export { setOwnNew }
+export { setOwnNewVal, setOwnNewReference, setOwnNew }

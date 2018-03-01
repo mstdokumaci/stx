@@ -7,8 +7,8 @@ import { getBranchForId, getApi } from './get'
 import { origin, compute } from './compute'
 import { forEach, map, filter, find, reduce } from './array'
 import { path, inspect, serialize } from './serialize'
-import { on, off } from './listeners/on-off'
-import { subscribe, unsubscribe } from './subscription/on-off'
+import { on } from './listeners/on'
+import { subscribe } from './subscription/on'
 import { emit, emitDataEvents } from './listeners/emit'
 import { listen } from './server'
 import { connect } from './client'
@@ -117,32 +117,17 @@ const defineApi = leaf => {
   })
 
   // ON
-  define(leaf, 'on', function (event, cb, listenerId) {
-    on(this.branch, this.id, event, cb, listenerId)
-    return this
-  })
-
-  // OFF
-  define(leaf, 'off', function (event, listenerId) {
-    off(this.branch, this.id, event, listenerId)
-    return this
+  define(leaf, 'on', function (event, cb) {
+    on(this.branch, this.id, event, cb)
   })
 
   // SUBSCRIBE
-  define(leaf, 'subscribe', function (options, cb, listenerId) {
+  define(leaf, 'subscribe', function (options, cb) {
     if (typeof options === 'function') {
-      listenerId = cb
       cb = options
       options = {}
     }
-    subscribe(this.branch, this.id, options, cb, listenerId)
-    return this
-  })
-
-  // UNSUBSCRIBE
-  define(leaf, 'unsubscribe', function (listenerId) {
-    unsubscribe(this.branch, this.id, listenerId)
-    return this
+    subscribe(this.branch, this.id, options, cb)
   })
 
   // EMIT

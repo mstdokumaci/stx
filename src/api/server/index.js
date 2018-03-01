@@ -35,7 +35,7 @@ const listen = (branch, port) => {
       const socketId = uid()
 
       socket.branch = branch
-      socket.queue = { l: {} }
+      socket.leaves = {}
       socket.ua = ua(socket.upgradeReq && socket.upgradeReq.headers['user-agent'])
       server.sockets[socketId] = socket
 

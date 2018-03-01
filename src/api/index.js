@@ -12,7 +12,7 @@ import { subscribe, unsubscribe } from './subscription/on-off'
 import { emit, emitDataEvents } from './listeners/emit'
 import { listen } from './server'
 import { connect } from './client'
-import { drainQueue } from './client/send'
+import { addSubscriptionToQueue, drainQueue, removeSubscriptionToQueue } from './client/send'
 
 const defineApi = leaf => {
   // ISLEAF
@@ -135,13 +135,26 @@ const defineApi = leaf => {
       cb = options
       options = {}
     }
-    subscribe(this.branch, this.id, options, cb, listenerId)
+
+    listenerId = subscribe(this.branch, this.id, options, cb, listenerId)
+
+    if (this.branch.client.queue) {
+      addSubscriptionToQueue(this.branch, this.id, listenerId)
+      drainQueue(this.branch)
+    }
+
     return this
   })
 
   // UNSUBSCRIBE
   define(leaf, 'unsubscribe', function (listenerId) {
     unsubscribe(this.branch, this.id, listenerId)
+
+    if (this.branch.client.queue) {
+      removeSubscriptionToQueue(this.branch, this.id, listenerId)
+      drainQueue(this.branch)
+    }
+
     return this
   })
 

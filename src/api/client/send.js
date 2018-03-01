@@ -5,7 +5,7 @@ const addSubscriptionToQueue = (branch, id, listenerId) => {
   )
 }
 
-const addAllSubscriptionsToQueue = branch => {
+const sendAllSubscriptions = branch => {
   for (const id in branch.subscriptions) {
     for (const listenerId in branch.subscriptions[id].listeners) {
       addSubscriptionToQueue(branch, id, listenerId)
@@ -13,6 +13,10 @@ const addAllSubscriptionsToQueue = branch => {
   }
 
   drainQueue(branch)
+}
+
+const removeSubscriptionToQueue = (branch, id, listenerId) => {
+  branch.client.queue.s.push([ false, id, listenerId ])
 }
 
 const drainQueue = branch => {
@@ -31,4 +35,9 @@ const drainQueue = branch => {
   }
 }
 
-export { addSubscriptionToQueue, addAllSubscriptionsToQueue, drainQueue }
+export {
+  addSubscriptionToQueue,
+  sendAllSubscriptions,
+  removeSubscriptionToQueue,
+  drainQueue
+}

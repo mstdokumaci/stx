@@ -2,7 +2,7 @@ import { root } from '../../id'
 import { createStamp } from '../../stamp'
 import define from '../../define'
 import { emit } from '../listeners/emit'
-import { addAllSubscriptionsToQueue } from './send'
+import { sendAllSubscriptions } from './send'
 import receiveLarge from './receiveLarge'
 import WebSocket from './websocket'
 import { incoming } from './incoming'
@@ -50,8 +50,9 @@ const connect = (branch, url, reconnect = 50) => {
     branch.client.socket = socket
     branch.client.queue = { s: [], e: [], l: {} }
 
+    sendAllSubscriptions(branch)
+
     emit(branch, root, 'connected', true, createStamp(branch.stamp))
-    addAllSubscriptionsToQueue(branch)
   }
 
   socket.onmessage = ({ data }) => {

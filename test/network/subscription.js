@@ -58,30 +58,34 @@ test('network - subscriptions', t => {
     }
   })
 
-  items2.subscribe({
-    excludeKeys: [ 'third' ],
-    depth: 2
-  }, i2 => {
-    if (i2.get('first')) {
-      t.same(
-        i2.serialize(),
-        { first: { title: 'item 1' }, second: { title: 'item 2' } },
-        'client2.items.serialize = correct'
-      )
+  client2.on('connected', val => {
+    if (val) {
+      items2.subscribe({
+        excludeKeys: [ 'third' ],
+        depth: 2
+      }, i2 => {
+        if (i2.get('first')) {
+          t.same(
+            i2.serialize(),
+            { first: { title: 'item 1' }, second: { title: 'item 2' } },
+            'client2.items.serialize = correct'
+          )
 
-      setTimeout(() => {
-        master.set({
-          items: {
-            first: {
+          setTimeout(() => {
+            master.set({
               items: {
-                third: [ '@', 'items', 'third' ]
+                first: {
+                  items: {
+                    third: [ '@', 'items', 'third' ]
+                  }
+                },
+                third: {
+                  id: 3
+                }
               }
-            },
-            third: {
-              id: 3
-            }
-          }
-        })
+            })
+          })
+        }
       })
     }
   })

@@ -118,7 +118,7 @@ const defineApi = leaf => {
 
   // ON
   define(leaf, 'on', function (event, cb) {
-    on(this.branch, this.id, event, cb)
+    return on(this.branch, this.id, event, cb)
   })
 
   // SUBSCRIBE
@@ -127,7 +127,8 @@ const defineApi = leaf => {
       cb = options
       options = {}
     }
-    subscribe(this.branch, this.id, options, cb)
+
+    return subscribe(this.branch, this.id, options, cb)
   })
 
   // EMIT

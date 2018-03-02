@@ -1,6 +1,48 @@
 import { createStamp } from '../../stamp'
 import { children } from '../array'
 import { cache, isCached } from './cache'
+import maxSize from './maxSize'
+
+const send = (socket, payload, next) => {
+  socket.send(payload)
+  process.nextTick(next)
+}
+
+const sendLarge = (socket, raw, size) => {
+  const count = size / maxSize
+  if ((count | 0) === count) {
+    raw += ' '
+  }
+
+  if (!socket.blobInProgress) {
+    socket.blobInProgress = []
+  }
+
+  console.log('📡 exceeds frame limit - split up', (size / (1024 * 1024)) | 0, 'MB')
+  const buf = Buffer.from(raw, 'utf8')
+  let i = 0
+
+  const drainInProgress = done => {
+    if (socket.blobInProgress.length > 0) {
+      send(socket, socket.blobInProgress.shift(), () => drainInProgress(done))
+    } else {
+      done()
+    }
+  }
+
+  const next = () => {
+    i++
+    if (i * maxSize <= size) {
+      send(socket, buf.slice(i * maxSize, (i + 1) * maxSize), next)
+    } else {
+      drainInProgress(() => {
+        socket.blobInProgress = false
+      })
+    }
+  }
+
+  send(socket, buf.slice(i * maxSize, (i + 1) * maxSize), next)
+}
 
 const sendLeaves = (socket, master, leaf, options) => {
   const { branch, id } = leaf
@@ -14,20 +56,27 @@ const sendLeaves = (socket, master, leaf, options) => {
     depth = Infinity
   }
 
+  const leaves = {}
+
   keys = keys ? keys.filter(
-    key => serializeWithAllChildren(socket, branch, master, key, depth - 1)
-  ) : serializeAllChildren(socket, branch, master, id, depth, excludeKeys, limit)
+    key => serializeWithAllChildren(leaves, socket, branch, master, key, depth - 1)
+  ) : serializeAllChildren(leaves, socket, branch, master, id, depth, excludeKeys, limit)
 
-  serializeLeaf(socket, branch, master, id, keys, depth)
+  serializeLeaf(leaves, socket, branch, master, id, keys, depth)
 
-  if (socket.external && Object.keys(socket.leaves).length) {
-    socket.send(JSON.stringify({ t: createStamp(branch.stamp), l: socket.leaves }))
-    socket.leaves = {}
+  if (socket.external && Object.keys(leaves).length) {
+    const raw = JSON.stringify({ t: createStamp(branch.stamp), l: leaves })
+    const size = Buffer.byteLength(raw, 'utf8')
+    if (size > maxSize) {
+      sendLarge(socket, raw, size)
+    } else {
+      socket.send(raw)
+    }
   }
 }
 
 const serializeAllChildren = (
-  socket, branch, master, id, depth, excludeKeys, limit = Infinity
+  leaves, socket, branch, master, id, depth, excludeKeys, limit = Infinity
 ) => {
   const keys = []
 
@@ -37,7 +86,7 @@ const serializeAllChildren = (
     }
 
     keys.push(leafId)
-    serializeWithAllChildren(socket, branch, master, leafId, depth - 1)
+    serializeWithAllChildren(leaves, socket, branch, master, leafId, depth - 1)
 
     if (!--limit) {
       return true
@@ -47,18 +96,18 @@ const serializeAllChildren = (
   return keys
 }
 
-const serializeWithAllChildren = (socket, branch, master, id, depth) => {
-  if (socket.leaves[id] || branch.leaves[id] === null || depth < 0) {
+const serializeWithAllChildren = (leaves, socket, branch, master, id, depth) => {
+  if (leaves[id] || branch.leaves[id] === null || depth < 0) {
     return
   }
 
-  const keys = serializeAllChildren(socket, branch, master, id, depth)
-  serializeLeaf(socket, branch, master, id, keys, depth)
+  const keys = serializeAllChildren(leaves, socket, branch, master, id, depth)
+  serializeLeaf(leaves, socket, branch, master, id, keys, depth)
 
   return true
 }
 
-const serializeLeaf = (socket, branch, master, id, keys, depth) => {
+const serializeLeaf = (leaves, socket, branch, master, id, keys, depth) => {
   const oBranch = branch
   let key, parent, stamp, val, rT, isMaster
 
@@ -88,7 +137,7 @@ const serializeLeaf = (socket, branch, master, id, keys, depth) => {
   }
 
   if (key && !isCached(socket, isMaster, id, stamp)) {
-    socket.leaves[id] = [ key, parent, stamp, val, rT, keys ]
+    leaves[id] = [ key, parent, stamp, val, rT, keys ]
     cache(socket, isMaster, id, stamp)
   }
 }

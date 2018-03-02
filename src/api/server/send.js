@@ -5,7 +5,7 @@ import maxSize from './maxSize'
 
 const send = (socket, payload, next) => {
   socket.send(payload)
-  process.nextTick(next)
+  setImmediate(next)
 }
 
 const sendLarge = (socket, raw, size) => {
@@ -36,7 +36,7 @@ const sendLarge = (socket, raw, size) => {
       send(socket, buf.slice(i * maxSize, (i + 1) * maxSize), next)
     } else {
       drainInProgress(() => {
-        socket.blobInProgress = false
+        socket.blobInProgress = null
       })
     }
   }
@@ -69,6 +69,8 @@ const sendLeaves = (socket, master, leaf, options) => {
     const size = Buffer.byteLength(raw, 'utf8')
     if (size > maxSize) {
       sendLarge(socket, raw, size)
+    } else if (socket.blobInProgress) {
+      socket.blobInProgress.push(raw)
     } else {
       socket.send(raw)
     }

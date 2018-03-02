@@ -312,13 +312,13 @@ test('data listeners - references', t => {
   masterFire.length = 0
   branch1Fire.length = 0
 
-  master.get(['pointers', 'pointer2']).on('data', (type, stamp, item) => {
+  const listener1 = master.get(['pointers', 'pointer2']).on('data', (type, stamp, item) => {
     masterFire.push(`${item.root().get('id').compute()}-${type}-${item.get('real').compute()}`)
-  }, 'listener1')
+  })
 
-  branch1.get(['pointers', 'pointer2']).on('data', (type, stamp, item) => {
+  const listener2 = branch1.get(['pointers', 'pointer2']).on('data', (type, stamp, item) => {
     branch1Fire.push(`${item.root().get('id').compute()}-${type}-${item.get('real').compute()}`)
-  }, 'listener1')
+  })
 
   const branch2 = branch1.create({
     id: 'branch2',
@@ -363,8 +363,8 @@ test('data listeners - references', t => {
   branch1Fire.length = 0
   branch2Fire.length = 0
 
-  master.get(['pointers', 'pointer2']).off('data', 'listener1')
-  branch1.get(['pointers', 'pointer2']).off('data', 'listener1')
+  listener1.off()
+  listener2.off()
 
   master.set({
     deep: {

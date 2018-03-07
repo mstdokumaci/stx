@@ -56,7 +56,7 @@ const setLeaves = (branch, leaves, stamp) => {
         setOwnNewReference(branch, leaf, id, rT, stamp)
       }
 
-      if (keys) {
+      if (keys && keys.length) {
         addDataEvent(void 0, id, 'add-key')
         leaf.keys = keys
       }

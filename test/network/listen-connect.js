@@ -2,14 +2,14 @@ const test = require('tape')
 const { create } = require('../../dist/index')
 
 test('network - listen & connect', t => {
-  const master = create()
-  const server = master.listen(7070)
+  const sMaster = create()
+  const server = sMaster.listen(7070)
 
-  const client = create()
-  client.on('connected', val => {
+  const cMaster = create()
+  cMaster.on('connected', val => {
     if (val) {
       t.pass('socket connected')
-      client.branch.client.socket.close()
+      client.socket.close()
     } else {
       t.pass('socket closed')
 
@@ -20,26 +20,26 @@ test('network - listen & connect', t => {
     }
   })
 
-  client.connect('ws://localhost:7070')
+  const client = cMaster.connect('ws://localhost:7070')
 })
 
 test('network - listen & reconnect', t => {
-  const master = create()
-  const server1 = master.listen(7070)
+  const sMaster = create()
+  const server1 = sMaster.listen(7070)
 
-  const client = create()
+  const cMaster = create()
 
   let connectCount = 0
   let server2
 
-  client.on('connected', val => {
+  cMaster.on('connected', val => {
     if (val) {
       t.pass('socket connected')
       if (++connectCount > 1) {
-        client.branch.client.socket.close()
+        client.socket.close()
       } else {
         server1.close()
-        server2 = master.listen(7070)
+        server2 = cMaster.listen(7070)
       }
     } else {
       t.pass('socket closed')
@@ -53,5 +53,5 @@ test('network - listen & reconnect', t => {
     }
   })
 
-  client.connect('ws://localhost:7070')
+  const client = cMaster.connect('ws://localhost:7070')
 })

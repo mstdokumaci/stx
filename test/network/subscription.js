@@ -2,7 +2,7 @@ const test = require('tape')
 const { create } = require('../../dist/index')
 
 test('network - subscriptions', t => {
-  const master = create({
+  const sMaster = create({
     id: 'master',
     items: {
       first: {
@@ -17,13 +17,13 @@ test('network - subscriptions', t => {
     }
   })
 
-  const server = master.listen(7070)
+  const server = sMaster.listen(7070)
 
-  const client1 = create({ id: 'client1' })
-  const items1 = client1.get('items', {})
+  const cMaster1 = create({ id: 'client1' })
+  const items1 = cMaster1.get('items', {})
 
-  const client2 = create({ id: 'client2' })
-  const items2 = client2.get('items', {})
+  const cMaster2 = create({ id: 'client2' })
+  const items2 = cMaster2.get('items', {})
 
   items1.subscribe({
     keys: [ 'first', 'third' ]
@@ -41,24 +41,24 @@ test('network - subscriptions', t => {
             },
             third: { title: 'item 3', id: 3 }
           },
-          'client1.items.serialize = correct'
+          'cMaster1.items.serialize = correct'
         )
 
-        client1.branch.client.socket.close()
-        client2.branch.client.socket.close()
+        client1.socket.close()
+        client2.socket.close()
         server.close()
         t.end()
       } else {
         t.same(
           i1.serialize(),
           { first: { title: 'item 1' }, third: { title: 'item 3' } },
-          'client1.items.serialize = correct'
+          'cMaster1.items.serialize = correct'
         )
       }
     }
   })
 
-  client2.on('connected', val => {
+  cMaster2.on('connected', val => {
     if (val) {
       items2.subscribe({
         excludeKeys: [ 'third' ],
@@ -68,11 +68,11 @@ test('network - subscriptions', t => {
           t.same(
             i2.serialize(),
             { first: { title: 'item 1' }, second: { title: 'item 2' } },
-            'client2.items.serialize = correct'
+            'cMaster2.items.serialize = correct'
           )
 
           setTimeout(() => {
-            master.set({
+            sMaster.set({
               items: {
                 first: {
                   items: {
@@ -90,16 +90,16 @@ test('network - subscriptions', t => {
     }
   })
 
-  client1.connect('ws://localhost:7070')
-  client2.connect('ws://localhost:7070')
+  const client1 = cMaster1.connect('ws://localhost:7070')
+  const client2 = cMaster2.connect('ws://localhost:7070')
 })
 
 test('network - subscription - data size', { timeout: 3000 }, t => {
-  const master = create({
+  const sMaster = create({
     id: 'master'
   })
 
-  const server = master.listen(7070)
+  const server = sMaster.listen(7070)
 
   const bigData = { here: 'it is' }
   const val = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor ' +
@@ -137,29 +137,27 @@ test('network - subscription - data size', { timeout: 3000 }, t => {
     }
   }
 
-  master.set({ bigData })
+  sMaster.set({ bigData })
 
-  const client = create({
+  const cMaster = create({
     id: 'client'
   })
 
-  client.connect('ws://localhost:7070')
-
   t.plan(2)
 
-  client.get('bigData', {}).subscribe(bigData => {
+  cMaster.get('bigData', {}).subscribe(bigData => {
     if (bigData.get('here')) {
       t.equals(
         bigData.get('here').compute(),
         'it is',
         'subscription fired for bigData'
       )
-      client.branch.client.socket.close()
+      client.socket.close()
       server.close()
     }
   })
 
-  client.get('otherData', {}).subscribe(otherData => {
+  cMaster.get('otherData', {}).subscribe(otherData => {
     if (otherData.get('here')) {
       t.equals(
         otherData.get('here').compute(),
@@ -169,13 +167,15 @@ test('network - subscription - data size', { timeout: 3000 }, t => {
     }
   })
 
-  client.on('connected', val => {
+  cMaster.on('connected', val => {
     if (val) {
-      master.set({
+      sMaster.set({
         otherData: {
           here: 'it is'
         }
       })
     }
   })
+
+  const client = cMaster.connect('ws://localhost:7070')
 })

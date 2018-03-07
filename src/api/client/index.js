@@ -79,6 +79,8 @@ const connect = (branch, url, reconnect = 50) => {
         }
       })
   }
+
+  return branch.client
 }
 
 export { connect }

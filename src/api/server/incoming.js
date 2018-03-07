@@ -45,12 +45,8 @@ const fireEmits = (branch, emits) => {
   emits.forEach(([ id, event, val, stamp ]) => emit(branch, id, event, val, stamp))
 }
 
-const setLeaves = (branch, leaves) => {
-
-}
-
 const incoming = (server, socketId, socket, master, data) => {
-  const { b: branchKey, s: subscriptions, e: emits, l: leaves } = data
+  const { b: branchKey, s: subscriptions, e: emits } = data
 
   if (branchKey !== void 0 && branchKey !== socket.branch.key) {
     switchBranch(socketId, socket, master, branchKey)
@@ -62,10 +58,6 @@ const incoming = (server, socketId, socket, master, data) => {
 
   if (emits) {
     fireEmits(socket.branch, emits)
-  }
-
-  if (leaves) {
-    setLeaves(socket.branch, leaves)
   }
 }
 

@@ -128,7 +128,7 @@ const setKeys = (branch, id, val, stamp) => {
       if (subLeafBranch) {
         if (subLeafBranch === branch) {
           setOwnExisting(
-            branch, subLeafBranch.leaves[subLeafId], subLeafId, val[key], stamp
+            branch, branch.leaves[subLeafId], subLeafId, val[key], stamp
           )
         } else {
           setOverride(

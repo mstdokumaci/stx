@@ -1,7 +1,7 @@
 import { Leaf } from '../..'
 import { subscriptions } from '../subscription/fire'
 
-const emitOwn = (branch, id, event, val, stamp, isKeys) => {
+const emitOwn = (branch, id, event, val, stamp) => {
   const listeners = branch.listeners
 
   if (listeners[id] && listeners[id][event]) {
@@ -10,7 +10,7 @@ const emitOwn = (branch, id, event, val, stamp, isKeys) => {
     }
   }
 
-  if (event === 'data' && !isKeys) {
+  if (event === 'data' && val !== 'add-key' && val !== 'remove') {
     subscriptions(branch, id, stamp)
   }
 }
@@ -42,18 +42,18 @@ const emitBranches = (branches, id, event, val, stamp) =>
     }
   })
 
-const emitReferences = (branch, ids, event, val, stamp, isKeys) => {
+const emitReferences = (branch, ids, event, val, stamp) => {
   for (const id in ids) {
-    emitOwn(branch, id, event, val, stamp, isKeys)
-    emitReferences(branch, ids[id], event, val, stamp, isKeys)
+    emitOwn(branch, id, event, val, stamp)
+    emitReferences(branch, ids[id], event, val, stamp)
   }
 }
 
 const emit = (branch, id, event, val, stamp, isKeys) => {
-  emitOwn(branch, id, event, val, stamp, isKeys)
+  emitOwn(branch, id, event, val, stamp)
 
   if (branch.rF[id]) {
-    emitReferences(branch, branch.rF[id], event, val, stamp, isKeys)
+    emitReferences(branch, branch.rF[id], event, val, stamp)
   }
 
   if (branch.branches.length && !isKeys) {

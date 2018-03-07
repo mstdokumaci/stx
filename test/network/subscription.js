@@ -34,25 +34,31 @@ test('network - subscriptions', t => {
           i1.serialize(),
           {
             first: {
-              title: 'item 1',
+              title: 'item 1 with items',
               items: {
                 third: [ '@', 'items', 'third' ]
               }
             },
             third: { title: 'item 3', id: 3 }
           },
-          'cMaster1.items.serialize = correct'
+          'cMaster1.items.serialize = correct2'
         )
 
-        client1.socket.close()
-        client2.socket.close()
-        server.close()
-        t.end()
+        setTimeout(() => {
+          sMaster.set({
+            items: {
+              second: {
+                title: null,
+                id: 2
+              }
+            }
+          })
+        })
       } else {
         t.same(
           i1.serialize(),
           { first: { title: 'item 1' }, third: { title: 'item 3' } },
-          'cMaster1.items.serialize = correct'
+          'cMaster1.items.serialize = correct1'
         )
       }
     }
@@ -65,26 +71,46 @@ test('network - subscriptions', t => {
         depth: 2
       }, i2 => {
         if (i2.get('first')) {
-          t.same(
-            i2.serialize(),
-            { first: { title: 'item 1' }, second: { title: 'item 2' } },
-            'cMaster2.items.serialize = correct'
-          )
+          if (!i2.get([ 'second', 'title' ])) {
+            t.same(
+              i2.serialize(),
+              { first: { title: 'item 1 with items', items: {} }, second: { id: 2 } },
+              'cMaster2.items.serialize = correct3'
+            )
 
-          setTimeout(() => {
-            sMaster.set({
-              items: {
-                first: {
-                  items: {
-                    third: [ '@', 'items', 'third' ]
+            client1.socket.close()
+            client2.socket.close()
+            server.close()
+            t.end()
+          } else if (i2.get([ 'first', 'items' ])) {
+            t.same(
+              i2.serialize(),
+              { first: { title: 'item 1 with items', items: {} }, second: { title: 'item 2' } },
+              'cMaster2.items.serialize = correct2'
+            )
+          } else {
+            t.same(
+              i2.serialize(),
+              { first: { title: 'item 1' }, second: { title: 'item 2' } },
+              'cMaster2.items.serialize = correct1'
+            )
+
+            setTimeout(() => {
+              sMaster.set({
+                items: {
+                  first: {
+                    title: 'item 1 with items',
+                    items: {
+                      third: [ '@', 'items', 'third' ]
+                    }
+                  },
+                  third: {
+                    id: 3
                   }
-                },
-                third: {
-                  id: 3
                 }
-              }
+              })
             })
-          })
+          }
         }
       })
     }

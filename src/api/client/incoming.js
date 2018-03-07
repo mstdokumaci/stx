@@ -38,7 +38,13 @@ const setLeaves = (branch, leaves, stamp) => {
           if (keys.find(key => !~leaf.keys.indexOf(key))) {
             addDataEvent(void 0, id, 'add-key')
           }
-          if (leaf.keys.find(key => !~keys.indexOf(key))) {
+          const removed = leaf.keys.filter(key => {
+            if (!~keys.indexOf(key)) {
+              delete branch.leaves[key]
+              return true
+            }
+          })
+          if (removed.length) {
             addDataEvent(void 0, id, 'remove-key')
           }
         } else {

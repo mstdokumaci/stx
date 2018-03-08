@@ -205,3 +205,55 @@ test('network - subscription - data size', { timeout: 3000 }, t => {
 
   const client = cMaster.connect('ws://localhost:7070')
 })
+
+test('network - remove subscriptions', t => {
+  const sMaster = create({
+    first: 1,
+    second: 2,
+    third: 3
+  })
+
+  const server = sMaster.listen(7070)
+
+  const cMaster = create()
+
+  const s1 = cMaster.subscribe(
+    { excludeKeys: [ 'first' ] },
+    cm => {
+      if (cm.get('second')) {
+        if (cm.get('fourth')) {
+          t.fail('should not get fourth after unsubscribe')
+        } else {
+          t.same(
+            cm.serialize(),
+            { second: 2, third: 3 },
+            'cm.serialize() = { second: 2, third: 3 }'
+          )
+
+          s1.unsubscribe()
+
+          setTimeout(() => {
+            sMaster.set({
+              fourth: 4
+            })
+          }, 50)
+        }
+      }
+    }
+  )
+
+  cMaster.subscribe(
+    { keys: [ 'fourth' ] },
+    cm => {
+      if (cm.get('fourth')) {
+        t.equals(cm.get('fourth').compute(), 4, 'fourth = 4')
+
+        client.socket.close()
+        server.close()
+        t.end()
+      }
+    }
+  )
+
+  const client = cMaster.connect('ws://localhost:7070')
+})

@@ -127,7 +127,7 @@ const serializeLeaf = (leaves, socket, branch, master, id, keys, depth) => {
         }
       }
 
-      if (!key && leaf.key) {
+      if (!stamp && leaf.stamp) {
         isMaster = branch === master
         key = leaf.key
         parent = leaf.parent
@@ -138,7 +138,7 @@ const serializeLeaf = (leaves, socket, branch, master, id, keys, depth) => {
     branch = branch.inherits
   }
 
-  if (key && !isCached(socket, isMaster, id, stamp)) {
+  if (stamp && !isCached(socket, isMaster, id, stamp)) {
     leaves[id] = [ key, parent, stamp, val, rT, keys ]
     cache(socket, isMaster, id, stamp)
   }

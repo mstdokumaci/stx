@@ -75,12 +75,10 @@ const setLeaves = (branch, leaves, stamp) => {
 const incoming = (branch, data) => {
   const { t: stamp, h: heartbeat, l: leaves } = data
 
-  if (stamp) {
-    setOffset(branch.stamp, stamp)
+  setOffset(branch.stamp, stamp)
 
-    if (leaves) {
-      setLeaves(branch, leaves, stamp)
-    }
+  if (leaves) {
+    setLeaves(branch, leaves, stamp)
   }
 
   if (heartbeat) {

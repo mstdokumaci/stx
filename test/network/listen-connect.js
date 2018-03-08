@@ -3,13 +3,15 @@ const { create } = require('../../dist/index')
 
 test('network - listen & connect', t => {
   const sMaster = create()
-  const server = sMaster.listen(7070)
+  const server = sMaster.listen(7070, true)
 
   const cMaster = create()
   cMaster.on('connected', val => {
     if (val) {
       t.pass('socket connected')
-      client.socket.close()
+      setTimeout(() => {
+        client.socket.close()
+      })
     } else {
       t.pass('socket closed')
 

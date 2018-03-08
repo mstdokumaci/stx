@@ -24,7 +24,7 @@ define(Server.prototype, 'close', function (cb) {
   serverClose.call(this, cb)
 })
 
-const listen = (branch, port) => {
+const listen = (branch, port, forceHeartbeat) => {
   const server = new Server({ port })
   server.sockets = {}
 
@@ -39,7 +39,7 @@ const listen = (branch, port) => {
       socket.ua = ua(socket.upgradeReq && socket.upgradeReq.headers['user-agent'])
       server.sockets[socketId] = socket
 
-      if (socket.ua.platform === 'ios') {
+      if (socket.ua.platform === 'ios' || forceHeartbeat) {
         socket.send(JSON.stringify({
           t: createStamp(socket.branch.stamp),
           h: true

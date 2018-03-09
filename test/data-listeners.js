@@ -20,7 +20,7 @@ test('data listeners - set', t => {
     masterFire.push(`${item.root().get('id').compute()}-${val}-${item.get('title').compute()}`)
   })
 
-  branch1.get('first').on('data', (val, stamp, item) => {
+  branch1.get('first').on((val, stamp, item) => {
     branch1Fire.push(`${item.root().get('id').compute()}-${val}-${item.get('title').compute()}`)
   })
 
@@ -75,7 +75,7 @@ test('data listeners - remove', t => {
     id: 'branch1'
   })
 
-  master.get('first').on('data', (val, stamp, item) => {
+  master.get('first').on((val, stamp, item) => {
     masterFire.push(`${item.root().get('id').compute()}-${val}-${item.get('id').compute()}`)
   })
 

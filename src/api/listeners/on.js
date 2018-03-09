@@ -10,7 +10,11 @@ const Listener = function (branch, id, event, listenerId) {
 }
 
 define(Listener.prototype, 'off', function () {
-  delete this.branch.listeners[this.id][this.event][this.listenerId]
+  if (this.event === 'allData') {
+    delete this.branch.listeners.allData[this.listenerId]
+  } else {
+    delete this.branch.listeners[this.id][this.event][this.listenerId]
+  }
 })
 
 const on = (branch, id, event, cb) => {
@@ -18,13 +22,21 @@ const on = (branch, id, event, cb) => {
 
   const listeners = branch.listeners
 
-  if (!listeners[id]) {
-    listeners[id] = { [ event ]: {} }
-  } else if (!listeners[id][event]) {
-    listeners[id][event] = {}
-  }
+  if (event === 'allData') {
+    if (!listeners.allData) {
+      listeners.allData = {}
+    }
 
-  listeners[id][event][listenerId] = cb
+    listeners.allData[listenerId] = cb
+  } else {
+    if (!listeners[id]) {
+      listeners[id] = { [ event ]: {} }
+    } else if (!listeners[id][event]) {
+      listeners[id][event] = {}
+    }
+
+    listeners[id][event][listenerId] = cb
+  }
 
   return new Listener(branch, id, event, listenerId)
 }

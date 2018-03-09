@@ -217,40 +217,63 @@ test('network - remove subscriptions', t => {
 
   const cMaster = create()
 
-  const s1 = cMaster.subscribe(
-    { excludeKeys: [ 'first' ] },
+  global.debug = true
+
+  cMaster.subscribe(
+    { keys: [ 'fourth', 'fifth' ] },
     cm => {
-      if (cm.get('second')) {
-        if (cm.get('fourth')) {
-          t.fail('should not get fourth after unsubscribe')
-        } else {
-          t.same(
-            cm.serialize(),
-            { second: 2, third: 3 },
-            'cm.serialize() = { second: 2, third: 3 }'
-          )
+      if (cm.get('fifth')) {
+        t.equals(
+          cm.get('fifth').compute(),
+          5,
+          's2 cm.fifth = 5'
+        )
 
-          s1.unsubscribe()
-
-          setTimeout(() => {
-            sMaster.set({
-              fourth: 4
-            })
-          }, 50)
-        }
+        global.debug = false
+        client.socket.close()
+        server.close()
+        t.end()
+      } else if (cm.get('fourth')) {
+        t.equals(
+          cm.get('fourth').compute(),
+          4,
+          's2 cm.fourth = 4'
+        )
       }
     }
   )
 
-  cMaster.subscribe(
-    { keys: [ 'fourth' ] },
+  const s1 = cMaster.subscribe(
+    { excludeKeys: [ 'first' ] },
     cm => {
       if (cm.get('fourth')) {
-        t.equals(cm.get('fourth').compute(), 4, 'fourth = 4')
+        t.same(
+          cm.serialize(),
+          { second: 2, third: 3, fourth: 4 },
+          's1 cm.serialize() = { second: 2, third: 3, fourth: 4 }'
+        )
 
-        client.socket.close()
-        server.close()
-        t.end()
+        s1.unsubscribe()
+
+        setTimeout(() => {
+          sMaster.set({
+            fifth: 5
+          })
+        })
+      } else if (cm.get('fifth')) {
+        t.fail('s1 should not fire for fifth')
+      } else if (cm.get('second')) {
+        t.same(
+          cm.serialize(),
+          { second: 2, third: 3 },
+          's1 cm.serialize() = { second: 2, third: 3 }'
+        )
+
+        setTimeout(() => {
+          sMaster.set({
+            fourth: 4
+          })
+        })
       }
     }
   )

@@ -118,6 +118,11 @@ const defineApi = leaf => {
 
   // ON
   define(leaf, 'on', function (event, cb) {
+    if (typeof event === 'function') {
+      cb = event
+      event = 'data'
+    }
+
     return on(this.branch, this.id, event, cb)
   })
 

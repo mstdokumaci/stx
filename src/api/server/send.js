@@ -3,7 +3,7 @@ import { children } from '../array'
 import { cache, isCached } from './cache'
 import maxSize from './maxSize'
 
-const send = (socket, payload, next) => {
+const sendToSocket = (socket, payload, next) => {
   socket.send(payload)
   setImmediate(next)
 }
@@ -24,7 +24,7 @@ const sendLarge = (socket, raw, size) => {
 
   const drainInProgress = done => {
     if (socket.blobInProgress.length > 0) {
-      send(socket, socket.blobInProgress.shift(), () => drainInProgress(done))
+      sendToSocket(socket, socket.blobInProgress.shift(), () => drainInProgress(done))
     } else {
       done()
     }
@@ -33,7 +33,7 @@ const sendLarge = (socket, raw, size) => {
   const next = () => {
     i++
     if (i * maxSize <= size) {
-      send(socket, buf.slice(i * maxSize, (i + 1) * maxSize), next)
+      sendToSocket(socket, buf.slice(i * maxSize, (i + 1) * maxSize), next)
     } else {
       drainInProgress(() => {
         socket.blobInProgress = null
@@ -41,7 +41,18 @@ const sendLarge = (socket, raw, size) => {
     }
   }
 
-  send(socket, buf.slice(i * maxSize, (i + 1) * maxSize), next)
+  sendToSocket(socket, buf.slice(i * maxSize, (i + 1) * maxSize), next)
+}
+
+const send = (socket, raw) => {
+  const size = Buffer.byteLength(raw, 'utf8')
+  if (size > maxSize) {
+    sendLarge(socket, raw, size)
+  } else if (socket.blobInProgress) {
+    socket.blobInProgress.push(raw)
+  } else {
+    socket.send(raw)
+  }
 }
 
 const sendLeaves = (socket, master, leaf, options) => {
@@ -64,16 +75,13 @@ const sendLeaves = (socket, master, leaf, options) => {
 
   serializeLeaf(leaves, socket, branch, master, id, keys, depth)
 
+  if (global.debug) {
+    console.log('KEYS', keys)
+    console.log('LEAVES', leaves)
+  }
+
   if (socket.external && Object.keys(leaves).length) {
-    const raw = JSON.stringify({ t: createStamp(branch.stamp), l: leaves })
-    const size = Buffer.byteLength(raw, 'utf8')
-    if (size > maxSize) {
-      sendLarge(socket, raw, size)
-    } else if (socket.blobInProgress) {
-      socket.blobInProgress.push(raw)
-    } else {
-      socket.send(raw)
-    }
+    send(socket, JSON.stringify({ t: createStamp(branch.stamp), l: leaves }))
   }
 }
 
@@ -104,9 +112,7 @@ const serializeWithAllChildren = (leaves, socket, branch, master, id, depth) => 
   }
 
   const keys = serializeAllChildren(leaves, socket, branch, master, id, depth)
-  serializeLeaf(leaves, socket, branch, master, id, keys, depth)
-
-  return true
+  return serializeLeaf(leaves, socket, branch, master, id, keys, depth)
 }
 
 const serializeLeaf = (leaves, socket, branch, master, id, keys, depth) => {
@@ -138,9 +144,13 @@ const serializeLeaf = (leaves, socket, branch, master, id, keys, depth) => {
     branch = branch.inherits
   }
 
-  if (stamp && !isCached(socket, isMaster, id, stamp)) {
-    leaves[id] = [ key, parent, stamp, val, rT, keys ]
-    cache(socket, isMaster, id, stamp)
+  if (stamp && (val || rT || keys.length)) {
+    if (!isCached(socket, isMaster, id, stamp)) {
+      leaves[id] = [ key, parent, stamp, val, rT, keys ]
+      cache(socket, isMaster, id, stamp)
+    }
+
+    return true
   }
 }
 

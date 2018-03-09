@@ -10,6 +10,12 @@ const emitOwn = (branch, id, event, val, stamp) => {
     }
   }
 
+  if (listeners.allData) {
+    for (const listenerId in listeners.allData) {
+      listeners.allData[listenerId](val, stamp, new Leaf(branch, id))
+    }
+  }
+
   if (event === 'data' && val !== 'add-key' && val !== 'remove') {
     subscriptions(branch, id, stamp)
   }

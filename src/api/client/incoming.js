@@ -21,7 +21,8 @@ const startHeartbeat = branch => {
 }
 
 const setLeaves = (branch, leaves, stamp) => {
-  for (const id in leaves) {
+  for (let id in leaves) {
+    id = Number(id)
     const [ key, parent, stamp, val, rT, keys ] = leaves[id]
 
     if (branch.leaves[id]) {
@@ -33,25 +34,17 @@ const setLeaves = (branch, leaves, stamp) => {
         setOwnExistingReference(branch, leaf, id, rT, stamp)
       }
 
-      if (keys) {
-        if (leaf.keys) {
-          if (keys.find(key => !~leaf.keys.indexOf(key))) {
+      if (keys && keys.length) {
+        if (leaf.keys && leaf.keys.length) {
+          const added = keys.filter(key => !~leaf.keys.indexOf(key))
+          if (added) {
+            leaf.keys = leaf.keys.concat(added)
             addDataEvent(void 0, id, 'add-key')
           }
-          const removed = leaf.keys.filter(key => {
-            if (!~keys.indexOf(key)) {
-              delete branch.leaves[key]
-              return true
-            }
-          })
-          if (removed.length) {
-            addDataEvent(void 0, id, 'remove-key')
-          }
         } else {
+          leaf.keys = keys
           addDataEvent(void 0, id, 'add-key')
         }
-
-        leaf.keys = keys
       }
     } else {
       const leaf = addOwnLeaf(branch, id, parent, key, stamp)
@@ -63,8 +56,8 @@ const setLeaves = (branch, leaves, stamp) => {
       }
 
       if (keys && keys.length) {
-        addDataEvent(void 0, id, 'add-key')
         leaf.keys = keys
+        addDataEvent(void 0, id, 'add-key')
       }
     }
   }

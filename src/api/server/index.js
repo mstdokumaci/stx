@@ -4,14 +4,17 @@ import { Server } from 'uws'
 import uid from '../../uid'
 import { createStamp } from '../../stamp'
 import define from '../../define'
-import { removeSubscriptions } from './subscriptions'
+import {
+  addAllDataListener,
+  removeSubscriptionsAndAllDataListener
+} from './subscriptions'
 import { incoming } from './incoming'
 
 const heartBeatTimeout = 8e3
 
 const removeSocket = (server, socketId, socket) => {
   socket.removeAllListeners()
-  removeSubscriptions(socket.branch, socketId)
+  removeSubscriptionsAndAllDataListener(socket.branch, socketId)
   delete server.sockets[socketId]
 }
 
@@ -38,6 +41,7 @@ const listen = (branch, port, forceHeartbeat) => {
       socket.leaves = {}
       socket.ua = ua(socket.upgradeReq && socket.upgradeReq.headers['user-agent'])
       server.sockets[socketId] = socket
+      addAllDataListener(branch, socketId, socket, branch)
 
       if (socket.ua.platform === 'ios' || forceHeartbeat) {
         socket.send(JSON.stringify({

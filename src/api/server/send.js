@@ -1,6 +1,6 @@
 import { createStamp } from '../../stamp'
 import { children } from '../array'
-import { cache, isCached } from './cache'
+import { cache, isCachedForStamp, isCached } from './cache'
 import maxSize from './maxSize'
 
 const sendToSocket = (socket, payload, next) => {
@@ -145,7 +145,7 @@ const serializeLeaf = (leaves, socket, branch, master, id, keys, depth) => {
   }
 
   if (stamp && (val || rT || keys.length)) {
-    if (!isCached(socket, isMaster, id, stamp)) {
+    if (!isCachedForStamp(socket, isMaster, id, stamp)) {
       leaves[id] = [ key, parent, stamp, val, rT, keys ]
       cache(socket, isMaster, id, stamp)
     }
@@ -154,4 +154,17 @@ const serializeLeaf = (leaves, socket, branch, master, id, keys, depth) => {
   }
 }
 
-export { sendLeaves }
+const removeLeaves = (socket, master, type, stamp, leaf) => {
+  if (type === 'remove') {
+    const { branch, id } = leaf
+    if (isCached(socket, branch === master, id)) {
+      if (!socket.removeLeaves) {
+        socket.removeLeaves = {}
+      }
+
+      socket.removeLeaves[id] = stamp
+    }
+  }
+}
+
+export { sendLeaves, removeLeaves }

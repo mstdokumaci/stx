@@ -10,8 +10,11 @@ const cache = (socket, isMaster, id, stamp) => {
   }
 }
 
-const isCached = (socket, isMaster, id, stamp) => socket.cache &&
+const isCachedForStamp = (socket, isMaster, id, stamp) => socket.cache &&
   (isMaster ? socket.cache.master[id] === stamp : socket.cache.branch[id] === stamp)
+
+const isCached = (socket, isMaster, id) => socket.cache &&
+  (isMaster ? socket.cache.master[id] : socket.cache.branch[id])
 
 const reuseCache = (socket) => {
   if (!socket.cache) return void 0
@@ -25,4 +28,4 @@ const reuseCache = (socket) => {
   }
 }
 
-export { cache, isCached, reuseCache }
+export { cache, isCachedForStamp, isCached, reuseCache }

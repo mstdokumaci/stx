@@ -1,7 +1,9 @@
 import { create } from '../..'
 import { emit } from '../listeners/emit'
-import { removeSubscriptions } from './subscriptions'
-import { sendLeaves } from './send'
+import {
+  syncSubscriptions,
+  removeSubscriptionsAndAllDataListener, addAllDataListener
+} from './subscriptions'
 
 const switchBranch = (socketId, socket, master, branchKey) => {
   let branch = master.branches.find(branch => branch.key === branchKey)
@@ -11,34 +13,10 @@ const switchBranch = (socketId, socket, master, branchKey) => {
     branch.key = branchKey
   }
 
-  removeSubscriptions(socket.branch, socketId)
+  removeSubscriptionsAndAllDataListener(socket.branch, socketId)
+  addAllDataListener(branch, socketId, socket, master)
 
   socket.branch = branch
-}
-
-const syncSubscriptions = (branch, socketId, socket, master, subscriptions) => {
-  subscriptions.forEach(subscription => {
-    const [ add, id, listenerId, keys, excludeKeys, depth, limit ] = subscription
-    if (add) {
-      if (!branch.subscriptions[id]) {
-        branch.subscriptions[id] = { listeners: {} }
-      } else if (!branch.subscriptions[id].listeners) {
-        branch.subscriptions[id].listeners = {}
-      }
-
-      branch.subscriptions[id].listeners[`${socketId}-${listenerId}`] = {
-        keys,
-        excludeKeys,
-        depth,
-        limit,
-        cb: sendLeaves.bind(null, socket, master)
-      }
-
-      sendLeaves(socket, master, { branch, id }, { keys, excludeKeys, depth, limit })
-    } else if (branch.subscriptions[id] && branch.subscriptions[id].listeners) {
-      delete branch.subscriptions[id].listeners[`${socketId}-${listenerId}`]
-    }
-  })
 }
 
 const fireEmits = (branch, emits) => {

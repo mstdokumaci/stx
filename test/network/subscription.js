@@ -217,8 +217,6 @@ test('network - remove subscriptions', t => {
 
   const cMaster = create()
 
-  global.debug = true
-
   cMaster.subscribe(
     { keys: [ 'fourth', 'fifth' ] },
     cm => {
@@ -226,10 +224,9 @@ test('network - remove subscriptions', t => {
         t.equals(
           cm.get('fifth').compute(),
           5,
-          's2 cm.fifth = 5'
+          's2 cm.fifth.compute() = 5'
         )
 
-        global.debug = false
         client.socket.close()
         server.close()
         t.end()
@@ -237,7 +234,7 @@ test('network - remove subscriptions', t => {
         t.equals(
           cm.get('fourth').compute(),
           4,
-          's2 cm.fourth = 4'
+          's2 cm.fourth.compute() = 4'
         )
       }
     }

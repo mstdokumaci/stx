@@ -1,4 +1,5 @@
 import { setOffset } from '../../stamp'
+import { remove } from '../remove'
 import { addOwnLeaf } from '../set'
 import { setOwnExistingVal, setOwnExistingReference } from '../set/own-existing'
 import { setOwnNewVal, setOwnNewReference } from '../set/own-new'
@@ -17,6 +18,16 @@ const startHeartbeat = branch => {
 
     socket.send(JSON.stringify({ h: true }))
     socket.heartbeat = setTimeout(() => startHeartbeat(branch), heartbeatTimeout)
+  }
+}
+
+const removeLeaves = (branch, list) => {
+  for (const id in list) {
+    const stamp = list[id]
+    if (branch.leaves[id]) {
+      const leaf = branch.leaves[id]
+      remove(branch, leaf, id, stamp)
+    }
   }
 }
 
@@ -66,9 +77,13 @@ const setLeaves = (branch, leaves, stamp) => {
 }
 
 const incoming = (branch, data) => {
-  const { t: stamp, h: heartbeat, l: leaves } = data
+  const { t: stamp, h: heartbeat, l: leaves, r: remove } = data
 
   setOffset(branch.stamp, stamp)
+
+  if (remove) {
+    removeLeaves(branch, remove)
+  }
 
   if (leaves) {
     setLeaves(branch, leaves, stamp)

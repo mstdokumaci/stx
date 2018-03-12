@@ -47,5 +47,5 @@ const removeSubscriptionsAndAllDataListener = (branch, socketId) => {
 export {
   syncSubscriptions,
   addAllDataListener,
-  removeSubscriptionsAndAllDataListener,
+  removeSubscriptionsAndAllDataListener
 }

@@ -39,6 +39,7 @@ const listen = (branch, port, forceHeartbeat) => {
 
       socket.branch = branch
       socket.leaves = {}
+      socket.removeLeaves = {}
       socket.ua = ua(socket.upgradeReq && socket.upgradeReq.headers['user-agent'])
       server.sockets[socketId] = socket
       addAllDataListener(branch, socketId, socket, branch)

@@ -75,13 +75,13 @@ const sendLeaves = (socket, master, leaf, options) => {
 
   serializeLeaf(leaves, socket, branch, master, id, keys, depth)
 
-  if (global.debug) {
-    console.log('KEYS', keys)
-    console.log('LEAVES', leaves)
-  }
-
   if (socket.external && Object.keys(leaves).length) {
-    send(socket, JSON.stringify({ t: createStamp(branch.stamp), l: leaves }))
+    const json = { t: createStamp(branch.stamp), l: leaves }
+    if (Object.keys(socket.removeLeaves).length) {
+      json.r = socket.removeLeaves
+      socket.removeLeaves = {}
+    }
+    send(socket, JSON.stringify(json))
   }
 }
 
@@ -158,10 +158,6 @@ const removeLeaves = (socket, master, type, stamp, leaf) => {
   if (type === 'remove') {
     const { branch, id } = leaf
     if (isCached(socket, branch === master, id)) {
-      if (!socket.removeLeaves) {
-        socket.removeLeaves = {}
-      }
-
       socket.removeLeaves[id] = stamp
     }
   }

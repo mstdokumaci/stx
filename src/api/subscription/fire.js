@@ -9,7 +9,7 @@ const checkOptions = (options, id, depth) => {
   }
 
   if (options.keys) {
-    pass &= ~options.keys.indexOf(id)
+    pass &= !!~options.keys.indexOf(id)
   } else if (options.excludeKeys) {
     pass &= !~options.excludeKeys.indexOf(id)
   }

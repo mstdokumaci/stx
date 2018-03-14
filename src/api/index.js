@@ -14,7 +14,7 @@ import { listen } from './server'
 import { connect } from './client'
 import { drainQueue } from './client/send'
 
-const defineApi = leaf => {
+const defineApi = (leaf, client) => {
   // ISLEAF
   define(leaf, 'isLeaf', true)
 
@@ -160,6 +160,13 @@ const defineApi = leaf => {
   // CONNECT
   define(leaf, 'connect', function (url) {
     return connect(this.branch, url)
+  })
+
+  // SWITCH BRANCH
+  define(client, 'switchBranch', function (branchKey) {
+    if (this.socket && this.socket.external) {
+      this.socket.send(JSON.stringify({ b: branchKey }))
+    }
   })
 }
 

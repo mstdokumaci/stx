@@ -30,7 +30,7 @@ const incoming = (server, socketId, socket, master, data) => {
   const { b: branchKey, s: subscriptions, e: emits } = data
 
   if (branchKey !== void 0 && branchKey !== socket.branch.key) {
-    if (server.switchBranch) {
+    if (typeof server.switchBranch === 'function') {
       server.switchBranch(
         new Leaf(socket.branch, root),
         branchKey,

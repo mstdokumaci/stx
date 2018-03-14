@@ -22,6 +22,8 @@ const Leaf = function (branch, id) {
   this.id = id
 }
 
+const Client = function () {}
+
 const create = function (val, stamp, inherits) {
   const branch = {
     branches: [],
@@ -30,7 +32,7 @@ const create = function (val, stamp, inherits) {
     subscriptions: {},
     rF: {},
     stamp: { offset: 0 },
-    client: {}
+    client: new Client()
   }
 
   if (inherits) {
@@ -51,6 +53,6 @@ const create = function (val, stamp, inherits) {
   return new Leaf(branch, root)
 }
 
-defineApi(Leaf.prototype)
+defineApi(Leaf.prototype, Client.prototype)
 
 export { create, Leaf, createStamp }

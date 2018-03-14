@@ -1,4 +1,5 @@
-import { create } from '../..'
+import { root } from '../../id'
+import { create, Leaf } from '../..'
 import { emit } from '../listeners/emit'
 import {
   syncSubscriptions,
@@ -17,6 +18,8 @@ const switchBranch = (socketId, socket, master, branchKey) => {
   addAllDataListener(branch, socketId, socket, master)
 
   socket.branch = branch
+
+  return new Leaf(branch, root)
 }
 
 const fireEmits = (branch, emits) => {
@@ -27,14 +30,22 @@ const incoming = (server, socketId, socket, master, data) => {
   const { b: branchKey, s: subscriptions, e: emits } = data
 
   if (branchKey !== void 0 && branchKey !== socket.branch.key) {
-    switchBranch(socketId, socket, master, branchKey)
+    if (server.switchBranch) {
+      server.switchBranch(
+        new Leaf(socket.branch, root),
+        branchKey,
+        switchBranch.bind(null, socketId, socket, master)
+      )
+    } else {
+      switchBranch(socketId, socket, master, branchKey)
+    }
   }
 
-  if (subscriptions) {
+  if (subscriptions && subscriptions.length) {
     syncSubscriptions(socket.branch, socketId, socket, master, subscriptions)
   }
 
-  if (emits) {
+  if (emits && emits.length) {
     fireEmits(socket.branch, emits)
   }
 }

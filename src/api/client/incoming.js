@@ -39,7 +39,7 @@ const setLeaves = (branch, leaves, stamp) => {
     if (branch.leaves[id]) {
       const leaf = branch.leaves[id]
 
-      if (val) {
+      if (val !== null) {
         setOwnExistingVal(branch, leaf, id, val, stamp)
       } else if (rT) {
         setOwnExistingReference(branch, leaf, id, rT, stamp)
@@ -60,7 +60,7 @@ const setLeaves = (branch, leaves, stamp) => {
     } else {
       const leaf = addOwnLeaf(branch, id, parent, key, stamp)
 
-      if (val) {
+      if (val !== null) {
         setOwnNewVal(branch, leaf, id, val, stamp)
       } else if (rT) {
         setOwnNewReference(branch, leaf, id, rT, stamp)

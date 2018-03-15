@@ -164,8 +164,10 @@ const defineApi = (leaf) => {
 
   // SWITCH BRANCH
   define(leaf, 'switchBranch', function (branchKey) {
-    this.branch.client.queue.b = branchKey
-    sendAllSubscriptions(this.branch)
+    if (this.branch.client.queue) {
+      this.branch.client.queue.b = branchKey
+      sendAllSubscriptions(this.branch)
+    }
   })
 }
 

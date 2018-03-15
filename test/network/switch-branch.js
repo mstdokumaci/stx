@@ -21,33 +21,61 @@ test('network - switch branch', t => {
   const cMaster2 = create()
   const cMaster3 = create()
 
+  t.plan(3)
+
   cMaster1.on('connected', val => {
     if (val) {
       cMaster1.subscribe(cm => {
-        console.log('Client1', cm.serialize())
+        if (cm.get('id') && cm.get('clients').compute() === 3) {
+          t.same(
+            cm.serialize(),
+            { clients: 3, id: 'A' },
+            'cm1.serialize() = { clients: 3, id: A }'
+          )
+
+          client1.socket.close()
+        }
       })
 
-      setTimeout(() => cMaster1.switchBranch('A'))
+      cMaster1.switchBranch('A')
+    } else {
+      server.close()
     }
   })
 
   cMaster2.on('connected', val => {
     if (val) {
       cMaster2.subscribe(cm => {
-        console.log('Client2', cm.serialize())
+        if (cm.get('id') && cm.get('clients').compute() === 3) {
+          t.same(
+            cm.serialize(),
+            { clients: 3, id: 'A' },
+            'cm2.serialize() = { clients: 3, id: A }'
+          )
+
+          client2.socket.close()
+        }
       })
 
-      setTimeout(() => cMaster2.switchBranch('A'))
+      cMaster2.switchBranch('A')
     }
   })
 
   cMaster3.on('connected', val => {
     if (val) {
       cMaster3.subscribe(cm => {
-        console.log('Client3', cm.serialize())
+        if (cm.get('id') && cm.get('clients').compute() === 3) {
+          t.same(
+            cm.serialize(),
+            { clients: 3, id: 'B' },
+            'cm3.serialize() = { clients: 3, id: B }'
+          )
+
+          client3.socket.close()
+        }
       })
 
-      setTimeout(() => cMaster3.switchBranch('B'))
+      cMaster3.switchBranch('B')
     }
   })
 

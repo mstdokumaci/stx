@@ -10,16 +10,18 @@ import {
 } from './'
 
 const setOwnExistingVal = (branch, leaf, id, val, stamp) => {
-  const rTold = getRtFromLeaves(branch, id)
-  if (rTold) {
-    removeReferenceFrom(branch, id, rTold)
-    leaf.rT = void 0
+  if (val !== leaf.val && val !== void 0) {
+    const rTold = getRtFromLeaves(branch, id)
+    if (rTold) {
+      removeReferenceFrom(branch, id, rTold)
+      leaf.rT = void 0
+    }
+
+    leaf.val = val
+    leaf.stamp = stamp
+
+    addDataEvent(void 0, id, 'set')
   }
-
-  leaf.val = val
-  leaf.stamp = stamp
-
-  addDataEvent(void 0, id, 'set')
 }
 
 const setOwnExistingReference = (branch, leaf, id, rT, stamp) => {

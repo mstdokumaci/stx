@@ -76,6 +76,8 @@ const sendLeaves = (socket, master, leaf, options) => {
   serializeLeaf(leaves, socket, branch, master, id, keys, depth)
 
   if (socket.external && Object.keys(leaves).length) {
+    console.log('KEYS', keys)
+    console.log('LEAVES', leaves)
     const json = { t: createStamp(branch.stamp), l: leaves }
     if (Object.keys(socket.removeLeaves).length) {
       json.r = socket.removeLeaves
@@ -125,7 +127,7 @@ const serializeLeaf = (leaves, socket, branch, master, id, keys, depth) => {
       break
     } else if (leaf) {
       if (!val && !rT) {
-        if (leaf.val) {
+        if (leaf.val !== void 0) {
           val = leaf.val
         } else if (leaf.rT) {
           rT = leaf.rT
@@ -144,7 +146,7 @@ const serializeLeaf = (leaves, socket, branch, master, id, keys, depth) => {
     branch = branch.inherits
   }
 
-  if (stamp && (val || rT || keys.length)) {
+  if (stamp && (val !== void 0 || rT || keys.length)) {
     if (!isCachedForStamp(socket, isMaster, id, stamp)) {
       leaves[id] = [ key, parent, stamp, val, rT, keys ]
       cache(socket, isMaster, id, stamp)

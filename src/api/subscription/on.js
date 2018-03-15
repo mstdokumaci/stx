@@ -20,7 +20,7 @@ define(Subscription.prototype, 'unsubscribe', function () {
 
   if (this.branch.client.queue) {
     removeSubscriptionToQueue(this.branch, this.id, this.listenerId)
-    drainQueue(this.branch)
+    drainQueue(this.branch.client)
   }
 })
 
@@ -58,7 +58,7 @@ const subscribe = (branch, id, options, cb) => {
 
   if (branch.client.queue) {
     addSubscriptionToQueue(branch, id, listenerId)
-    drainQueue(branch)
+    drainQueue(branch.client)
   }
 
   return new Subscription(branch, id, listenerId)

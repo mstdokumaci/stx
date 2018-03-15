@@ -12,9 +12,9 @@ import { subscribe } from './subscription/on'
 import { emit, emitDataEvents } from './listeners/emit'
 import { listen } from './server'
 import { connect } from './client'
-import { drainQueue } from './client/send'
+import { sendAllSubscriptions, drainQueue } from './client/send'
 
-const defineApi = (leaf, client) => {
+const defineApi = (leaf) => {
   // ISLEAF
   define(leaf, 'isLeaf', true)
 
@@ -146,7 +146,7 @@ const defineApi = (leaf, client) => {
 
     if (this.branch.client.queue && event !== 'data') {
       this.branch.client.queue.e.push([ this.id, event, val, stamp ])
-      drainQueue(this.branch)
+      drainQueue(this.branch.client)
     }
 
     return this
@@ -163,10 +163,9 @@ const defineApi = (leaf, client) => {
   })
 
   // SWITCH BRANCH
-  define(client, 'switchBranch', function (branchKey) {
-    if (this.socket && this.socket.external) {
-      this.socket.send(JSON.stringify({ b: branchKey }))
-    }
+  define(leaf, 'switchBranch', function (branchKey) {
+    this.branch.client.queue.b = branchKey
+    sendAllSubscriptions(this.branch)
   })
 }
 

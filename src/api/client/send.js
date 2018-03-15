@@ -12,24 +12,25 @@ const sendAllSubscriptions = branch => {
     }
   }
 
-  drainQueue(branch)
+  drainQueue(branch.client)
 }
 
 const removeSubscriptionToQueue = (branch, id, listenerId) => {
   branch.client.queue.s.push([ false, id, listenerId ])
 }
 
-const drainQueue = branch => {
+const drainQueue = client => {
   if (
-    branch.client.socket &&
-    branch.client.socket.external &&
+    client.socket &&
+    client.socket.external &&
     (
-      branch.client.queue.s.length ||
-      branch.client.queue.e.length
+      client.queue.b ||
+      client.queue.s.length ||
+      client.queue.e.length
     )
   ) {
-    branch.client.socket.send(JSON.stringify(branch.client.queue))
-    branch.client.queue = { s: [], e: [] }
+    client.socket.send(JSON.stringify(client.queue))
+    client.queue = { s: [], e: [] }
   }
 }
 

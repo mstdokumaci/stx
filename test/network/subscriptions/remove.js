@@ -2,15 +2,22 @@ const test = require('tape')
 const { create } = require('../../../dist/index')
 
 test('network - remove subscriptions', t => {
-  const sMaster = create({
-    first: 1,
-    second: 2,
-    third: 3
-  })
-
+  const sMaster = create()
   const server = sMaster.listen(7070)
 
   const cMaster = create()
+
+  cMaster.on('connected', val => {
+    if (val) {
+      setTimeout(() => {
+        sMaster.set({
+          first: 1,
+          second: 2,
+          third: 3
+        })
+      })
+    }
+  })
 
   cMaster.subscribe(
     { keys: [ 'fourth', 'fifth' ] },

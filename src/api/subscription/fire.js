@@ -40,6 +40,8 @@ const subscriptions = (branch, id, stamp, depth = 0) => {
         const options = branch.subscriptions[id].listeners[listenerId]
         if (!previousId || checkOptions(options, previousId, depth)) {
           options.cb(new Leaf(branch, id), options)
+        } else {
+          branch.subscriptions[id].stamp = null
         }
       }
     }

@@ -139,6 +139,11 @@ test('set - get - references', t => {
     },
     'branch1.serialize() = correct'
   )
+  t.equals(
+    branch1.get([ 'pointers', 'pointer1' ]).inspect(),
+    'Struct pointer1 { val: Struct deep { real2, real }, real3 }',
+    'branch1.pointers.pointer1.inspect() = Struct pointer1 { val: Struct deep { real2, real }, real3 }'
+  )
 
   t.end()
 })
@@ -224,6 +229,11 @@ test('set - get - arrays', t => {
       }
     },
     'master.serialize() = correct'
+  )
+  t.equals(
+    master.get([ 'deep', 'other' ]).inspect(),
+    'Struct other { }',
+    'master.deep.other.inspect() = Struct other { }'
   )
   t.same(
     branch1.get([ 'pointers', 'pointer2' ]).compute(),

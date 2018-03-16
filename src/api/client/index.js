@@ -23,6 +23,7 @@ const connect = (branch, url, reconnect = 50) => {
     throw Error('Can not connect twice')
   }
 
+  branch.client.socket = {}
   const socket = new WebSocket(url)
 
   socket.onclose = () => {

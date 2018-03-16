@@ -23,6 +23,12 @@ test('network - listen & connect', t => {
   })
 
   const client = cMaster.connect('ws://localhost:7070')
+
+  try {
+    cMaster.connect('ws://localhost:7070')
+  } catch (error) {
+    t.equals(error.message, 'Can not connect twice', 'Can not connect twice')
+  }
 })
 
 test('network - listen & reconnect', t => {

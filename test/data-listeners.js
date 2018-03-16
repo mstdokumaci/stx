@@ -762,6 +762,9 @@ test('data listeners - allData', t => {
     branch2Fire.push(`${path}-${type}-${item.compute()}`)
   })
 
+  const listener2 = branch2.on('allData', () => {})
+  listener2.off()
+
   master.get('content').set({
     first: '1-u',
     second: '2-u',

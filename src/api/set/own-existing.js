@@ -1,6 +1,4 @@
 import { root } from '../../id'
-import { getRtFromLeaves, getByPath } from '../get'
-import { remove, removeReferenceFrom } from '../remove'
 import { addDataEvent } from '../listeners/emit'
 import {
   addReferenceFrom,
@@ -8,25 +6,30 @@ import {
   fixBranchReferences,
   setKeys
 } from './'
+import { getRtFromLeaves, getByPath } from '../get'
+import { getValOrRef } from '../compute'
+import { remove, removeReferenceFrom } from '../remove'
 
 const setOwnExistingVal = (branch, leaf, id, val, stamp) => {
-  if (val !== leaf.val && val !== void 0) {
-    const rTold = getRtFromLeaves(branch, id)
-    if (rTold) {
-      removeReferenceFrom(branch, id, rTold)
-      leaf.rT = void 0
-    }
-
-    leaf.val = val
-    leaf.stamp = stamp
-
-    addDataEvent(void 0, id, 'set')
+  const valOrRef = getValOrRef(branch, id)
+  if (val === valOrRef) {
+    return
+  } else if (valOrRef && valOrRef.id) {
+    removeReferenceFrom(branch, id, valOrRef.id)
+    leaf.rT = void 0
   }
+
+  leaf.val = val
+  leaf.stamp = stamp
+
+  addDataEvent(void 0, id, 'set')
 }
 
 const setOwnExistingReference = (branch, leaf, id, rT, stamp) => {
   const rTold = getRtFromLeaves(branch, id)
-  if (rTold) {
+  if (rTold === rT) {
+    return
+  } else if (rTold) {
     delete branch.rF[rTold][id]
   } else {
     leaf.val = void 0
@@ -51,12 +54,11 @@ const setOwnExisting = (branch, leaf, id, val, stamp) => {
         const rT = getByPath(branch, root, val.slice(1), {}, stamp)
         setOwnExistingReference(branch, leaf, id, rT, stamp)
       } else {
-        setOwnExistingVal(branch, leaf, id, val, stamp)
+        return setOwnExistingVal(branch, leaf, id, val, stamp)
       }
     } else if (val.isLeaf) {
-      checkReferenceByLeaf(branch, id, val.branch, val.id, () => {
-        setOwnExistingReference(branch, leaf, id, val.id, stamp)
-      })
+      checkReferenceByLeaf(branch, id, val.branch, val.id, () =>
+        setOwnExistingReference(branch, leaf, id, val.id, stamp))
     } else {
       setKeys(branch, id, val, stamp)
     }

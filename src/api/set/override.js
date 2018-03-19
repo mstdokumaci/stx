@@ -1,7 +1,8 @@
 import { root } from '../../id'
-import { getRtFromLeaves, getByPath } from '../get'
-import { remove, removeReferenceFrom } from '../remove'
 import { addDataEvent } from '../listeners/emit'
+import { getRtFromLeaves, getByPath } from '../get'
+import { getValOrRef } from '../compute'
+import { remove, removeReferenceFrom } from '../remove'
 import {
   addOwnLeaf,
   addReferenceFrom,
@@ -11,18 +12,18 @@ import {
 } from './'
 
 const setOverrideVal = (branch, leaf, id, val, stamp) => {
-  if (val !== leaf.val && val !== void 0) {
-    const rTold = getRtFromLeaves(branch, id)
-    if (rTold) {
-      removeReferenceFrom(branch, id, rTold)
-      leaf.rT = void 0
-    }
-
-    leaf = addOwnLeaf(branch, id, leaf.parent, leaf.key, stamp)
-    leaf.val = val
-
-    addDataEvent(void 0, id, 'set')
+  const valOrRef = getValOrRef(branch, id)
+  if (val === valOrRef) {
+    return
+  } else if (valOrRef && valOrRef.id) {
+    removeReferenceFrom(branch, id, valOrRef.id)
+    leaf.rT = void 0
   }
+
+  leaf = addOwnLeaf(branch, id, leaf.parent, leaf.key, stamp)
+  leaf.val = val
+
+  addDataEvent(void 0, id, 'set')
 }
 
 const setOverrideReference = (branch, leaf, id, rT, stamp) => {
@@ -56,9 +57,8 @@ const setOverride = (branch, leaf, id, val, stamp) => {
         setOverrideVal(branch, leaf, id, val, stamp)
       }
     } else if (val.isLeaf) {
-      checkReferenceByLeaf(branch, id, val.branch, val.id, () => {
-        setOverrideReference(branch, leaf, id, val.id, stamp)
-      })
+      checkReferenceByLeaf(branch, id, val.branch, val.id, () =>
+        setOverrideReference(branch, leaf, id, val.id, stamp))
     } else {
       setKeys(branch, id, val, stamp)
     }

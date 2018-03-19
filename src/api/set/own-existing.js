@@ -60,7 +60,7 @@ const setOwnExisting = (branch, leaf, id, val, stamp) => {
       checkReferenceByLeaf(branch, id, val.branch, val.id, () =>
         setOwnExistingReference(branch, leaf, id, val.id, stamp))
     } else {
-      setKeys(branch, id, val, stamp)
+      setKeys(branch, leaf, id, val, stamp, setOwnExisting)
     }
   } else {
     setOwnExistingVal(branch, leaf, id, val, stamp)

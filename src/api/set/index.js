@@ -117,11 +117,11 @@ const cleanBranchKeys = (branches, id, keys, stamp) =>
     }
   })
 
-const setKeys = (branch, id, val, stamp) => {
+const setKeys = (branch, leaf, id, val, stamp, set) => {
   let keys = []
   for (let key in val) {
     if (key === 'val') {
-      set(branch, id, val.val, stamp)
+      set(branch, leaf, id, val.val, stamp)
     } else {
       const subLeafId = keyToId(key, id)
       const subLeafBranch = getBranchForId(branch, subLeafId)
@@ -145,7 +145,9 @@ const setKeys = (branch, id, val, stamp) => {
     }
   }
   if (keys.length) {
-    const leaf = addBranchLeaf(branch, id, stamp)
+    if (set === setOverride) {
+      leaf = addOwnLeaf(branch, id, leaf.parent, leaf.key, stamp)
+    }
     leaf.keys = (leaf.keys || []).concat(keys)
     leaf.stamp = stamp
     cleanBranchKeys(branch.branches, id, keys, stamp)

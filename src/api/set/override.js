@@ -60,7 +60,7 @@ const setOverride = (branch, leaf, id, val, stamp) => {
       checkReferenceByLeaf(branch, id, val.branch, val.id, () =>
         setOverrideReference(branch, leaf, id, val.id, stamp))
     } else {
-      setKeys(branch, id, val, stamp)
+      setKeys(branch, leaf, id, val, stamp, setOverride)
     }
   } else {
     setOverrideVal(branch, leaf, id, val, stamp)

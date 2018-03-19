@@ -15,29 +15,6 @@ const addParentSubscription = (branch, parent, child, depth) => {
   }
 }
 
-const checkOptions = (options, id, depth) => {
-  let pass = true
-
-  if (options.depth) {
-    pass &= depth <= options.depth
-  }
-
-  if (options.keys) {
-    pass &= !!~options.keys.indexOf(id)
-  } else if (options.excludeKeys) {
-    pass &= !~options.excludeKeys.indexOf(id)
-  }
-
-  return pass
-}
-
-const referenceSubscriptions = (branch, ids, stamp, keys) => {
-  for (const id in ids) {
-    subscriptions(branch, id, stamp, keys)
-    referenceSubscriptions(branch, ids[id], stamp, keys)
-  }
-}
-
 const subscriptions = (branch, id, stamp) => {
   if (!branch.subscriptions[id]) {
     branch.subscriptions[id] = { stamp }
@@ -60,9 +37,36 @@ const subscriptions = (branch, id, stamp) => {
   }
 }
 
-const parentSubscriptions = (branch, id, stamp) => {
-  const keys = branch.subscriptions[id].keys.splice(0)
-  delete branch.subscriptions[id].keys
+const checkOptions = (options, id, depth) => {
+  let pass = true
+
+  if (options.depth) {
+    pass &= depth <= options.depth
+  }
+
+  if (options.keys) {
+    pass &= !!~options.keys.indexOf(id)
+  } else if (options.excludeKeys) {
+    pass &= !~options.excludeKeys.indexOf(id)
+  }
+
+  return pass
+}
+
+const referenceSubscriptions = (branch, ids, stamp, keys) => {
+  for (const id in ids) {
+    if (!branch.subscriptions[id]) {
+      branch.subscriptions[id] = {}
+    }
+    parentSubscriptions(branch, id, stamp, keys)
+  }
+}
+
+const parentSubscriptions = (branch, id, stamp, keys) => {
+  if (!keys) {
+    keys = branch.subscriptions[id].keys.splice(0)
+    delete branch.subscriptions[id].keys
+  }
 
   if (branch.subscriptions[id].stamp === stamp) {
     return

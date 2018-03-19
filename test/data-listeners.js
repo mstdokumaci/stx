@@ -325,7 +325,8 @@ test('data listeners - references', t => {
     id: 'branch2',
     pointers: {
       pointer3: ['@', 'pointers', 'pointer2'],
-      pointer7: ['@', 'pointers', 'pointer6']
+      pointer7: ['@', 'pointers', 'pointer6'],
+      pointer8: ['@', 'pointers', 'pointer5']
     }
   })
 
@@ -339,6 +340,10 @@ test('data listeners - references', t => {
 
   branch2.get(['pointers', 'pointer7']).on('data', (val, stamp, item) => {
     branch2Fire.push(`p7-${item.root().get('id').compute()}-${val}-${item.get('real2').compute()}`)
+  })
+
+  branch2.get(['pointers', 'pointer8']).on('data', (val, stamp, item) => {
+    branch2Fire.push(`p8-${item.root().get('id').compute()}-${val}-${item.compute()}`)
   })
 
   branch1.set({
@@ -376,7 +381,8 @@ test('data listeners - references', t => {
       'p3-branch2-add-key-thing2',
       'p7-branch2-add-key-thing2',
       'p3-branch2-add-key-thing2',
-      'p4-branch2-set-override-thing'
+      'p4-branch2-set-override-thing',
+      'p8-branch2-set-override-thing'
     ],
     'branch2Fire = correct'
   )
@@ -412,8 +418,8 @@ test('data listeners - references', t => {
   )
   t.same(
     branch2Fire,
-    [ 'p4-branch2-set-updated2-thing' ],
-    'branch2Fire = [ p4-branch2-set-updated2-thing ]'
+    [ 'p4-branch2-set-updated2-thing', 'p8-branch2-set-updated2-thing' ],
+    'branch2Fire = [ p4-branch2-set-updated2-thing, p8-branch2-set-updated2-thing ]'
   )
 
   t.end()

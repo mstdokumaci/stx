@@ -111,21 +111,34 @@ test('do not set in reference get', t => {
   t.end()
 })
 
-test('ignore same val in branch', t => {
+test('ignore same val & rT in branch', t => {
   const master = create({
-    real: 'thing'
+    real: 'thing',
+    other: 'thing2',
+    pointer: [ '@', 'real' ]
   })
 
   const branch1 = master.create({
-    real: 'thing'
+    real: 'thing',
+    pointer: {
+      deep: 'added'
+    }
   })
 
+  branch1.get('pointer').set([ '@', 'real' ])
   master.get('real').set('updated')
+  master.get('pointer').set([ '@', 'other' ])
 
   t.equals(
     branch1.get('real').compute(),
     'updated',
     'branch1.real.compute() = updated'
+  )
+
+  t.equals(
+    branch1.get('pointer').compute(),
+    'thing2',
+    'branch1.pointer.compute() = thing2'
   )
 
   t.end()

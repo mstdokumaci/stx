@@ -63,11 +63,6 @@ const referenceSubscriptions = (branch, ids, stamp, keys) => {
 }
 
 const parentSubscriptions = (branch, id, stamp, keys) => {
-  if (!keys) {
-    keys = branch.subscriptions[id].keys.splice(0)
-    delete branch.subscriptions[id].keys
-  }
-
   if (branch.subscriptions[id].stamp === stamp) {
     return
   } else {
@@ -97,7 +92,9 @@ const parentSubscriptions = (branch, id, stamp, keys) => {
 const fireParentSubscriptions = (branch, stamp) => {
   while (branch.parentSubscriptions.length) {
     branch.parentSubscriptions.splice(0).forEach(id => {
-      parentSubscriptions(branch, Number(id), stamp)
+      const keys = branch.subscriptions[id].keys.splice(0)
+      delete branch.subscriptions[id].keys
+      parentSubscriptions(branch, Number(id), stamp, keys)
     })
   }
 

@@ -572,19 +572,28 @@ test('references - ignore same reference in branch', t => {
   const master = create({
     real1: 'thing1',
     real2: 'thing2',
-    pointer: [ '@', 'real1' ]
+    pointer1: [ '@', 'real1' ],
+    pointer2: [ '@', 'real2' ]
   })
 
-  const branch1 = master.create({
-    pointer: [ '@', 'real1' ]
+  const branch = master.create({
+    pointer1: [ '@', 'real1' ]
   })
 
-  master.get('pointer').set([ '@', 'real2' ])
+  branch.get('pointer2').set([ '@', 'real2' ])
+  master.get('pointer1').set([ '@', 'real2' ])
+  master.get('pointer2').set([ '@', 'real1' ])
 
   t.equals(
-    branch1.get('pointer').compute(),
+    branch.get('pointer1').compute(),
     'thing2',
-    'branch1.pointer.compute() = thing2'
+    'branch.pointer1.compute() = thing2'
+  )
+
+  t.equals(
+    branch.get('pointer2').compute(),
+    'thing1',
+    'branch.pointer1.compute() = thing1'
   )
 
   t.end()

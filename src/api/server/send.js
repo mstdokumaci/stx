@@ -124,7 +124,7 @@ const serializeLeaf = (leaves, socket, branch, master, id, keys, depth) => {
     if (leaf === null) {
       break
     } else if (leaf) {
-      if (!val && !rT) {
+      if (val === void 0 && !rT) {
         if (leaf.val !== void 0) {
           val = leaf.val
         } else if (leaf.rT) {

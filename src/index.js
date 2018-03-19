@@ -28,7 +28,7 @@ const create = function (val, stamp, inherits) {
     leaves: { [ root ]: {} },
     listeners: {},
     subscriptions: {},
-    parentSubscriptions: {},
+    parentSubscriptions: [],
     rF: {},
     stamp: { offset: 0 },
     client: {}

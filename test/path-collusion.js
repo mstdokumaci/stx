@@ -27,7 +27,7 @@ test('path collusion', t => {
   const structSet = Date.now() - d
   t.ok(
     structSet < objSet * 60,
-    `1e5 sets (${structSet}ms) under 40x objSet (${objSet}ms)`
+    `1e5 sets (${structSet}ms) under 60x objSet (${objSet}ms)`
   )
 
   d = Date.now()

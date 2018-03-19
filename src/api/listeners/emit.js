@@ -1,5 +1,5 @@
 import { Leaf } from '../..'
-import { createParentSubscriptions, fireParentSubscriptions, subscriptions } from '../subscription/fire'
+import { fireParentSubscriptions, subscriptions } from '../subscription/fire'
 
 const emitOwn = (branch, id, event, val, stamp) => {
   const listeners = branch.listeners
@@ -78,7 +78,6 @@ const addAfterEmitEvent = (cb) => afterEmitEvents.push(cb)
 
 const emitDataEvents = (branch, stamp) => {
   const afterEmitEventsToRun = afterEmitEvents.splice(0)
-  createParentSubscriptions(branch, stamp)
   dataEvents.splice(0).forEach(event =>
     emit(
       event[0] || branch,

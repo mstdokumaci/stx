@@ -1,11 +1,17 @@
 import { Leaf } from '../..'
 import { getFromLeaves } from '../get'
 
-const createParentSubscriptions = (branch, stamp) => {
-  branch.parentSubscriptions[stamp] = {}
-
-  if (branch.branches.length) {
-    branch.branches.forEach(branch => createParentSubscriptions(branch, stamp))
+const addParentSubscription = (branch, parent, child, depth) => {
+  if (branch.subscriptions[parent]) {
+    if (branch.subscriptions[parent].keys) {
+      branch.subscriptions[parent].keys.push([ child, depth ])
+    } else {
+      branch.subscriptions[parent].keys = [ [ child, depth ] ]
+      branch.parentSubscriptions.push(parent)
+    }
+  } else {
+    branch.subscriptions[parent] = { keys: [ [ child, depth ] ] }
+    branch.parentSubscriptions.push(parent)
   }
 }
 
@@ -50,17 +56,7 @@ const subscriptions = (branch, id, stamp) => {
 
   const parent = getFromLeaves(branch, id).parent
   if (parent) {
-    if (branch.subscriptions[parent]) {
-      if (branch.subscriptions[parent].keys) {
-        branch.subscriptions[parent].keys.push([ id, 1 ])
-      } else {
-        branch.subscriptions[parent].keys = [ [ id, 1 ] ]
-        branch.parentSubscriptions.push(parent)
-      }
-    } else {
-      branch.subscriptions[parent] = { keys: [ [ id, 1 ] ] }
-      branch.parentSubscriptions.push(parent)
-    }
+    addParentSubscription(branch, parent, id, 1)
   }
 }
 
@@ -90,18 +86,7 @@ const parentSubscriptions = (branch, id, stamp) => {
   const parent = getFromLeaves(branch, id).parent
   if (parent) {
     const depth = keys.reduce((depth, key) => depth > key[1] ? key[1] : depth, Infinity)
-
-    if (branch.subscriptions[parent]) {
-      if (branch.subscriptions[parent].keys) {
-        branch.subscriptions[parent].keys.push([ id, depth + 1 ])
-      } else {
-        branch.subscriptions[parent].keys = [ [ id, depth + 1 ] ]
-        branch.parentSubscriptions.push(parent)
-      }
-    } else {
-      branch.subscriptions[parent] = { keys: [ [ id, depth + 1 ] ] }
-      branch.parentSubscriptions.push(parent)
-    }
+    addParentSubscription(branch, parent, id, depth + 1)
   }
 }
 
@@ -118,7 +103,6 @@ const fireParentSubscriptions = (branch, stamp) => {
 }
 
 export {
-  createParentSubscriptions,
   subscriptions,
   fireParentSubscriptions
 }

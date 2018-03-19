@@ -280,7 +280,8 @@ test('data listeners - references', t => {
     id: 'branch1',
     pointers: {
       pointer4: ['@', 'pointers', 'pointer1'],
-      pointer5: ['@', 'pointers', 'pointer4']
+      pointer5: ['@', 'pointers', 'pointer4'],
+      pointer6: ['@', 'pointers', 'pointer2']
     }
   })
 
@@ -323,21 +324,32 @@ test('data listeners - references', t => {
   const branch2 = branch1.create({
     id: 'branch2',
     pointers: {
-      pointer3: ['@', 'pointers', 'pointer2']
+      pointer3: ['@', 'pointers', 'pointer2'],
+      pointer7: ['@', 'pointers', 'pointer6']
     }
   })
 
   branch2.get(['pointers', 'pointer3']).on('data', (val, stamp, item) => {
-    branch2Fire.push(`${item.root().get('id').compute()}-${val}-${item.get('real2').compute()}`)
+    branch2Fire.push(`p3-${item.root().get('id').compute()}-${val}-${item.get('real2').compute()}`)
   })
 
   branch2.get(['pointers', 'pointer4']).on('data', (val, stamp, item) => {
-    branch2Fire.push(`${item.root().get('id').compute()}-${val}-${item.compute()}`)
+    branch2Fire.push(`p4-${item.root().get('id').compute()}-${val}-${item.compute()}`)
+  })
+
+  branch2.get(['pointers', 'pointer7']).on('data', (val, stamp, item) => {
+    branch2Fire.push(`p7-${item.root().get('id').compute()}-${val}-${item.get('real2').compute()}`)
   })
 
   branch1.set({
     deep: {
       real2: 'thing2'
+    }
+  })
+
+  master.set({
+    deep: {
+      real3: 'thing3'
     }
   })
 
@@ -347,16 +359,26 @@ test('data listeners - references', t => {
     }
   })
 
-  t.same(masterFire, [], 'masterFire = []')
+  t.same(
+    masterFire,
+    [ 'master-add-key-updated-thing' ],
+    'masterFire = [ master-add-key-updated-thing ]'
+  )
   t.same(
     branch1Fire,
-    [ 'branch1-add-key-updated-thing' ],
-    'branch1Fire = [ branch1-add-key-updated-thing ]'
+    [ 'branch1-add-key-updated-thing', 'branch1-add-key-updated-thing' ],
+    'branch1Fire = [ branch1-add-key-updated-thing, branch1-add-key-updated-thing ]'
   )
   t.same(
     branch2Fire,
-    [ 'branch2-add-key-thing2', 'branch2-set-override-thing' ],
-    'branch2Fire = [ branch2-add-key-thing2, branch2-set-override-thing ]'
+    [
+      'p7-branch2-add-key-thing2',
+      'p3-branch2-add-key-thing2',
+      'p7-branch2-add-key-thing2',
+      'p3-branch2-add-key-thing2',
+      'p4-branch2-set-override-thing'
+    ],
+    'branch2Fire = correct'
   )
 
   masterFire.length = 0
@@ -390,8 +412,8 @@ test('data listeners - references', t => {
   )
   t.same(
     branch2Fire,
-    [ 'branch2-set-updated2-thing' ],
-    'branch2Fire = [ branch2-set-updated2-thing ]'
+    [ 'p4-branch2-set-updated2-thing' ],
+    'branch2Fire = [ p4-branch2-set-updated2-thing ]'
   )
 
   t.end()

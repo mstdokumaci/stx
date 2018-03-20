@@ -1,0 +1,6 @@
+require('./simple')
+require('./merge')
+require('./key-swapping')
+require('./multi-branch')
+require('./override')
+require('./corner-cases')

@@ -32,13 +32,13 @@ test('subscriptions - deep field references', t => {
     )
   }
 
-  master.get([ 'pointers', 'pointer2' ]).subscribe(item => fire(masterFire, item), 's1')
+  const s1 = master.get([ 'pointers', 'pointer2' ]).subscribe(item => fire(masterFire, item))
   master.get([ 'pointers', 'pointer3' ]).subscribe(item => fire(masterFire, item))
 
   const branch = master.create({ id: 'branch' })
 
   branch.get([ 'pointers', 'pointer2' ]).subscribe(item => fire(branchFire, item))
-  branch.get([ 'pointers', 'pointer3' ]).subscribe(item => fire(branchFire, item), 's1')
+  const s2 = branch.get([ 'pointers', 'pointer3' ]).subscribe(item => fire(branchFire, item))
 
   branch.set({
     otherDeep: {
@@ -98,9 +98,8 @@ test('subscriptions - deep field references', t => {
   masterFire.length = 0
   branchFire.length = 0
 
-  master.get([ 'pointers', 'pointer2' ]).unsubscribe('s1')
-  branch.get([ 'pointers', 'pointer3' ]).unsubscribe('s1')
-  branch.get([ 'pointers', 'pointer3' ]).unsubscribe()
+  s1.unsubscribe()
+  s2.unsubscribe()
 
   master.set({
     otherDeep: {

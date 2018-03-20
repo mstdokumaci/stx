@@ -1,7 +1,7 @@
-import { Leaf } from '../../index'
-import { subscriptions } from '../subscription/fire'
+import { Leaf } from '../..'
+import { fireParentSubscriptions, subscriptions } from '../subscription/fire'
 
-const emitOwn = (branch, id, event, val, stamp, isKeys) => {
+const emitOwn = (branch, id, event, val, stamp, depth) => {
   const listeners = branch.listeners
 
   if (listeners[id] && listeners[id][event]) {
@@ -10,12 +10,18 @@ const emitOwn = (branch, id, event, val, stamp, isKeys) => {
     }
   }
 
-  if (event === 'data' && !isKeys) {
-    subscriptions(branch, id, stamp)
+  if (listeners.allData) {
+    for (const listenerId in listeners.allData) {
+      listeners.allData[listenerId](val, stamp, new Leaf(branch, id))
+    }
+  }
+
+  if (event === 'data' && val !== 'add-key' && val !== 'remove') {
+    subscriptions(branch, id, stamp, depth + 1)
   }
 }
 
-const emitBranches = (branches, id, event, val, stamp) =>
+const emitBranches = (branches, id, event, val, stamp, depth) =>
   branches.forEach(branch => {
     if (
       branch.leaves[id] === null ||
@@ -31,41 +37,41 @@ const emitBranches = (branches, id, event, val, stamp) =>
       return
     }
 
-    emitOwn(branch, id, event, val, stamp)
+    emitOwn(branch, id, event, val, stamp, depth)
 
     if (branch.rF[id]) {
-      emitReferences(branch, branch.rF[id], event, val, stamp)
+      emitReferences(branch, branch.rF[id], event, val, stamp, depth)
     }
 
     if (branch.branches.length) {
-      emitBranches(branch.branches, id, event, val, stamp)
+      emitBranches(branch.branches, id, event, val, stamp, depth)
     }
   })
 
-const emitReferences = (branch, ids, event, val, stamp, isKeys) => {
+const emitReferences = (branch, ids, event, val, stamp, depth) => {
   for (const id in ids) {
-    emitOwn(branch, id, event, val, stamp, isKeys)
-    emitReferences(branch, ids[id], event, val, stamp, isKeys)
+    emitOwn(branch, id, event, val, stamp, depth)
+    emitReferences(branch, ids[id], event, val, stamp, depth)
   }
 }
 
-const emit = (branch, id, event, val, stamp = {}, isKeys) => {
-  emitOwn(branch, id, event, val, stamp, isKeys)
+const emit = (branch, id, event, val, stamp, depth, isKeys) => {
+  emitOwn(branch, id, event, val, stamp, depth)
 
   if (branch.rF[id]) {
-    emitReferences(branch, branch.rF[id], event, val, stamp, isKeys)
+    emitReferences(branch, branch.rF[id], event, val, stamp, depth)
   }
 
   if (branch.branches.length && !isKeys) {
-    emitBranches(branch.branches, id, event, val, stamp)
+    emitBranches(branch.branches, id, event, val, stamp, depth)
   }
 }
 
 const dataEvents = []
 const afterEmitEvents = []
 
-const addDataEvent = (branch, id, val) => {
-  dataEvents.push([ branch, id, val ])
+const addDataEvent = (branch, id, val, depth) => {
+  dataEvents.push([ branch, id, val, depth ])
 }
 
 const addAfterEmitEvent = (cb) => afterEmitEvents.push(cb)
@@ -79,9 +85,11 @@ const emitDataEvents = (branch, stamp) => {
       'data',
       event[2],
       stamp,
+      event[3],
       event[2] === 'add-key' || event[2] === 'remove-key'
     )
   )
+  fireParentSubscriptions(branch, stamp)
   afterEmitEventsToRun.forEach(event => event())
 }
 

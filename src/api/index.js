@@ -1,20 +1,20 @@
-import { create, Leaf } from '../index'
+import { create, Leaf } from '../'
 import { root } from '../id'
+import define from '../define'
 import { createStamp } from '../stamp'
-import { set } from './set/index'
+import { set } from './set'
 import { getBranchForId, getApi } from './get'
 import { origin, compute } from './compute'
 import { forEach, map, filter, find, reduce } from './array'
 import { path, inspect, serialize } from './serialize'
-import { on, off } from './listeners/on-off'
-import { subscribe, unsubscribe } from './subscription/on-off'
+import { on } from './listeners/on'
+import { subscribe } from './subscription/on'
 import { emit, emitDataEvents } from './listeners/emit'
+import { listen } from './server'
+import { connect } from './client'
+import { sendAllSubscriptions, drainQueue } from './client/send'
 
-const define = (obj, key, val) => {
-  Object.defineProperty(obj, key, { value: val, configurable: true })
-}
-
-const defineApi = leaf => {
+const defineApi = (leaf) => {
   // ISLEAF
   define(leaf, 'isLeaf', true)
 
@@ -30,7 +30,7 @@ const defineApi = leaf => {
   // SET
   define(leaf, 'set', function (val, stamp) {
     if (!stamp) {
-      stamp = createStamp()
+      stamp = createStamp(this.branch.stamp)
     }
 
     set(this.branch, this.id, val, stamp)
@@ -41,7 +41,7 @@ const defineApi = leaf => {
   // GET
   define(leaf, 'get', function (path, val, stamp) {
     if (!stamp && val !== void 0) {
-      stamp = createStamp()
+      stamp = createStamp(this.branch.stamp)
     }
 
     const subId = getApi(this.branch, this.id, path, val, stamp)
@@ -117,43 +117,58 @@ const defineApi = leaf => {
   })
 
   // ON
-  define(leaf, 'on', function (event, cb, listenerId) {
-    on(this.branch, this.id, event, cb, listenerId)
-    return this
-  })
+  define(leaf, 'on', function (event, cb) {
+    if (typeof event === 'function') {
+      cb = event
+      event = 'data'
+    }
 
-  // OFF
-  define(leaf, 'off', function (event, listenerId) {
-    off(this.branch, this.id, event, listenerId)
-    return this
+    return on(this.branch, this.id, event, cb)
   })
 
   // SUBSCRIBE
-  define(leaf, 'subscribe', function (options, cb, listenerId) {
+  define(leaf, 'subscribe', function (options, cb) {
     if (typeof options === 'function') {
-      listenerId = cb
       cb = options
       options = {}
     }
-    subscribe(this.branch, this.id, options, cb, listenerId)
-    return this
-  })
 
-  // UNSUBSCRIBE
-  define(leaf, 'unsubscribe', function (listenerId) {
-    unsubscribe(this.branch, this.id, listenerId)
-    return this
+    return subscribe(this.branch, this.id, options, cb)
   })
 
   // EMIT
   define(leaf, 'emit', function (event, val, stamp) {
     if (!stamp) {
-      stamp = createStamp()
+      stamp = createStamp(this.branch.stamp)
     }
 
     emit(this.branch, this.id, event, val, stamp)
+
+    if (this.branch.client.queue && event !== 'data') {
+      this.branch.client.queue.e.push([ this.id, event, val, stamp ])
+      drainQueue(this.branch.client)
+    }
+
     return this
+  })
+
+  // LISTEN
+  define(leaf, 'listen', function (port, forceHeartbeat) {
+    return listen(this.branch, port, forceHeartbeat)
+  })
+
+  // CONNECT
+  define(leaf, 'connect', function (url) {
+    return connect(this.branch, url)
+  })
+
+  // SWITCH BRANCH
+  define(leaf, 'switchBranch', function (branchKey) {
+    if (this.branch.client.queue) {
+      this.branch.client.queue.b = branchKey
+      sendAllSubscriptions(this.branch)
+    }
   })
 }
 
-export { defineApi, set }
+export { define, defineApi }

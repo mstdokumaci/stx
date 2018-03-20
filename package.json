@@ -4,13 +4,18 @@
   "description": "a blazing fast state manager with network sync out of the box",
   "main": "dist/index.js",
   "scripts": {
-    "build": "rollup src/index.js -o dist/index.js --f cjs && rollup src/index.js -o dist/browser.js --f umd -n stx",
+    "build": "rollup -c",
     "budo": "budo test/index.js",
     "cover": "istanbul cover --report none --print detail test",
     "dev": "nodemon --watch src --watch test -x 'npm run build && npm test'",
     "pretest": "npm run build",
     "test": "node test/index.js | tap-difflet && standard",
     "travis": "npm run build && npm run cover -s && istanbul report lcov && (cat coverage/lcov.info | coveralls) && standard"
+  },
+  "browser": {
+    "./server": "./server/browser",
+    "./receiveLarge": "./receiveLarge/browser",
+    "./websocket": "./websocket/browser"
   },
   "repository": {
     "type": "git",
@@ -33,11 +38,15 @@
     "Mustafa Dokumacı <mustafa@foraa.com>"
   ],
   "dependencies": {
-    "uws": "^9.0.0"
+    "uws": "^9.0.0",
+    "vigour-ua": "^3.0.0"
   },
   "devDependencies": {
     "budo": "^10.0.0",
-    "rollup": "latest",
+    "rollup": "0.51.2",
+    "rollup-plugin-local-resolve": "1.0.7",
+    "rollup-plugin-node-resolve": "3.0.2",
+    "rollup-plugin-buble": "0.18.0",
     "coveralls": "^3.0.0",
     "istanbul": "latest",
     "nodemon": "^1.0.0",

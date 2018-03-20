@@ -1,17 +1,27 @@
-let inProgress, count, ms
+const defaultConfig = { offset: 0 }
 
-const createStamp = () => {
-  if (inProgress) {
-    ms += ++count / 9999
-  } else {
-    count = 0
-    ms = Date.now()
-    inProgress = true
-    setTimeout(() => {
-      inProgress = false
-    })
-  }
-  return ms
+const setOffset = (config, stamp) => {
+  config.offset = (stamp | 0) - (createStamp(config) | 0) + config.offset
+  config.inProgress = false
 }
 
-export { createStamp }
+const createStamp = config => {
+  if (!config) {
+    config = defaultConfig
+  }
+
+  if (config.inProgress) {
+    config.ms += ++config.count / 9999
+  } else {
+    config.count = 0
+    config.ms = Date.now() + config.offset
+    config.inProgress = true
+    setTimeout(() => {
+      config.inProgress = false
+    })
+  }
+
+  return config.ms
+}
+
+export { createStamp, setOffset }

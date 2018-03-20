@@ -91,9 +91,8 @@ test('listeners - off', t => {
     id: 'branch1'
   })
 
-  master.on('success', (val, stamp, item) =>
-    masterFire.push(`success-${item.get('id').compute()}-${val}`),
-    'listener1'
+  const listener1 = master.on('success', (val, stamp, item) =>
+    masterFire.push(`success-${item.get('id').compute()}-${val}`)
   )
   master.on('fail', (val, stamp, item) =>
     masterFire.push(`fail-${item.get('id').compute()}-${val}`)
@@ -102,10 +101,9 @@ test('listeners - off', t => {
     branch1Fire.push(`${item.get('id').compute()}-${val}`)
   )
 
-  master.off('success', 'listener1')
+  listener1.off()
   master.emit('success', 'value1')
   master.emit('fail', 'value1')
-  branch1.off('fail', 'listener1')
   branch1.emit('success', 'value2')
 
   t.same(
@@ -122,12 +120,11 @@ test('listeners - off', t => {
   master.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
     masterFire.push(`${item.root().get('id').compute()}-${val}`)
   )
-  branch1.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
-    branch1Fire.push(`${item.root().get('id').compute()}-${val}`),
-    'listener2'
+  const listener2 = branch1.get([ 'first', 'id' ]).on('success', (val, stamp, item) =>
+    branch1Fire.push(`${item.root().get('id').compute()}-${val}`)
   )
 
-  branch1.get(['first', 'id']).off('success', 'listener2')
+  listener2.off()
   master.get([ 'first', 'id' ]).emit('success', 'value3')
   branch1.get([ 'first', 'id' ]).emit('success', 'value4')
 

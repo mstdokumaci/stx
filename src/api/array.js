@@ -1,4 +1,4 @@
-import { Leaf } from '../index'
+import { Leaf } from '../'
 import { getString } from '../cache'
 import { getBranchForId } from './get'
 import { compute } from './compute'

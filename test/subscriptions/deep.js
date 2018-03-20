@@ -84,6 +84,8 @@ test('subscriptions - deep fields', t => {
   masterFire.length = 0
   branchFire.length = 0
 
+  branch.switchBranch('random')
+
   branch.set({
     deep: {
       real: {

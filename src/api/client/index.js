@@ -11,6 +11,9 @@ const isNode = typeof window === 'undefined'
 
 const socketClose = WebSocket.prototype.close
 define(WebSocket.prototype, 'close', function (code, data) {
+  if (this.heartbeat) {
+    clearTimeout(this.heartbeat)
+  }
   this.blockReconnect = true
   socketClose.call(this, code, data)
 })

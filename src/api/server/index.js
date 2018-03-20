@@ -13,6 +13,9 @@ import { incoming } from './incoming'
 const heartBeatTimeout = 8e3
 
 const removeSocket = (server, socketId, socket) => {
+  if (socket.heartBeatTimeout) {
+    clearTimeout(socket.heartBeatTimeout)
+  }
   socket.removeAllListeners()
   removeSubscriptionsAndAllDataListener(socket.branch, socketId)
   delete server.sockets[socketId]

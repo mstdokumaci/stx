@@ -48,7 +48,7 @@ const setLeaves = (branch, leaves, stamp) => {
       if (keys && keys.length) {
         if (leaf.keys && leaf.keys.length) {
           const added = keys.filter(key => !~leaf.keys.indexOf(key))
-          if (added) {
+          if (added.length) {
             leaf.keys = leaf.keys.concat(added)
             addDataEvent(void 0, id, 'add-key')
           }

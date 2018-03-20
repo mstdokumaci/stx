@@ -5,6 +5,7 @@ import {
   syncSubscriptions,
   removeSubscriptionsAndAllDataListener, addAllDataListener
 } from './subscriptions'
+import { reuseCache } from './cache'
 
 const switchBranch = (socketId, socket, master, branchKey) => {
   let branch = master.branches.find(branch => branch.key === branchKey)
@@ -15,9 +16,14 @@ const switchBranch = (socketId, socket, master, branchKey) => {
   }
 
   removeSubscriptionsAndAllDataListener(socket.branch, socketId)
-  addAllDataListener(branch, socketId, socket, master)
+  const reuse = reuseCache(socket)
 
   socket.branch = branch
+  addAllDataListener(branch, socketId, socket, master)
+  if (reuse) {
+    socket.cache = reuse.cache
+    socket.removeLeaves = reuse.remove
+  }
 
   return new Leaf(branch, root)
 }

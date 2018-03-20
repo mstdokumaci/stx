@@ -2,6 +2,7 @@ import { createStamp } from '../../stamp'
 import { children } from '../array'
 import { cache, isCachedForStamp, isCached } from './cache'
 import maxSize from './maxSize'
+import { getFromLeaves } from '../get'
 
 const sendToSocket = (socket, payload, next) => {
   socket.send(payload)
@@ -67,6 +68,8 @@ const sendLeaves = (socket, master, leaf, options) => {
 
   const leaves = {}
 
+  serializeParents(leaves, socket, master, branch, id, depthLimit)
+
   keys = keys ? keys.filter(
     key => serializeWithAllChildren(leaves, socket, master, branch, key, depthLimit, 1)
   ) : serializeAllChildren(leaves, socket, master, branch, id, depthLimit, 0, excludeKeys, limit)
@@ -113,6 +116,20 @@ const serializeWithAllChildren = (leaves, socket, master, branch, id, depthLimit
   return serializeLeaf(leaves, socket, master, branch, id, keys, depthLimit, depth)
 }
 
+const serializeParents = (leaves, socket, master, branch, id, depthLimit) => {
+  let parent = getFromLeaves(branch, id).parent
+  while (parent) {
+    if (!leaves[id]) {
+      break
+    }
+
+    serializeLeaf(leaves, socket, master, branch, parent, [ id ], depthLimit, 0)
+
+    id = parent
+    parent = getFromLeaves(branch, id).parent
+  }
+}
+
 const serializeLeaf = (leaves, socket, master, branch, id, keys, depthLimit, depth) => {
   const oBranch = branch
   let key, parent, stamp, val, rT, isMaster
@@ -128,6 +145,7 @@ const serializeLeaf = (leaves, socket, master, branch, id, keys, depthLimit, dep
         } else if (leaf.rT) {
           rT = leaf.rT
           serializeWithAllChildren(leaves, socket, master, oBranch, leaf.rT, depthLimit, depth)
+          serializeParents(leaves, socket, master, oBranch, leaf.rT, depthLimit)
         }
       }
 
@@ -145,6 +163,9 @@ const serializeLeaf = (leaves, socket, master, branch, id, keys, depthLimit, dep
   if (stamp && (val !== void 0 || rT || keys.length)) {
     if (!isCachedForStamp(socket, isMaster, id, stamp)) {
       leaves[id] = [ key, parent, stamp, val, rT, keys, depth ]
+      if (socket.removeLeaves[id]) {
+        delete socket.removeLeaves[id]
+      }
       cache(socket, isMaster, id, stamp)
     }
 

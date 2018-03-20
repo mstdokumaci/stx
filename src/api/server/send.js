@@ -61,11 +61,9 @@ const sendLeaves = (socket, master, leaf, options) => {
     return
   }
 
-  let { keys, excludeKeys, depthLimit, limit } = options
+  let { keys, excludeKeys, depth, limit } = options
 
-  if (!depthLimit) {
-    depthLimit = Infinity
-  }
+  const depthLimit = depth || Infinity
 
   const leaves = {}
 

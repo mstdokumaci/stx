@@ -119,3 +119,86 @@ test('network - subscriptions - simple', t => {
   const client1 = cMaster1.connect('ws://localhost:7070')
   const client2 = cMaster2.connect('ws://localhost:7070')
 })
+
+test('network - subscriptions - on branch', t => {
+  const master = create({
+    id: 'master',
+    i1: {
+      title: 'item 1'
+    },
+    i2: {
+      title: 'item 2'
+    }
+  })
+
+  const branch = master.create({ id: 'branch' })
+
+  const server = branch.listen(7070, true)
+
+  const cMaster1 = create({ id: 'client1' })
+  const cMaster2 = create({ id: 'client2' })
+
+  cMaster1.subscribe(
+    { excludeKeys: [ 'id', 'i2' ] },
+    cm => {
+      if (cm.get('i1')) {
+        if (cm.get([ 'i1', 'title' ]).compute() === 'item 1') {
+          t.same(
+            cm.serialize(),
+            { id: 'client1', i1: { title: 'item 1' } },
+            'cm1.serialize() = { id: client1, i1: { title: item 1 } }'
+          )
+
+          branch.set({
+            i1: {
+              title: 'item 1 override'
+            },
+            i2: {
+              title: 'item 2 override'
+            },
+            i3: {
+              title: 'item 3'
+            }
+          })
+        } else {
+          t.same(
+            cm.serialize(),
+            {
+              id: 'client1',
+              i1: { title: 'item 1 override' },
+              i3: { title: 'item 3' }
+            },
+            'cm1.serialize() = correct'
+          )
+
+          client1.socket.close()
+          client2.socket.close()
+          server.close()
+          t.end()
+        }
+      }
+    }
+  )
+
+  cMaster2.subscribe(
+    { keys: [ 'i2', 'i3' ] },
+    cm => {
+      if (cm.get('i3')) {
+        t.equals(
+          cm.get([ 'i3', 'title' ]).compute(),
+          'item 3',
+          'cm2.i3.title.compute() = item 3'
+        )
+      } else if (cm.get('i2')) {
+        t.equals(
+          cm.get([ 'i2', 'title' ]).compute(),
+          'item 2',
+          'cm2.i2.title.compute() = item 2'
+        )
+      }
+    }
+  )
+
+  const client1 = cMaster1.connect('ws://localhost:7070')
+  const client2 = cMaster2.connect('ws://localhost:7070')
+})

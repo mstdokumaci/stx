@@ -117,30 +117,30 @@ const cleanBranchKeys = (branches, id, keys, stamp) =>
     }
   })
 
-const setKeys = (branch, leaf, id, val, stamp, set) => {
+const setKeys = (branch, leaf, id, val, stamp, depth, set) => {
   let keys = []
   for (let key in val) {
     if (key === 'val') {
-      set(branch, leaf, id, val.val, stamp)
+      set(branch, leaf, id, val.val, stamp, depth)
     } else {
       const subLeafId = keyToId(key, id)
       const subLeafBranch = getBranchForId(branch, subLeafId)
       if (subLeafBranch) {
-        if (subLeafBranch === branch) {
-          setOwnExisting(
-            branch, branch.leaves[subLeafId], subLeafId, val[key], stamp
-          )
-        } else {
-          setOverride(
-            branch, subLeafBranch.leaves[subLeafId], subLeafId, val[key], stamp
-          )
-        }
+        const fn = subLeafBranch === branch ? setOwnExisting : setOverride
+        fn(
+          branch,
+          subLeafBranch.leaves[subLeafId],
+          subLeafId,
+          val[key],
+          stamp,
+          depth + 1
+        )
       } else if (val[key] !== null && val[key] !== void 0) {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
         keys.push(subLeafId)
         const subLeaf = addOwnLeaf(branch, subLeafId, id, keyId, stamp)
-        setOwnNew(branch, subLeaf, subLeafId, val[key], stamp)
+        setOwnNew(branch, subLeaf, subLeafId, val[key], stamp, depth + 1)
       }
     }
   }

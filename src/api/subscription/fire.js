@@ -1,21 +1,21 @@
 import { Leaf } from '../..'
 import { getFromLeaves } from '../get'
 
-const addParentSubscription = (branch, parent, child, depth) => {
+const addParentSubscription = (branch, parent, child, depth, parentList) => {
   if (branch.subscriptions[parent]) {
     if (branch.subscriptions[parent].keys) {
       branch.subscriptions[parent].keys.push([ child, depth ])
     } else {
       branch.subscriptions[parent].keys = [ [ child, depth ] ]
-      branch.parentSubscriptions.push(parent)
+      parentList.push(parent)
     }
   } else {
     branch.subscriptions[parent] = { keys: [ [ child, depth ] ] }
-    branch.parentSubscriptions.push(parent)
+    parentList.push(parent)
   }
 }
 
-const subscriptions = (branch, id, stamp) => {
+const subscriptions = (branch, id, stamp, depth) => {
   if (!branch.subscriptions[id]) {
     branch.subscriptions[id] = { stamp }
   } else if (branch.subscriptions[id].stamp === stamp) {
@@ -33,7 +33,10 @@ const subscriptions = (branch, id, stamp) => {
 
   const parent = getFromLeaves(branch, id).parent
   if (parent) {
-    addParentSubscription(branch, parent, id, 1)
+    if (!branch.parentSubscriptions[depth]) {
+      branch.parentSubscriptions[depth] = []
+    }
+    addParentSubscription(branch, parent, id, 1, branch.parentSubscriptions[depth])
   }
 }
 
@@ -53,16 +56,16 @@ const checkOptions = (options, id, depth) => {
   return pass
 }
 
-const referenceSubscriptions = (branch, ids, stamp, keys) => {
+const referenceSubscriptions = (branch, ids, stamp, keys, parentList) => {
   for (const id in ids) {
     if (!branch.subscriptions[id]) {
       branch.subscriptions[id] = {}
     }
-    parentSubscriptions(branch, id, stamp, keys)
+    parentSubscriptions(branch, id, stamp, keys, parentList)
   }
 }
 
-const parentSubscriptions = (branch, id, stamp, keys) => {
+const parentSubscriptions = (branch, id, stamp, keys, parentList) => {
   if (branch.subscriptions[id].stamp === stamp) {
     return
   } else {
@@ -79,23 +82,35 @@ const parentSubscriptions = (branch, id, stamp, keys) => {
   }
 
   if (branch.rF[id]) {
-    referenceSubscriptions(branch, branch.rF[id], stamp, keys)
+    referenceSubscriptions(branch, branch.rF[id], stamp, keys, parentList)
   }
 
   const parent = getFromLeaves(branch, id).parent
   if (parent) {
+    const last = parentList.length - 1
+    if (!parentList[last]) {
+      parentList[last] = []
+    }
     const depth = keys.reduce((depth, key) => depth > key[1] ? key[1] : depth, Infinity)
-    addParentSubscription(branch, parent, id, depth + 1)
+    addParentSubscription(branch, parent, id, depth + 1, parentList[last])
   }
 }
 
 const fireParentSubscriptions = (branch, stamp) => {
-  while (branch.parentSubscriptions.length) {
-    branch.parentSubscriptions.splice(0).forEach(id => {
-      const keys = branch.subscriptions[id].keys.splice(0)
-      delete branch.subscriptions[id].keys
-      parentSubscriptions(branch, Number(id), stamp, keys)
-    })
+  const parentList = branch.parentSubscriptions.splice(0)
+  branch.parentSubscriptions = []
+  while (parentList.length) {
+    const nextLevel = parentList.pop()
+    if (nextLevel) {
+      if (nextLevel.length && !parentList.length) {
+        parentList.push([])
+      }
+      nextLevel.forEach(id => {
+        const keys = branch.subscriptions[id].keys.splice(0)
+        delete branch.subscriptions[id].keys
+        parentSubscriptions(branch, Number(id), stamp, keys, parentList)
+      })
+    }
   }
 
   if (branch.branches.length) {

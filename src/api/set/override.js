@@ -11,7 +11,7 @@ import {
   setKeys
 } from './'
 
-const setOverrideVal = (branch, leaf, id, val, stamp) => {
+const setOverrideVal = (branch, leaf, id, val, stamp, depth) => {
   const valOrRef = getValOrRef(branch, id)
   if (val === valOrRef) {
     return
@@ -23,10 +23,10 @@ const setOverrideVal = (branch, leaf, id, val, stamp) => {
   leaf = addOwnLeaf(branch, id, leaf.parent, leaf.key, stamp)
   leaf.val = val
 
-  addDataEvent(void 0, id, 'set')
+  addDataEvent(void 0, id, 'set', depth)
 }
 
-const setOverrideReference = (branch, leaf, id, rT, stamp) => {
+const setOverrideReference = (branch, leaf, id, rT, stamp, depth) => {
   const rTold = getRtFromLeaves(branch, id)
   if (rTold === rT) {
     return
@@ -38,32 +38,32 @@ const setOverrideReference = (branch, leaf, id, rT, stamp) => {
 
   leaf.rT = rT
   addReferenceFrom(branch, id, rT)
-  addDataEvent(void 0, id, 'set')
+  addDataEvent(void 0, id, 'set', depth)
 
   if (branch.branches.length) {
     fixBranchReferences(branch.branches, id, rT, rTold)
   }
 }
 
-const setOverride = (branch, leaf, id, val, stamp) => {
+const setOverride = (branch, leaf, id, val, stamp, depth = 0) => {
   if (typeof val === 'object') {
     if (!val) {
-      remove(branch, leaf, id, stamp)
+      remove(branch, leaf, id, stamp, depth)
     } else if (Array.isArray(val)) {
       if (val[0] === '@') {
         const rT = getByPath(branch, root, val.slice(1), {}, stamp)
-        setOverrideReference(branch, leaf, id, rT, stamp)
+        setOverrideReference(branch, leaf, id, rT, stamp, depth)
       } else {
-        setOverrideVal(branch, leaf, id, val, stamp)
+        setOverrideVal(branch, leaf, id, val, stamp, depth)
       }
     } else if (val.isLeaf) {
       checkReferenceByLeaf(branch, id, val.branch, val.id, () =>
-        setOverrideReference(branch, leaf, id, val.id, stamp))
+        setOverrideReference(branch, leaf, id, val.id, stamp, depth))
     } else {
-      setKeys(branch, leaf, id, val, stamp, setOverride)
+      setKeys(branch, leaf, id, val, stamp, depth, setOverride)
     }
   } else {
-    setOverrideVal(branch, leaf, id, val, stamp)
+    setOverrideVal(branch, leaf, id, val, stamp, depth)
   }
 }
 

@@ -34,15 +34,15 @@ const removeLeaves = (branch, list) => {
 const setLeaves = (branch, leaves, stamp) => {
   for (let id in leaves) {
     id = Number(id)
-    const [ key, parent, stamp, val, rT, keys ] = leaves[id]
+    const [ key, parent, stamp, val, rT, keys, depth ] = leaves[id]
 
     if (branch.leaves[id]) {
       const leaf = branch.leaves[id]
 
       if (val !== null) {
-        setOwnExistingVal(branch, leaf, id, val, stamp)
+        setOwnExistingVal(branch, leaf, id, val, stamp, depth)
       } else if (rT) {
-        setOwnExistingReference(branch, leaf, id, rT, stamp)
+        setOwnExistingReference(branch, leaf, id, rT, stamp, depth)
       }
 
       if (keys && keys.length) {
@@ -61,9 +61,9 @@ const setLeaves = (branch, leaves, stamp) => {
       const leaf = addOwnLeaf(branch, id, parent, key, stamp)
 
       if (val !== null) {
-        setOwnNewVal(branch, leaf, id, val, stamp)
+        setOwnNewVal(branch, leaf, id, val, stamp, depth)
       } else if (rT) {
-        setOwnNewReference(branch, leaf, id, rT, stamp)
+        setOwnNewReference(branch, leaf, id, rT, stamp, depth)
       }
 
       if (keys && keys.length) {

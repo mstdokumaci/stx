@@ -32,7 +32,6 @@ const connect = (branch, url, reconnect = 50) => {
   socket.onclose = () => {
     if (socket.heartbeat) {
       clearTimeout(socket.heartbeat)
-      socket.heartbeat = null
     }
 
     if (branch.client.socket) {

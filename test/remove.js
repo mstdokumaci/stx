@@ -204,7 +204,10 @@ test('remove- transfer keys', t => {
 
   const branch2 = branch1.create({
     content: {
-      fourth: 42
+      fourth: {
+        val: 42,
+        refToContent: [ '@', 'content' ]
+      }
     }
   })
 
@@ -217,8 +220,8 @@ test('remove- transfer keys', t => {
   )
   t.same(
     branch2.get('content').serialize(),
-    { second: 21, third: 31, fourth: 42 },
-    'branch2.content.serialize() = { second: 21, third: 31, fourth: 42 }'
+    { fourth: { val: 42, refToContent: [ '@', 'content' ] }, second: 21, third: 31 },
+    'branch2.content.serialize() = correct'
   )
 
   t.end()

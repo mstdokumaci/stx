@@ -146,7 +146,7 @@ const setKeys = (branch, leaf, id, val, stamp, depth, set) => {
   }
   if (keys.length) {
     if (set === setOverride) {
-      leaf = addOwnLeaf(branch, id, leaf.parent, leaf.key, stamp)
+      leaf = branch.leaves[id] || addOwnLeaf(branch, id, leaf.parent, leaf.key, stamp)
     }
     leaf.keys = (leaf.keys || []).concat(keys)
     leaf.stamp = stamp

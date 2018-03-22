@@ -17,9 +17,9 @@ const switchBranch = (socketId, socket, master, branchKey) => {
 
   removeSubscriptionsAndAllDataListener(socket.branch, socketId)
   const reuse = reuseCache(socket)
-
   socket.branch = branch
   addAllDataListener(branch, socketId, socket, master)
+
   if (reuse) {
     socket.cache = reuse.cache
     socket.removeLeaves = reuse.remove

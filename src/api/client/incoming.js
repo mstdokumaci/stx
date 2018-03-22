@@ -13,7 +13,6 @@ const startHeartbeat = branch => {
   if (socket) {
     if (socket.heartbeat) {
       clearTimeout(socket.heartbeat)
-      socket.heartbeat = null
     }
 
     socket.send(JSON.stringify({ h: true }))

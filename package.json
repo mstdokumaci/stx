@@ -13,9 +13,9 @@
     "travis": "npm run build && npm run cover -s && istanbul report lcov && (cat coverage/lcov.info | coveralls) && standard"
   },
   "browser": {
-    "./server": "./server/browser",
-    "./receiveLarge": "./receiveLarge/browser",
-    "./websocket": "./websocket/browser"
+    "./src/api/server": "./src/api/server/browser",
+    "./src/api/client/receiveLarge": "./src/api/client/receiveLarge/browser",
+    "./src/api/client/websocket": "./src/api/client/websocket/browser"
   },
   "repository": {
     "type": "git",
@@ -42,16 +42,16 @@
     "vigour-ua": "^3.0.0"
   },
   "devDependencies": {
-    "budo": "^10.0.0",
-    "rollup": "0.51.2",
-    "rollup-plugin-local-resolve": "1.0.7",
-    "rollup-plugin-node-resolve": "3.0.2",
-    "rollup-plugin-buble": "0.18.0",
+    "budo": "^11.0.0",
     "coveralls": "^3.0.0",
-    "istanbul": "latest",
+    "istanbul": "0.4.5",
     "nodemon": "^1.0.0",
-    "standard": "^10.0.0",
-    "tap-difflet": "latest",
-    "tape": "^4.0.0"
+    "rollup": "0.58.2",
+    "rollup-plugin-buble": "0.19.2",
+    "rollup-plugin-local-resolve": "^1.0.7",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "standard": "^11.0.0",
+    "tap-difflet": "0.7.1",
+    "tape": "^4.9.0"
   }
 }

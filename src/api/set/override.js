@@ -3,13 +3,13 @@ import { addDataEvent } from '../listeners/emit'
 import { getRtFromLeaves, getByPath } from '../get'
 import { getValOrRef } from '../compute'
 import { remove, removeReferenceFrom } from '../remove'
+import { setKeys } from './'
 import {
   addOwnLeaf,
   addReferenceFrom,
   checkReferenceByLeaf,
-  fixBranchReferences,
-  setKeys
-} from './'
+  fixBranchReferences
+} from './utils'
 
 const setOverrideVal = (branch, leaf, id, val, stamp, depth) => {
   const valOrRef = getValOrRef(branch, id)

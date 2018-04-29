@@ -1,11 +1,11 @@
 import { root } from '../../id'
 import { addDataEvent } from '../listeners/emit'
+import { setKeys } from './'
 import {
   addReferenceFrom,
   checkReferenceByLeaf,
-  fixBranchReferences,
-  setKeys
-} from './'
+  fixBranchReferences
+} from './utils'
 import { getRtFromLeaves, getByPath } from '../get'
 import { getValOrRef } from '../compute'
 import { remove, removeReferenceFrom } from '../remove'

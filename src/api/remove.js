@@ -1,5 +1,5 @@
 import { emit, addDataEvent } from './listeners/emit'
-import { addOwnLeaf, addBranchLeaf } from './set'
+import { addOwnLeaf, addBranchLeaf } from './set/utils'
 import { children } from './array'
 import { getRtFromLeaves } from './get'
 

@@ -1,6 +1,6 @@
 import { keyToId } from '../../id'
 import define from '../../define'
-import { Leaf } from '../..'
+import { Leaf } from '../../leaf'
 import {
   addSubscriptionToQueue,
   removeSubscriptionToQueue,

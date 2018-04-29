@@ -1,6 +1,6 @@
 import { setOffset } from '../../stamp'
 import { remove } from '../remove'
-import { addOwnLeaf } from '../set'
+import { addOwnLeaf } from '../set/utils'
 import { setOwnExistingVal, setOwnExistingReference } from '../set/own-existing'
 import { setOwnNewVal, setOwnNewReference } from '../set/own-new'
 import { addDataEvent, emitDataEvents } from '../listeners/emit'

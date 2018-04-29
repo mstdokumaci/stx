@@ -1,5 +1,5 @@
 import { root } from '../../id'
-import { create, Leaf } from '../..'
+import { create, Leaf } from '../../leaf'
 import { emit } from '../listeners/emit'
 import {
   syncSubscriptions,

@@ -1,4 +1,4 @@
-import { Leaf } from '../..'
+import { Leaf } from '../../leaf'
 import { getFromLeaves } from '../get'
 
 const addParentSubscription = (branch, parent, child, depth, parentList) => {

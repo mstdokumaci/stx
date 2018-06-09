@@ -42,10 +42,10 @@
     "vigour-ua": "^3.0.0"
   },
   "devDependencies": {
-    "budo": "^11.0.0",
+    "budo": "^11.2.2",
     "coveralls": "^3.0.0",
     "istanbul": "0.4.5",
-    "nodemon": "^1.0.0",
+    "nodemon": "^1.17.5",
     "rollup": "0.58.2",
     "rollup-plugin-buble": "0.19.2",
     "rollup-plugin-local-resolve": "^1.0.7",

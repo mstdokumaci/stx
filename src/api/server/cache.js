@@ -1,5 +1,5 @@
 const cache = (socket, isMaster, id, stamp) => {
-  if (!socket.cache) socket.cache = { master: {}, branch: {} }
+  if (!socket.cache) socket.cache = { master: {}, branch: {}, strings: {} }
 
   if (isMaster) {
     delete socket.cache.branch[id]
@@ -22,10 +22,17 @@ const reuseCache = (socket) => {
   return {
     cache: {
       master: socket.cache.master,
-      branch: {}
+      branch: {},
+      strings: {}
     },
     remove: socket.cache.branch
   }
 }
 
-export { cache, isCachedForStamp, isCached, reuseCache }
+const cacheString = (socket, id) => {
+  socket.cache.strings[id] = true
+}
+
+const isStringCached = (socket, id) => socket.cache && socket.cache.strings[id]
+
+export { cache, isCachedForStamp, isCached, reuseCache, cacheString, isStringCached }

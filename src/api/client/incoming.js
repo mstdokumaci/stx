@@ -4,6 +4,7 @@ import { addOwnLeaf } from '../set/utils'
 import { setOwnExistingVal, setOwnExistingReference } from '../set/own-existing'
 import { setOwnNewVal, setOwnNewReference } from '../set/own-new'
 import { addDataEvent, emitDataEvents } from '../listeners/emit'
+import { addToStrings } from '../../cache'
 
 const heartbeatTimeout = 3e3
 
@@ -75,13 +76,23 @@ const setLeaves = (branch, leaves, stamp) => {
   emitDataEvents(branch, stamp)
 }
 
+const setStrings = strings => {
+  for (const id in strings) {
+    addToStrings(id, strings[id])
+  }
+}
+
 const incoming = (branch, data) => {
-  const { t: stamp, h: heartbeat, l: leaves, r: remove } = data
+  const { t: stamp, h: heartbeat, l: leaves, s: strings, r: remove } = data
 
   setOffset(branch.stamp, stamp)
 
   if (remove) {
     removeLeaves(branch, remove)
+  }
+
+  if (strings) {
+    setStrings(strings)
   }
 
   if (leaves) {

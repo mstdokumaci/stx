@@ -22,7 +22,6 @@ const removeSubscriptionToQueue = (branch, id, listenerId) => {
 const drainQueue = client => {
   if (
     client.socket &&
-    client.socket.external &&
     (
       client.queue.b ||
       client.queue.s.length ||

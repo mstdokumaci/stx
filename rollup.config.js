@@ -17,7 +17,7 @@ export default [
     input: 'src/index.js',
     output: {
       file: 'dist/browser.js',
-      format: 'iife',
+      format: 'es',
       name: 'stx',
       sourcemap: 'inline'
     },

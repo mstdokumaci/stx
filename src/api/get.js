@@ -57,7 +57,9 @@ const setByPath = (branch, ids, path, val, stamp, inReference) => {
     if (i === 0 && inReference) {
       return
     }
-    val = { [ path.pop() ]: val }
+    // buble hack
+    const newVal = { [ path.pop() ]: val }
+    val = newVal
     if (getBranchForId(branch, ids[i])) {
       set(branch, ids[i], val, stamp)
       return leafId

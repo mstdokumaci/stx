@@ -3,7 +3,8 @@ import { create, Leaf } from '../../leaf'
 import { emit } from '../listeners/emit'
 import {
   syncSubscriptions,
-  removeSubscriptionsAndAllDataListener, addAllDataListener
+  removeSubscriptionsAndAllDataListener,
+  addAllDataListener
 } from './subscriptions'
 import { reuseCache } from './cache'
 

@@ -1,7 +1,7 @@
 import { getString } from '../../cache'
 import { createStamp } from '../../stamp'
 import { children } from '../array'
-import maxSize from './maxSize'
+import maxSize from './max-size'
 import { getFromLeaves } from '../get'
 import {
   cache,

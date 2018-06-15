@@ -1,4 +1,4 @@
-import maxSize from '../../server/maxSize'
+import maxSize from '../../server/max-size'
 
 let blobArray = false
 

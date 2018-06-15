@@ -63,7 +63,18 @@ const send = (socket, raw) => {
   }
 }
 
-const sendLeaves = (socket, master, leaf, options) => {
+const sendData = (socket, branch, data) => {
+  if (socket.external && Object.keys(data).length) {
+    const json = { t: createStamp(branch.stamp), l: data.leaves, s: data.strings }
+    if (Object.keys(socket.removeLeaves).length) {
+      json.r = socket.removeLeaves
+      socket.removeLeaves = {}
+    }
+    send(socket, JSON.stringify(json))
+  }
+}
+
+const sendLeaves = (socket, master, leaf, options, dataOverride) => {
   const { branch, id } = leaf
   if (branch.leaves[id] === null) {
     return
@@ -72,11 +83,7 @@ const sendLeaves = (socket, master, leaf, options) => {
   let { keys, excludeKeys, depth, limit } = options
 
   const depthLimit = depth || Infinity
-
-  const data = {
-    leaves: {},
-    strings: {}
-  }
+  const data = Object.assign({ leaves: {}, strings: {} }, dataOverride)
 
   serializeParents(data, socket, master, branch, id, depthLimit)
 
@@ -86,14 +93,7 @@ const sendLeaves = (socket, master, leaf, options) => {
 
   serializeLeaf(data, socket, master, branch, id, keys, depthLimit, 0)
 
-  if (socket.external && Object.keys(data).length) {
-    const json = { t: createStamp(branch.stamp), l: data.leaves, s: data.strings }
-    if (Object.keys(socket.removeLeaves).length) {
-      json.r = socket.removeLeaves
-      socket.removeLeaves = {}
-    }
-    send(socket, JSON.stringify(json))
-  }
+  return dataOverride ? data : sendData(socket, branch, data)
 }
 
 const serializeAllChildren = (
@@ -197,4 +197,4 @@ const removeLeaves = (socket, master, type, stamp, leaf) => {
   }
 }
 
-export { sendLeaves, removeLeaves }
+export { sendData, sendLeaves, removeLeaves }

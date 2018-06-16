@@ -23,7 +23,7 @@ const reuseCache = (socket) => {
     cache: {
       master: socket.cache.master,
       branch: {},
-      strings: {}
+      strings: socket.cache.strings
     },
     remove: socket.cache.branch
   }

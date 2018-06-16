@@ -64,7 +64,13 @@ const send = (socket, raw) => {
 }
 
 const sendData = (socket, branch, data) => {
-  if (socket.external && Object.keys(data).length) {
+  if (
+    socket.external &&
+    (
+      Object.keys(data.leaves).length ||
+      Object.keys(data.strings).length
+    )
+  ) {
     const json = { t: createStamp(branch.stamp), l: data.leaves, s: data.strings }
     if (Object.keys(socket.removeLeaves).length) {
       json.r = socket.removeLeaves

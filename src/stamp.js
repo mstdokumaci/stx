@@ -1,7 +1,7 @@
 const defaultConfig = { offset: 0 }
 
 const setOffset = (config, stamp) => {
-  config.offset = (stamp | 0) - (createStamp(config) | 0) + config.offset
+  config.offset = (stamp | 0) - Date.now()
   config.inProgress = false
 }
 

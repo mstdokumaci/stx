@@ -22,16 +22,17 @@ const startHeartbeat = branch => {
 }
 
 const removeLeaves = (branch, list) => {
-  for (const id in list) {
+  for (let id in list) {
+    id = Number(id)
     const stamp = list[id]
     if (branch.leaves[id]) {
       const leaf = branch.leaves[id]
-      remove(branch, leaf, id, stamp)
+      remove(branch, leaf, id, stamp, 1)
     }
   }
 }
 
-const setLeaves = (branch, leaves, stamp) => {
+const setLeaves = (branch, leaves) => {
   for (let id in leaves) {
     id = Number(id)
     const [ key, parent, stamp, val, rT, keys, depth ] = leaves[id]
@@ -72,8 +73,6 @@ const setLeaves = (branch, leaves, stamp) => {
       }
     }
   }
-
-  emitDataEvents(branch, stamp)
 }
 
 const setStrings = strings => {
@@ -96,8 +95,10 @@ const incoming = (branch, data) => {
   }
 
   if (leaves) {
-    setLeaves(branch, leaves, stamp)
+    setLeaves(branch, leaves)
   }
+
+  emitDataEvents(branch, stamp)
 
   if (heartbeat) {
     startHeartbeat(branch)

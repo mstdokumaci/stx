@@ -29,7 +29,7 @@ const cleanLeaves = (branch, list) => {
     if (branch.leaves[id]) {
       const leaf = branch.leaves[id]
       const rT = getRtFromLeaves(branch, id)
-      removeOwn(branch, leaf, id, rT, stamp, 1, true)
+      removeOwn(branch, leaf, id, rT, stamp, 1, list[leaf.parent])
       if (rT) {
         delete branch.rF[rT][id]
       }

@@ -1,5 +1,6 @@
 import { setOffset } from '../../stamp'
-import { remove } from '../remove'
+import { remove, removeOwn, removeListenersSubscriptions } from '../remove'
+import { getRtFromLeaves } from '../get'
 import { addOwnLeaf } from '../set/utils'
 import { setOwnExistingVal, setOwnExistingReference } from '../set/own-existing'
 import { setOwnNewVal, setOwnNewReference } from '../set/own-new'
@@ -18,6 +19,22 @@ const startHeartbeat = branch => {
 
     socket.send(JSON.stringify({ h: true }))
     socket.heartbeat = setTimeout(() => startHeartbeat(branch), heartbeatTimeout)
+  }
+}
+
+const cleanLeaves = (branch, list) => {
+  for (let id in list) {
+    id = Number(id)
+    const stamp = list[id]
+    if (branch.leaves[id]) {
+      const leaf = branch.leaves[id]
+      const rT = getRtFromLeaves(branch, id)
+      removeOwn(branch, leaf, id, rT, stamp, 1, true)
+      if (rT) {
+        delete branch.rF[rT][id]
+      }
+      removeListenersSubscriptions(branch, id)
+    }
   }
 }
 
@@ -82,9 +99,13 @@ const setStrings = strings => {
 }
 
 const incoming = (branch, data) => {
-  const { t: stamp, h: heartbeat, l: leaves, s: strings, r: remove } = data
+  const { t: stamp, h: heartbeat, l: leaves, c: clean, s: strings, r: remove } = data
 
   setOffset(branch.stamp, stamp)
+
+  if (clean) {
+    cleanLeaves(branch, clean)
+  }
 
   if (remove) {
     removeLeaves(branch, remove)

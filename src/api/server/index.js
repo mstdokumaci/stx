@@ -42,6 +42,7 @@ const listen = (branch, port, forceHeartbeat) => {
 
       socket.branch = branch
       socket.leaves = {}
+      socket.cleanLeaves = {}
       socket.removeLeaves = {}
       socket.ua = ua(socket.upgradeReq && socket.upgradeReq.headers['user-agent'])
       server.sockets[socketId] = socket

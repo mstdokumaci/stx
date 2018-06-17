@@ -144,4 +144,4 @@ const remove = (branch, leaf, id, stamp, depth, ignoreParent) => {
   removeListenersSubscriptions(branch, id)
 }
 
-export { remove, removeReferenceFrom }
+export { remove, removeOwn, removeListenersSubscriptions, removeReferenceFrom }

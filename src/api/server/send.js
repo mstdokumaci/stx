@@ -72,6 +72,10 @@ const sendData = (socket, branch, data) => {
     )
   ) {
     const json = { t: createStamp(branch.stamp), l: data.leaves, s: data.strings }
+    if (Object.keys(socket.cleanLeaves).length) {
+      json.c = socket.cleanLeaves
+      socket.cleanLeaves = {}
+    }
     if (Object.keys(socket.removeLeaves).length) {
       json.r = socket.removeLeaves
       socket.removeLeaves = {}
@@ -181,8 +185,8 @@ const serializeLeaf = (data, socket, master, branch, id, keys, depthLimit, depth
   if (stamp && (val !== void 0 || rT || keys.length)) {
     if (!isCachedForStamp(socket, isMaster, id, stamp)) {
       data.leaves[id] = [ key, parent, stamp, val, rT, keys, depth ]
-      if (socket.removeLeaves[id]) {
-        delete socket.removeLeaves[id]
+      if (socket.cleanLeaves[id]) {
+        delete socket.cleanLeaves[id]
       }
       cache(socket, isMaster, id, stamp)
 

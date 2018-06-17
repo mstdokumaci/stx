@@ -23,7 +23,7 @@ const switchBranch = (socketId, socket, master, branchKey) => {
 
   if (reuse) {
     socket.cache = reuse.cache
-    socket.removeLeaves = reuse.remove
+    socket.cleanLeaves = reuse.remove
   }
 
   return new Leaf(branch, root)

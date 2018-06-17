@@ -1,7 +1,7 @@
 import { sendData, sendLeaves, removeLeaves } from './send'
 
 const syncSubscriptions = (branch, socketId, socket, master, subscriptions) => {
-  let data = {}
+  const data = { leaves: {}, strings: {} }
 
   subscriptions.forEach(subscription => {
     const [ add, id, listenerId, keys, excludeKeys, depth, limit ] = subscription
@@ -20,7 +20,7 @@ const syncSubscriptions = (branch, socketId, socket, master, subscriptions) => {
         cb: sendLeaves.bind(null, socket, master)
       }
 
-      data = sendLeaves(
+      sendLeaves(
         socket,
         master,
         { branch, id },

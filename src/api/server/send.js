@@ -89,7 +89,7 @@ const sendLeaves = (socket, master, leaf, options, dataOverride) => {
   let { keys, excludeKeys, depth, limit } = options
 
   const depthLimit = depth || Infinity
-  const data = Object.assign({ leaves: {}, strings: {} }, dataOverride)
+  const data = dataOverride || { leaves: {}, strings: {} }
 
   serializeParents(data, socket, master, branch, id, depthLimit)
 
@@ -99,7 +99,9 @@ const sendLeaves = (socket, master, leaf, options, dataOverride) => {
 
   serializeLeaf(data, socket, master, branch, id, keys, depthLimit, 0)
 
-  return dataOverride ? data : sendData(socket, branch, data)
+  if (!dataOverride) {
+    sendData(socket, branch, data)
+  }
 }
 
 const serializeAllChildren = (

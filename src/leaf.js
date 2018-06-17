@@ -46,6 +46,10 @@ const create = function (val, stamp, inherits) {
     stamp = createStamp(branch.stamp)
   }
 
+  if (inherits && typeof inherits.branchListeners === 'function') {
+    inherits.branchListeners(new Leaf(branch, root))
+  }
+
   set(branch, root, val, stamp)
   emitDataEvents(branch, stamp)
   return new Leaf(branch, root)

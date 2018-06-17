@@ -11,7 +11,7 @@ const createStamp = config => {
   }
 
   if (config.inProgress) {
-    config.ms += ++config.count / 9999
+    config.ms += ++config.count / 999
   } else {
     config.count = 0
     config.ms = Date.now() + config.offset

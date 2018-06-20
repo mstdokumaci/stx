@@ -119,3 +119,62 @@ subKey.on('error', err => errors.push(err))
 subKey.emit('error', 'splines are not reticulated')
 errors // → [ 'satellites are not aligned', 'splines are not reticulated' ]
 ```
+
+# Creating branches of master
+
+```js
+const master = create({
+  movies: {
+    tt0130827: {
+     year: 1998,
+     imdb: 7.7,
+     title: 'Run Lola Run'
+    },
+    tt0301357: {
+      year: 2003,
+      imdb: 7.7,
+      title: 'Good Bye Lenin'
+    },
+    tt0408777: {
+      year: 2004,
+      imdb: 7.5,
+      title: 'The Edukators'
+    }
+  }
+})
+
+const branchA = master.create({
+  userName:'A',
+  movies: {
+    tt0130827: { favourite: true },
+    tt0408777: { favourite: true }
+  }
+})
+
+const branchB = master.create({
+  userName:'B',
+  movies: {
+    tt0301357: { favourite: true }
+  }
+})
+
+master.get('userName') // → undefined
+
+branchA.get(['movies', 'tt0408777']).serialize()
+// → { favourite: true, year: 2004, imdb: 7.5, title: 'The Edukators' }
+branchB.get(['movies', 'tt0408777']).serialize()
+// → { year: 2004, imdb: 7.5, title: 'The Edukators' }
+master.get(['movies', 'tt0408777']).serialize()
+// → { year: 2004, imdb: 7.5, title: 'The Edukators' }
+
+master.get(['movies', 'tt0130827', 'rating'], 'R')
+branchB.get(['movies', 'tt0130827', 'rating']).compute() // → R
+branchA.get(['movies', 'tt0130827', 'rating']).compute() // → R
+
+branchB.get(['movies', 'tt0130827', 'rating']).set('G')
+branchA.get(['movies', 'tt0130827', 'rating']).compute() // → R
+
+master.get(['movies', 'tt0130827', 'rating']).set('PG')
+branchA.get(['movies', 'tt0130827', 'rating']).compute() // → PG
+branchB.get(['movies', 'tt0130827', 'rating']).compute() // → G
+```

@@ -50,6 +50,17 @@ state.serialize() // → { second: { subKey: 'subValue' } }
 const subKey = state.get(['second', 'subKey'])
 subKey.compute() // → subValue
 ```
+### Get with set
+
+Second parameter of get is a default value for the path.
+
+⚠ It'll be `set` and returned in absence of given path otherwise it'll be ignored.
+
+```js
+state.get('first', 1).compute() // → 1
+state.get('first').compute() // → 1
+```
+
 
 ## Navigate
 
@@ -68,7 +79,7 @@ subKey.parent().serialize() // → { subKey: 'subValue' }
 ### Root
 
 ```js
-subKey.root().serialize() // → { second: { subKey: 'subValue' } }
+subKey.root().serialize() // → { second: { subKey: 'subValue' }, first: 1 }
 ```
 
 ## Listen

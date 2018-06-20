@@ -125,17 +125,17 @@ errors // → [ 'satellites are not aligned', 'splines are not reticulated' ]
 ```js
 const master = create({
   movies: {
-    tt0130827: {
+    runLolaRun: {
      year: 1998,
      imdb: 7.7,
      title: 'Run Lola Run'
     },
-    tt0301357: {
+    goodByeLenin: {
       year: 2003,
       imdb: 7.7,
       title: 'Good Bye Lenin'
     },
-    tt0408777: {
+    theEdukators: {
       year: 2004,
       imdb: 7.5,
       title: 'The Edukators'
@@ -146,35 +146,35 @@ const master = create({
 const branchA = master.create({
   userName:'A',
   movies: {
-    tt0130827: { favourite: true },
-    tt0408777: { favourite: true }
+    runLolaRun: { favourite: true },
+    theEdukators: { favourite: true }
   }
 })
 
 const branchB = master.create({
   userName:'B',
   movies: {
-    tt0301357: { favourite: true }
+    goodByeLenin: { favourite: true }
   }
 })
 
 master.get('userName') // → undefined
 
-branchA.get(['movies', 'tt0408777']).serialize()
+branchA.get(['movies', 'theEdukators']).serialize()
 // → { favourite: true, year: 2004, imdb: 7.5, title: 'The Edukators' }
-branchB.get(['movies', 'tt0408777']).serialize()
+branchB.get(['movies', 'theEdukators']).serialize()
 // → { year: 2004, imdb: 7.5, title: 'The Edukators' }
-master.get(['movies', 'tt0408777']).serialize()
+master.get(['movies', 'theEdukators']).serialize()
 // → { year: 2004, imdb: 7.5, title: 'The Edukators' }
 
-master.get(['movies', 'tt0130827', 'rating'], 'R')
-branchB.get(['movies', 'tt0130827', 'rating']).compute() // → R
-branchA.get(['movies', 'tt0130827', 'rating']).compute() // → R
+master.get(['movies', 'runLolaRun', 'rating'], 'R')
+branchB.get(['movies', 'runLolaRun', 'rating']).compute() // → R
+branchA.get(['movies', 'runLolaRun', 'rating']).compute() // → R
 
-branchB.get(['movies', 'tt0130827', 'rating']).set('G')
-branchA.get(['movies', 'tt0130827', 'rating']).compute() // → R
+branchB.get(['movies', 'runLolaRun', 'rating']).set('G')
+branchA.get(['movies', 'runLolaRun', 'rating']).compute() // → R
 
-master.get(['movies', 'tt0130827', 'rating']).set('PG')
-branchA.get(['movies', 'tt0130827', 'rating']).compute() // → PG
-branchB.get(['movies', 'tt0130827', 'rating']).compute() // → G
+master.get(['movies', 'runLolaRun', 'rating']).set('PG')
+branchA.get(['movies', 'runLolaRun', 'rating']).compute() // → PG
+branchB.get(['movies', 'runLolaRun', 'rating']).compute() // → G
 ```

@@ -188,6 +188,7 @@ branchB.set({
     goodByeLenin: [ '@', 'movies', 'goodByeLenin' ]
   } 
 })
+
 branchB.get([ 'watched', 'goodByeLenin', 'favourite' ]).compute() // → true
 branchB.get([ 'watched', 'runLolaRun', 'favourite' ]) // → undefined
 ```

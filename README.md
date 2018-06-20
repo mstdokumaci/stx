@@ -192,3 +192,12 @@ branchB.set({
 branchB.get([ 'watched', 'goodByeLenin', 'favourite' ]).compute() // → true
 branchB.get([ 'watched', 'runLolaRun', 'favourite' ]) // → undefined
 ```
+
+### Origin
+
+```js
+branchB.get([ 'watched', 'goodByeLenin' ]).serialize()
+// → [ '@', 'movies', 'goodByeLenin' ]
+branchB.get([ 'watched', 'goodByeLenin' ]).origin().serialize()
+// → { favourite: true, year: 2003, imdb: 7.7, title: 'Good Bye Lenin' }
+```

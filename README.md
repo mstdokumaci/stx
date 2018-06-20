@@ -18,7 +18,7 @@ const state = create({ firstKey: 'value' })
 ### Serialize
 
 ```js
-state.serialize() // → { "firstKey": "value" }
+state.serialize() // → { firstKey: 'value' }
 ```
 
 ### Set
@@ -27,13 +27,13 @@ state.serialize() // → { "firstKey": "value" }
 
 ```js
 state.set({ second: { subKey: 'subValue' } })
-state.serialize() // → { "firstKey": "value", "second": { "subKey": "subValue" } }
+state.serialize() // → { firstKey: 'value', second: { subKey: 'subValue' } }
 ```
 
 ### Get
 
 ```js
-state.get('second').serialize() // → { "subKey": "subValue" }
+state.get('second').serialize() // → { subKey: 'subValue' }
 ```
 
 ### Remove
@@ -41,14 +41,14 @@ state.get('second').serialize() // → { "subKey": "subValue" }
 ```js
 state.set({ firstKey: null })
 state.get('firstKey') // → undefined
-state.serialize() // → { "second": { "subKey": "subValue" } }
+state.serialize() // → { second: { subKey: 'subValue' } }
 ```
 
 ### Compute
 
 ```js
-const subKey = root.get(['second', 'subKey'])
-subKey.compute() // → "subValue"
+const subKey = state.get(['second', 'subKey'])
+subKey.compute() // → subValue
 ```
 
 ## Navigate
@@ -56,18 +56,56 @@ subKey.compute() // → "subValue"
 ### Path
 
 ```js
-subKey.path() // → ["second", "subKey"]
+subKey.path() // → [ 'second', 'subKey' ]
 ```
 
 ### Parent
 
 ```js
-subKey.parent().serialize() // → { "subKey": "subValue" }
+subKey.parent().serialize() // → { subKey: 'subValue' }
 ```
 
 ### Root
 
 ```js
-subKey.root().serialize() // → { "second": { "subKey": "subValue" } }
+subKey.root().serialize() // → { second: { subKey: 'subValue' } }
 ```
 
+## Listen
+
+### On
+
+```js
+let results = []
+state.set({ third: 3 })
+const third = state.get('third')
+const listener = third
+  .on((val, stamp, item) => results.push(`${val}-${item.compute()}`))
+results // → []
+third.set('changed')
+results // → [ 'set-changed' ]
+state.set({ third: 'again' })
+results // → [ 'set-changed', 'set-again' ]
+```
+
+### Off
+
+```js
+listener.off()
+third.set('yet again')
+results // → [ 'set-changed', 'set-again' ]
+```
+
+### Emit
+
+⚠ Events fired on a path can be listened only at exact same path.
+
+```js
+const errors = []
+state.on('error', err => errors.push(err))
+state.emit('error', 'satellites are not aligned')
+errors // → [ 'satellites are not aligned' ]
+subKey.on('error', err => errors.push(err))
+subKey.emit('error', 'splines are not reticulated')
+errors // → [ 'satellites are not aligned', 'splines are not reticulated' ]
+```

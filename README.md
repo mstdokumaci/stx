@@ -79,8 +79,7 @@ subKey.root().serialize() // → { second: { subKey: 'subValue' } }
 let results = []
 state.set({ third: 3 })
 const third = state.get('third')
-const listener = third
-  .on((val, stamp, item) => results.push(`${val}-${item.compute()}`))
+const listener = third.on((val, stamp, item) => results.push(`${val}-${item.compute()}`))
 results // → []
 third.set('changed')
 results // → [ 'set-changed' ]

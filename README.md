@@ -120,7 +120,7 @@ subKey.emit('error', 'splines are not reticulated')
 errors // → [ 'satellites are not aligned', 'splines are not reticulated' ]
 ```
 
-## Creating branches of master
+## Creating branches from master
 
 ```js
 const master = create({
@@ -177,4 +177,17 @@ branchA.get(['movies', 'runLolaRun', 'rating']).compute() // → R
 master.get(['movies', 'runLolaRun', 'rating']).set('PG')
 branchA.get(['movies', 'runLolaRun', 'rating']).compute() // → PG
 branchB.get(['movies', 'runLolaRun', 'rating']).compute() // → G
+```
+
+## In state references
+
+```js
+branchB.set({
+  watched: {
+    runLolaRun: [ '@', 'movies', 'runLolaRun' ],
+    goodByeLenin: [ '@', 'movies', 'goodByeLenin' ]
+  } 
+})
+branchB.get([ 'watched', 'goodByeLenin', 'favourite' ]).compute() // → true
+branchB.get([ 'watched', 'runLolaRun', 'favourite' ]) // → undefined
 ```

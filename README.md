@@ -120,7 +120,7 @@ subKey.emit('error', 'splines are not reticulated')
 errors // → [ 'satellites are not aligned', 'splines are not reticulated' ]
 ```
 
-# Creating branches of master
+## Creating branches of master
 
 ```js
 const master = create({

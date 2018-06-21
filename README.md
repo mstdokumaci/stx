@@ -179,7 +179,7 @@ branchA.get(['movies', 'runLolaRun', 'rating']).compute() // → PG
 branchB.get(['movies', 'runLolaRun', 'rating']).compute() // → G
 ```
 
-## In state references
+## References
 
 ```js
 branchB.set({

@@ -87,15 +87,15 @@ subKey.root().serialize() // → { second: { subKey: 'subValue' }, first: 1 }
 ### On
 
 ```js
-let results = []
+let fired = []
 state.set({ third: 3 })
 const third = state.get('third')
-const listener = third.on((val, stamp, item) => results.push(`${val}-${item.compute()}`))
-results // → []
+const listener = third.on((val, stamp, item) => fired.push(`${val}-${item.compute()}`))
+fired // → []
 third.set('changed')
-results // → [ 'set-changed' ]
+fired // → [ 'set-changed' ]
 state.set({ third: 'again' })
-results // → [ 'set-changed', 'set-again' ]
+fired // → [ 'set-changed', 'set-again' ]
 ```
 
 ### Off
@@ -103,7 +103,7 @@ results // → [ 'set-changed', 'set-again' ]
 ```js
 listener.off()
 third.set('yet again')
-results // → [ 'set-changed', 'set-again' ]
+fired // → [ 'set-changed', 'set-again' ]
 ```
 
 ### Emit
@@ -200,4 +200,16 @@ branchB.get([ 'watched', 'goodByeLenin' ]).serialize()
 // → [ '@', 'movies', 'goodByeLenin' ]
 branchB.get([ 'watched', 'goodByeLenin' ]).origin().serialize()
 // → { favourite: true, year: 2003, imdb: 7.7, title: 'Good Bye Lenin' }
+```
+
+### Listeners on references
+
+```js
+fired = []
+branchB.get([ 'watched', 'runLolaRun' ])
+  .on('data', (val, stamp, item) => {
+    fired.push(`${val}-${item.get('favourite').compute()}`)
+  })
+branchB.get([ 'movies', 'runLolaRun' ]).set({ favourite: true })
+fired // → [ 'add-key-true' ]
 ```

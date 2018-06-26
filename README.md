@@ -82,7 +82,7 @@ subKey.parent().serialize() // → { subKey: 'subValue' }
 subKey.root().serialize() // → { second: { subKey: 'subValue' }, first: 1 }
 ```
 
-## Listen
+## Listeners
 
 ### On
 
@@ -202,7 +202,7 @@ branchB.get([ 'watched', 'goodByeLenin' ]).origin().serialize()
 // → { favourite: true, year: 2003, imdb: 7.7, title: 'Good Bye Lenin' }
 ```
 
-### Listeners on references
+### Data listeners on references
 
 ```js
 fired = []

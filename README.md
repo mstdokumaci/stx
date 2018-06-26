@@ -179,6 +179,16 @@ branchA.get(['movies', 'runLolaRun', 'rating']).compute() // → PG
 branchB.get(['movies', 'runLolaRun', 'rating']).compute() // → G
 ```
 
+### Listeners on branches
+
+```js
+fired = []
+branchA.get('movies').on('reload', val => fired.push(`A-${val}`))
+branchB.get('movies').on('reload', val => fired.push(`B-${val}`))
+master.get('movies').emit('reload', 'now')
+fired // → [ 'A-now', 'B-now' ]
+```
+
 ## References
 
 ```js

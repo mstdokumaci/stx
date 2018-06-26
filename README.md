@@ -186,7 +186,8 @@ fired = []
 branchA.get('movies').on('reload', val => fired.push(`A-${val}`))
 branchB.get('movies').on('reload', val => fired.push(`B-${val}`))
 master.get('movies').emit('reload', 'now')
-fired // → [ 'A-now', 'B-now' ]
+branchA.get('movies').emit('reload', 'later')
+fired // → [ 'A-now', 'B-now', 'A-later' ]
 ```
 
 ## References

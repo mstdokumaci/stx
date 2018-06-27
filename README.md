@@ -224,3 +224,46 @@ branchB.get([ 'watched', 'runLolaRun' ])
 branchB.get([ 'movies', 'runLolaRun' ]).set({ favourite: true })
 fired // → [ 'add-key-true' ]
 ```
+
+## Subscriptions
+
+```js
+let count = 0
+const items = create({
+  i1: {
+    title: 'Item 1',
+    items: {
+      sub2: ['@', 'i2'],
+      sub3: ['@', 'i3']
+    }
+  },
+  i2: {
+    title: 'Item2',
+    items: {
+      sub1: ['@', 'i1']
+    }
+  },
+  i3: {
+    title: 'Item3',
+    items: {
+      sub2: ['@', 'i2']
+    }
+  }
+})
+
+items.get('i2').subscribe(() => { count++ })
+count // → 1 (fired once for existing path)
+
+items.set({
+  i2: {
+    description: 'Description2'
+  }
+})
+count // → 2 (fired once more for immediate child)
+
+items.get('i3').set({
+  description: 'Description3'
+})
+count // → 3 (fired once more for nested child)
+// i2.items.sub1.items.sub3.description === i3.description
+```

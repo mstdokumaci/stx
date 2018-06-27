@@ -251,12 +251,12 @@ const items = create({
   }
 })
 
-items.get('i2').subscribe(() => { count++ })
+let subscription = items.get('i2').subscribe(() => { count++ })
 count // → 1 (fired once for existing path)
 
 items.set({
   i2: {
-    description: 'Description2'
+    title: 'Title2'
   }
 })
 count // → 2 (fired once more for immediate child)
@@ -266,4 +266,36 @@ items.get('i3').set({
 })
 count // → 3 (fired once more for nested child)
 // i2.items.sub1.items.sub3.title === i3.title
+
+subscription.unsubscribe()
+```
+
+### Subscription options
+
+```js
+count = 0
+subscription = items.get('i2').subscribe({
+  keys: [ 'items' ],
+  depth: 3
+}, () => { count++ })
+count // → 1 (fired once for existing path)
+
+items.set({
+  i2: {
+    title: 'Title2'
+  }
+})
+count // → 1 (did not fire for ignored key)
+
+items.get('i1').set({
+  title: 'Title1'
+})
+count // → 2 (fired once more for 3rd depth nested)
+
+items.get('i3').set({
+  description: 'Description3'
+})
+count // → 2 (did not fire for more than 3rd depth)
+
+subscription.unsubscribe()
 ```

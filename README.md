@@ -262,8 +262,8 @@ items.set({
 count // → 2 (fired once more for immediate child)
 
 items.get('i3').set({
-  description: 'Description3'
+  title: 'Title3'
 })
 count // → 3 (fired once more for nested child)
-// i2.items.sub1.items.sub3.description === i3.description
+// i2.items.sub1.items.sub3.title === i3.title
 ```

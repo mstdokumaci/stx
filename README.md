@@ -290,12 +290,41 @@ count // → 1 (did not fire for ignored key)
 items.get('i1').set({
   title: 'Title1'
 })
-count // → 2 (fired once more for 3rd depth nested)
+count // → 2 (fired once more for 3rd level depth nested)
 
 items.get('i3').set({
   description: 'Description3'
 })
-count // → 2 (did not fire for more than 3rd depth)
+count // → 2 (did not fire for more than 3rd level depth)
 
 subscription.unsubscribe()
+```
+
+## Over the wire
+
+### Server
+
+```js
+const server = items.listen(7171)
+items.on('log', line => {
+  line // → Hello!
+  server.close()
+})
+```
+
+### Client
+
+```js
+const cItems = create()
+const client = cItems.connect('ws://localhost:7171')
+cItems.get('i1', {}).subscribe(
+  { depth: 1 },
+  i1 => {
+    if (i1.get('title')) {
+      cItems.serialize() // → { i1: { title: 'Title1', items: {} } }
+      cItems.emit('log', 'Hello!')
+      client.socket.close()
+    }
+  }
+)
 ```

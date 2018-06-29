@@ -7,6 +7,8 @@ Batteries included data structure / state manager.
 [![npm version](https://badge.fury.io/js/stx.svg)](https://badge.fury.io/js/stx)
 [![Coverage Status](https://coveralls.io/repos/github/mstdokumaci/stx/badge.svg?branch=master)](https://coveralls.io/github/mstdokumaci/stx?branch=master)
 
+[Here](https://github.com/mstdokumaci/stx-vue-example) is a Vue example. 
+
 ## CRUD operations
 
 ### Create

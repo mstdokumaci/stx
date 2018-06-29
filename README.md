@@ -14,7 +14,7 @@ Batteries included data structure / state manager.
 ### Create
 
 ```js
-import { create } from 'stx'
+const { create } = require('stx')
 const state = create({ firstKey: 'value' })
 ```
 

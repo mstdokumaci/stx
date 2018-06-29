@@ -3,7 +3,7 @@ import { createStamp } from '../../stamp'
 import define from '../../define'
 import { emit } from '../listeners/emit'
 import { sendAllSubscriptions } from './send'
-import receiveLarge from './receiveLarge'
+import receiveLarge from './receive-large'
 import WebSocket from './websocket'
 import { incoming } from './incoming'
 

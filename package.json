@@ -14,7 +14,7 @@
   },
   "browser": {
     "./src/api/server": "./src/api/server/browser",
-    "./src/api/client/receiveLarge": "./src/api/client/receiveLarge/browser",
+    "./src/api/client/receive-large": "./src/api/client/receive-large/browser",
     "./src/api/client/websocket": "./src/api/client/websocket/browser"
   },
   "repository": {

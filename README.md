@@ -1,4 +1,5 @@
 # stx
+
 Batteries included data structure / state manager.
 
 [![Build Status](https://travis-ci.org/mstdokumaci/stx.svg?branch=master)](https://travis-ci.org/mstdokumaci/stx)

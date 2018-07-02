@@ -49,6 +49,8 @@ state.serialize() // → { second: { subKey: 'subValue' } }
 
 ### Compute
 
+⚠ Paths are represented as arrays for nested keys.
+
 ```js
 const subKey = state.get(['second', 'subKey'])
 subKey.compute() // → subValue
@@ -88,6 +90,8 @@ subKey.root().serialize() // → { second: { subKey: 'subValue' }, first: 1 }
 ## Listeners
 
 ### On
+
+⚠ A listener without a name is by default a data listener. Fired on `set`, `remove`, `add-key`, `remove-key`. 
 
 ```js
 let fired = []
@@ -184,6 +188,8 @@ branchB.get(['movies', 'runLolaRun', 'rating']).compute() // → G
 
 ### Listeners on branches
 
+⚠ Events fired on master can be listened on branches and branches of branches.
+
 ```js
 fired = []
 branchA.get('movies').on('reload', val => fired.push(`A-${val}`))
@@ -217,6 +223,8 @@ branchB.get([ 'watched', 'goodByeLenin' ]).origin().serialize()
 ```
 
 ### Data listeners on references
+
+⚠ It's also possible to listen `data` events explicitly.
 
 ```js
 fired = []

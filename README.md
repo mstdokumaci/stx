@@ -91,7 +91,7 @@ subKey.root().serialize() // → { second: { subKey: 'subValue' }, first: 1 }
 
 ### On
 
-⚠ A listener without a name is by default a data listener. Fired on `set`, `remove`, `add-key`, `remove-key`. 
+⚠ A listener without a name is by default a data listener. Fires on `set`, `remove`, `add-key`, `remove-key`. 
 
 ```js
 let fired = []

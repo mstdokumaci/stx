@@ -2,6 +2,11 @@
 
 Batteries included data structure / state manager.
 
+[![Build Status](https://travis-ci.org/mstdokumaci/stx.svg?branch=master)](https://travis-ci.org/mstdokumaci/stx)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+[![npm version](https://badge.fury.io/js/stx.svg)](https://badge.fury.io/js/stx)
+[![Coverage Status](https://coveralls.io/repos/github/mstdokumaci/stx/badge.svg?branch=master)](https://coveralls.io/github/mstdokumaci/stx?branch=master)
+
 - Set and get deep nested paths
 - Data listeners for watching changes
 - Subscriptions for watching deep nested changes
@@ -9,11 +14,6 @@ Batteries included data structure / state manager.
 - Create branches from master state
 - Minimum diff is synchronised over web sockets
 - Works both on server and browser
-
-[![Build Status](https://travis-ci.org/mstdokumaci/stx.svg?branch=master)](https://travis-ci.org/mstdokumaci/stx)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
-[![npm version](https://badge.fury.io/js/stx.svg)](https://badge.fury.io/js/stx)
-[![Coverage Status](https://coveralls.io/repos/github/mstdokumaci/stx/badge.svg?branch=master)](https://coveralls.io/github/mstdokumaci/stx?branch=master)
 
 ### [Here is](https://github.com/mstdokumaci/stx-vue-example) a fully working Vue example.
 

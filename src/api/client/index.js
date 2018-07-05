@@ -47,7 +47,13 @@ const connect = (branch, url, reconnect = 50) => {
     }
   }
 
-  socket.onerror = isNode ? socket.onclose : () => socket.close()
+  socket.onerror = () => {
+    if (isNode || socket.readyState !== 1) {
+      socket.onclose()
+    } else {
+      socket.close()
+    }
+  }
 
   socket.onopen = () => {
     branch.client.socket = socket

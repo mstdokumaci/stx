@@ -15,8 +15,8 @@ Batteries included data structure / state manager.
 - Minimum diff is synchronised over web sockets
 - Works both on server and browser
 
-### [Here is](https://github.com/mstdokumaci/stx-vue-example) a fully working Vue example.
-### [Here is](https://mstdokumaci.github.io/stx) the complete documentation (WIP).
+### [Here is](https://github.com/mstdokumaci/stx-vue-example) a fully working Vue example
+### [Here is](https://mstdokumaci.github.io/stx) the complete documentation (WIP)
 
 ## CRUD operations
 

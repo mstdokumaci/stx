@@ -17,7 +17,7 @@ const path = (branch, id) => {
 const inspect = (branch, id) => {
   const leaf = getFromLeaves(branch, id)
   const subLeaves = children(branch, id)
-  const start = 'Struct ' + (leaf.key ? getString(leaf.key) + ' ' : '')
+  const start = 'stx ' + (leaf.key ? getString(leaf.key) + ' ' : '')
   let val = getValOrRef(branch, id)
   if (val && val.id) {
     val = inspect(branch, val.id)

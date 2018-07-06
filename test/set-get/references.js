@@ -40,18 +40,18 @@ test('set - get - references', t => {
   )
   t.equals(
     master.inspect(),
-    'Struct { deep, pointers }',
-    'master.inspect() = Struct { deep, pointers }'
+    'stx { deep, pointers }',
+    'master.inspect() = stx { deep, pointers }'
   )
   t.equals(
     master.get('pointers').inspect(),
-    'Struct pointers { pointer1, pointer2, pointer3, pointer4 }',
-    'master.pointers.inspect() = Struct pointers { pointer1, pointer2, pointer3, pointer4 }'
+    'stx pointers { pointer1, pointer2, pointer3, pointer4 }',
+    'master.pointers.inspect() = stx pointers { pointer1, pointer2, pointer3, pointer4 }'
   )
   t.equals(
     master.get([ 'pointers', 'pointer2' ]).inspect(),
-    'Struct pointer2 { val: Struct real { val: thing } }',
-    'master.pointers.pointer2.inspect() = Struct pointer2 { val: Struct real { val: thing } }'
+    'stx pointer2 { val: stx real { val: thing } }',
+    'master.pointers.pointer2.inspect() = stx pointer2 { val: stx real { val: thing } }'
   )
   t.same(
     master.get([ 'deep', 'real' ]).path(),
@@ -141,8 +141,8 @@ test('set - get - references', t => {
   )
   t.equals(
     branch1.get([ 'pointers', 'pointer1' ]).inspect(),
-    'Struct pointer1 { val: Struct deep { real2, real }, real3 }',
-    'branch1.pointers.pointer1.inspect() = Struct pointer1 { val: Struct deep { real2, real }, real3 }'
+    'stx pointer1 { val: stx deep { real2, real }, real3 }',
+    'branch1.pointers.pointer1.inspect() = stx pointer1 { val: stx deep { real2, real }, real3 }'
   )
 
   t.end()

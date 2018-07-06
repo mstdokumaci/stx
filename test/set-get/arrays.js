@@ -28,8 +28,8 @@ test('set - get - arrays', t => {
   )
   t.equals(
     master.inspect(),
-    'Struct { deep, pointers }',
-    'master.inspect() = Struct { deep, pointers }'
+    'stx { deep, pointers }',
+    'master.inspect() = stx { deep, pointers }'
   )
   t.same(
     master.serialize(),
@@ -46,8 +46,8 @@ test('set - get - arrays', t => {
   )
   t.same(
     master.get([ 'deep', 'real' ]).inspect(),
-    'Struct real { val: 1,2,3 }',
-    'master.deep.real.inspect() = Struct real { val: 1,2,3 }'
+    'stx real { val: 1,2,3 }',
+    'master.deep.real.inspect() = stx real { val: 1,2,3 }'
   )
 
   const branch1 = master.create({
@@ -85,8 +85,8 @@ test('set - get - arrays', t => {
   )
   t.equals(
     master.get([ 'deep', 'other' ]).inspect(),
-    'Struct other { }',
-    'master.deep.other.inspect() = Struct other { }'
+    'stx other { }',
+    'master.deep.other.inspect() = stx other { }'
   )
   t.same(
     branch1.get([ 'pointers', 'pointer2' ]).compute(),

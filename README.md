@@ -10,9 +10,9 @@ Batteries included data structure / state manager.
 - Set and get deep nested paths
 - Data listeners for watching changes
 - Subscriptions for watching deep nested changes
-- In state references with special notation
-- Create branches from master state
-- Minimum diff is synchronised over web sockets
+- In-state references with special notation
+- Create branches from a master state
+- Minimum state diff is synchronised over web sockets
 - Works both on server and browser
 
 ### [Here is](https://github.com/mstdokumaci/stx-vue-example) a fully working Vue example

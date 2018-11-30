@@ -7,8 +7,6 @@ import receiveLarge from './receive-large'
 import WebSocket from './websocket'
 import { incoming } from './incoming'
 
-const isNode = typeof window === 'undefined'
-
 const socketClose = WebSocket.prototype.close
 define(WebSocket.prototype, 'close', function (code, data) {
   if (this.heartbeat) {
@@ -29,7 +27,7 @@ const connect = (branch, url, reconnect = 50) => {
   branch.client.socket = {}
   const socket = new WebSocket(url)
 
-  socket.onclose = () => {
+  socket.on('close', () => {
     if (socket.heartbeat) {
       clearTimeout(socket.heartbeat)
     }
@@ -45,26 +43,26 @@ const connect = (branch, url, reconnect = 50) => {
       reconnect = Math.min((reconnect * 1.5), 2000)
       branch.client.reconnect = setTimeout(connect, reconnect, branch, url, reconnect)
     }
-  }
+  })
 
-  socket.onerror = () => {
-    if (isNode || socket.readyState !== 1) {
-      socket.onclose()
+  socket.on('error', () => {
+    if (socket.readyState !== 1) {
+      socket.emit('close')
     } else {
       socket.close()
     }
-  }
+  })
 
-  socket.onopen = () => {
+  socket.on('open', () => {
     branch.client.socket = socket
     branch.client.queue = { s: [], e: [] }
 
     sendAllSubscriptions(branch)
 
     emit(branch, root, 'connected', true, createStamp(branch.stamp))
-  }
+  })
 
-  socket.onmessage = ({ data }) => {
+  socket.on('message', data => {
     (
       (
         typeof data !== 'string' &&
@@ -87,7 +85,7 @@ const connect = (branch, url, reconnect = 50) => {
           incoming(branch, data)
         }
       })
-  }
+  })
 
   return branch.client
 }

@@ -1,5 +1,5 @@
 import ua from 'vigour-ua'
-import { Server } from 'uws'
+import { WebSocketServer } from '@clusterws/cws'
 
 import uid from '../../uid'
 import { createStamp } from '../../stamp'
@@ -16,13 +16,12 @@ const removeSocket = (server, socketId, socket) => {
   if (socket.heartBeatTimeout) {
     clearTimeout(socket.heartBeatTimeout)
   }
-  socket.removeAllListeners()
   removeSubscriptionsAndAllDataListener(socket.branch, socketId)
   delete server.sockets[socketId]
 }
 
-const serverClose = Server.prototype.close
-define(Server.prototype, 'close', function (cb) {
+const serverClose = WebSocketServer.prototype.close
+define(WebSocketServer.prototype, 'close', function (cb) {
   for (const socketId in this.sockets) {
     this.sockets[socketId].close()
   }
@@ -31,7 +30,7 @@ define(Server.prototype, 'close', function (cb) {
 })
 
 const listen = (branch, port, forceHeartbeat) => {
-  const server = new Server({ port })
+  const server = new WebSocketServer({ port })
   server.sockets = {}
 
   server.on('listening', () => {

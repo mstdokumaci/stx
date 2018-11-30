@@ -1,2 +1,2 @@
-import WebSocket from 'uws'
+import { WebSocket } from '@clusterws/cws'
 export default WebSocket

@@ -37,19 +37,19 @@
     "Mustafa Dokumacı <mustafa@foraa.com>"
   ],
   "dependencies": {
-    "uws": "^9.0.0",
-    "vigour-ua": "^3.0.0"
+    "@clusterws/cws": "latest",
+    "vigour-ua": "^4.0.0"
   },
   "devDependencies": {
     "coveralls": "^3.0.0",
     "istanbul": "0.4.5",
-    "nodemon": "^1.17.5",
-    "rollup": "0.58.2",
-    "rollup-plugin-buble": "0.19.2",
+    "nodemon": "^1.18.7",
+    "rollup": "0.67.3",
+    "rollup-plugin-buble": "0.19.4",
     "rollup-plugin-local-resolve": "^1.0.7",
-    "rollup-plugin-node-resolve": "^3.3.0",
-    "standard": "^11.0.0",
+    "rollup-plugin-node-resolve": "^3.4.0",
+    "standard": "^12.0.0",
     "tap-difflet": "0.7.1",
-    "tape": "^4.9.0"
+    "tape": "^4.9.1"
   }
 }

@@ -4,7 +4,7 @@ import define from '../../define'
 import { emit } from '../listeners/emit'
 import { sendAllSubscriptions } from './send'
 import receiveLarge from './receive-large'
-import WebSocket from './websocket'
+import { bindSocketListeners, WebSocket } from './websocket'
 import { incoming } from './incoming'
 
 const socketClose = WebSocket.prototype.close
@@ -27,7 +27,7 @@ const connect = (branch, url, reconnect = 50) => {
   branch.client.socket = {}
   const socket = new WebSocket(url)
 
-  socket.on('close', () => {
+  const close = () => {
     if (socket.heartbeat) {
       clearTimeout(socket.heartbeat)
     }
@@ -43,26 +43,26 @@ const connect = (branch, url, reconnect = 50) => {
       reconnect = Math.min((reconnect * 1.5), 2000)
       branch.client.reconnect = setTimeout(connect, reconnect, branch, url, reconnect)
     }
-  })
+  }
 
-  socket.on('error', () => {
+  error = () => {
     if (socket.readyState !== 1) {
       socket.emit('close')
     } else {
       socket.close()
     }
-  })
+  }
 
-  socket.on('open', () => {
+  open = () => {
     branch.client.socket = socket
     branch.client.queue = { s: [], e: [] }
 
     sendAllSubscriptions(branch)
 
     emit(branch, root, 'connected', true, createStamp(branch.stamp))
-  })
+  }
 
-  socket.on('message', data => {
+  message = data => {
     (
       (
         typeof data !== 'string' &&
@@ -85,7 +85,9 @@ const connect = (branch, url, reconnect = 50) => {
           incoming(branch, data)
         }
       })
-  })
+  }
+
+  bindSocketListeners(socket, close, error, open, message)
 
   return branch.client
 }

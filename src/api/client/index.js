@@ -45,7 +45,7 @@ const connect = (branch, url, reconnect = 50) => {
     }
   }
 
-  error = () => {
+  const error = () => {
     if (socket.readyState !== 1) {
       socket.emit('close')
     } else {
@@ -53,7 +53,7 @@ const connect = (branch, url, reconnect = 50) => {
     }
   }
 
-  open = () => {
+  const open = () => {
     branch.client.socket = socket
     branch.client.queue = { s: [], e: [] }
 
@@ -62,7 +62,7 @@ const connect = (branch, url, reconnect = 50) => {
     emit(branch, root, 'connected', true, createStamp(branch.stamp))
   }
 
-  message = data => {
+  const message = data => {
     (
       (
         typeof data !== 'string' &&

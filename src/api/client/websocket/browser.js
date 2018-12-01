@@ -1,4 +1,4 @@
-WebSocket = global.WebSocket
+const WebSocket = global.WebSocket
 
 const bindSocketListeners = (socket, close, error, open, message) => {
   socket.onclose = close

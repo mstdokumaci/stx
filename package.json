@@ -10,7 +10,7 @@
     "pretest": "npm run build",
     "test": "node test/index.js | tap-difflet && standard",
     "travis": "npm run build && npm run cover -s && istanbul report lcov && (cat coverage/lcov.info | coveralls) && standard",
-    "publish": "npm ru nbuild"
+    "publish": "npm run build"
   },
   "browser": {
     "./src/api/server": "./src/api/server/browser",

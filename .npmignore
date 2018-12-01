@@ -1,2 +1,3 @@
 *
-!dist
+!dist/index.js
+!dist/browser.js

@@ -1,12 +1,13 @@
 const test = require('tape')
-const { create } = require('../../../dist')
+const { create } = require('../../dist')
 
-test('network - subscription - data size', { timeout: 3000 }, t => {
-  const sMaster = create({
-    id: 'master'
-  })
+const handler = require('serve-handler')
+const http = require('http')
+const puppeteer = require('puppeteer')
 
-  const server = sMaster.listen(7070)
+test('browser - data size', { timeout: 5000 }, async t => {
+  const master = create()
+  const server = master.listen(7070)
 
   const bigData = { here: 'it is' }
   const val = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor ' +
@@ -44,45 +45,71 @@ test('network - subscription - data size', { timeout: 3000 }, t => {
     }
   }
 
-  sMaster.set({ bigData })
+  master.set({ bigData })
 
-  const cMaster = create({
-    id: 'client'
-  })
+  const httpServer = http.createServer(
+    (request, response) => handler(
+      request,
+      response,
+      {
+        public: './dist/',
+        renderSingle: true
+      }
+    )
+  )
 
-  t.plan(2)
+  httpServer.listen(8888)
 
-  cMaster.get('bigData', {}).subscribe(bigData => {
-    if (bigData.get('here')) {
-      t.equals(
-        bigData.get('here').compute(),
-        'it is',
-        'subscription fired for bigData'
-      )
-      client.socket.close()
-      server.close()
-    }
-  })
+  const browser = await puppeteer.launch()
+  const page = await browser.newPage()
+  await page.goto('http://localhost:8888')
 
-  cMaster.get('otherData', {}).subscribe(otherData => {
-    if (otherData.get('here')) {
-      t.equals(
-        otherData.get('here').compute(),
-        'it is',
-        'subscription fired for otherData'
-      )
-    }
-  })
+  const fired = []
+  page.on('console', msg => fired.push(msg.text()))
 
-  cMaster.on('connected', val => {
-    if (val) {
-      sMaster.set({
-        otherData: {
-          here: 'it is'
+  await page.evaluate(
+    window => new Promise(resolve => {
+      window.master = window.stx.create()
+
+      window.master.get('bigData', {}).subscribe(bigData => {
+        if (bigData.get('here')) {
+          console.log('bigData.here', bigData.get('here').compute())
+          resolve()
         }
       })
+
+      window.client = window.master.connect('ws://localhost:7070')
+    }),
+    await page.evaluateHandle('window')
+  )
+
+  master.set({
+    otherData: {
+      here: 'it is'
     }
   })
 
-  const client = cMaster.connect('ws://localhost:7070')
+  await page.evaluate(
+    window => new Promise(resolve => {
+      window.master.get('otherData', {}).subscribe(otherData => {
+        if (otherData.get('here')) {
+          console.log('otherData.here', otherData.get('here').compute())
+          window.client.socket.close()
+          resolve()
+        }
+      })
+    }),
+    await page.evaluateHandle('window')
+  )
+
+  t.same(
+    fired,
+    [ 'bigData.here it is', 'otherData.here it is' ],
+    'fired = [ bigData.here it is, otherData.here it is ]'
+  )
+
+  await browser.close()
+  await server.close()
+  await httpServer.close()
+  t.end()
 })

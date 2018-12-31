@@ -2,7 +2,11 @@ import { root } from '../../id'
 import { createStamp } from '../../stamp'
 import define from '../../define'
 import { emit } from '../listeners/emit'
-import { sendAllSubscriptions } from './send'
+import {
+  sendAllSubscriptions,
+  addAllDataListener,
+  removeAllDataListener
+} from './send'
 import receiveLarge from './receive-large'
 import { bindSocketListeners, WebSocket } from './websocket'
 import { incoming } from './incoming'
@@ -12,6 +16,7 @@ define(WebSocket.prototype, 'close', function (code, data) {
   if (this.heartbeat) {
     clearTimeout(this.heartbeat)
   }
+  removeAllDataListener(this.branch)
   this.blockReconnect = true
   socketClose.call(this, code, data)
 })
@@ -54,10 +59,12 @@ const connect = (branch, url, reconnect = 50) => {
   }
 
   const open = () => {
+    socket.branch = branch
     branch.client.socket = socket
-    branch.client.queue = { s: [], e: [] }
+    branch.client.queue = { s: [], l: {}, e: [] }
 
     sendAllSubscriptions(branch)
+    addAllDataListener(branch)
 
     emit(branch, root, 'connected', true, createStamp(branch.stamp))
   }
@@ -68,8 +75,8 @@ const connect = (branch, url, reconnect = 50) => {
         typeof data !== 'string' &&
         (
           data instanceof ArrayBuffer ||
-          (('Blob' in global) && data instanceof Blob) || // eslint-disable-line
-          (('WebkitBlob' in global) && data instanceof WebkitBlob) // eslint-disable-line
+          (('Blob' in window) && data instanceof Blob) || // eslint-disable-line
+          (('WebkitBlob' in window) && data instanceof WebkitBlob) // eslint-disable-line
         )
       ) ? receiveLarge(data) : Promise.resolve(data)
     )

@@ -1,12 +1,14 @@
 import { root } from '../../id'
 import { create, Leaf } from '../../leaf'
+import { setOwnExistingVal, setOwnExistingReference } from '../set/own-existing'
 import { emit } from '../listeners/emit'
+import { path } from '../serialize'
 import {
   syncSubscriptions,
   removeSubscriptionsAndAllDataListener,
   addAllDataListener
 } from './subscriptions'
-import { reuseCache } from './cache'
+import { cache, reuseCache } from './cache'
 
 const switchBranch = (socketId, socket, master, branchKey) => {
   let branch = master.branches.find(branch => branch.key === branchKey)
@@ -29,12 +31,51 @@ const switchBranch = (socketId, socket, master, branchKey) => {
   return new Leaf(branch, root)
 }
 
+const setLeaves = (socket, leaves) => {
+  if (socket.branch.clientCanUpdate) {
+    for (let id in leaves) {
+      id = Number(id)
+      const [ stamp, val, rT ] = leaves[id]
+
+      if (socket.branch.leaves[id]) {
+        const leaf = socket.branch.leaves[id]
+        const setPath = path(socket.branch, id)
+        const rule = socket.branch.clientCanUpdate.find(
+          rule => rule.path.length === setPath.length && rule.path.every(
+            (key, i) => key === '*' || key === setPath[i]
+          )
+        )
+
+        if (
+          rule &&
+          (
+            typeof rule.authorize !== 'function' ||
+            rule.authorize(new Leaf(socket.branch, id))
+          )
+        ) {
+          cache(socket, false, id, stamp)
+
+          if (val !== null) {
+            setOwnExistingVal(socket.branch, leaf, id, val, stamp, 0)
+          } else if (rT) {
+            setOwnExistingReference(socket.branch, leaf, id, rT, stamp, 0)
+          }
+
+          if (typeof rule.after === 'function') {
+            rule.after(new Leaf(socket.branch, id))
+          }
+        }
+      }
+    }
+  }
+}
+
 const fireEmits = (branch, emits) => {
   emits.forEach(([ id, event, val, stamp ]) => emit(branch, id, event, val, stamp))
 }
 
 const incoming = (server, socketId, socket, master, data) => {
-  const { b: branchKey, s: subscriptions, e: emits } = data
+  const { b: branchKey, s: subscriptions, l: leaves, e: emits } = data
 
   if (
     branchKey !== void 0 &&
@@ -50,6 +91,10 @@ const incoming = (server, socketId, socket, master, data) => {
 
   if (subscriptions && subscriptions.length) {
     syncSubscriptions(socket.branch, socketId, socket, master, subscriptions)
+  }
+
+  if (leaves) {
+    setLeaves(socket, leaves)
   }
 
   if (emits && emits.length) {

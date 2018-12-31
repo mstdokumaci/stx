@@ -1,5 +1,5 @@
 const test = require('tape')
-const { create } = require('../../dist/index')
+const { create } = require('../../dist')
 
 test('references - from another branch', t => {
   const master1 = create({

@@ -1,5 +1,5 @@
 const test = require('tape')
-const { create, createStamp } = require('../../dist/index')
+const { create, createStamp } = require('../../dist')
 
 test('interference', t => {
   const stamp = createStamp()

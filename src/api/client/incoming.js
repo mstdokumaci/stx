@@ -6,6 +6,7 @@ import { setOwnExistingVal, setOwnExistingReference } from '../set/own-existing'
 import { setOwnNewVal, setOwnNewReference } from '../set/own-new'
 import { addDataEvent, emitDataEvents } from '../listeners/emit'
 import { addToStrings } from '../../cache'
+import { sendSetExisting } from './send'
 
 const heartbeatTimeout = 3e3
 
@@ -50,6 +51,7 @@ const removeLeaves = (branch, list) => {
 }
 
 const setLeaves = (branch, leaves) => {
+  delete branch.listeners.allData['client']
   for (let id in leaves) {
     id = Number(id)
     const [ key, parent, stamp, val, rT, keys, depth ] = leaves[id]
@@ -90,6 +92,7 @@ const setLeaves = (branch, leaves) => {
       }
     }
   }
+  branch.listeners.allData['client'] = sendSetExisting
 }
 
 const setStrings = strings => {

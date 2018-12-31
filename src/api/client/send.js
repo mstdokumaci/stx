@@ -15,6 +15,26 @@ const sendAllSubscriptions = branch => {
   drainQueue(branch.client)
 }
 
+const sendSetExisting = (type, stamp, leaf) => {
+  if (type === 'set') {
+    const { val, rT } = leaf.branch.leaves[leaf.id]
+
+    leaf.branch.client.queue.l[leaf.id] = [ stamp, val, rT ]
+  }
+}
+
+const addAllDataListener = branch => {
+  if (!branch.listeners.allData) {
+    branch.listeners.allData = {}
+  }
+
+  branch.listeners.allData['client'] = sendSetExisting
+}
+
+const removeAllDataListener = branch => {
+  delete branch.listeners.allData['client']
+}
+
 const removeSubscriptionToQueue = (branch, id, listenerId) => {
   branch.client.queue.s.push([ false, id, listenerId ])
 }
@@ -25,17 +45,21 @@ const drainQueue = client => {
     (
       client.queue.b ||
       client.queue.s.length ||
+      client.queue.l.length ||
       client.queue.e.length
     )
   ) {
     client.socket.send(JSON.stringify(client.queue))
-    client.queue = { s: [], e: [] }
+    client.queue = { s: [], l: {}, e: [] }
   }
 }
 
 export {
   addSubscriptionToQueue,
   sendAllSubscriptions,
+  sendSetExisting,
+  addAllDataListener,
+  removeAllDataListener,
   removeSubscriptionToQueue,
   drainQueue
 }

@@ -1,5 +1,6 @@
 import { Leaf } from '../../leaf'
 import { fireParentSubscriptions, subscriptions } from '../subscription/fire'
+import { drainQueue } from '../client/send'
 
 const emitOwn = (branch, id, event, val, stamp, depth) => {
   const listeners = branch.listeners
@@ -91,6 +92,7 @@ const emitDataEvents = (branch, stamp) => {
   )
   fireParentSubscriptions(branch, stamp)
   afterEmitEventsToRun.forEach(event => event())
+  drainQueue(branch.client)
 }
 
 export { emit, addDataEvent, emitDataEvents, addAfterEmitEvent }

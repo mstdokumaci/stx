@@ -17,6 +17,19 @@ export default [
     input: 'src/index.js',
     output: {
       file: 'dist/browser.js',
+      format: 'iife',
+      name: 'stx',
+      sourcemap: 'inline'
+    },
+    plugins: [
+      nodeResolve({ browser: true }),
+      buble({ include: 'src/**' })
+    ]
+  },
+  {
+    input: 'src/index.js',
+    output: {
+      file: 'dist/es.js',
       format: 'es',
       name: 'stx',
       sourcemap: 'inline'

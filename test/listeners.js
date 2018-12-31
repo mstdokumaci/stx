@@ -1,5 +1,5 @@
 const test = require('tape')
-const { create, createStamp } = require('../dist/index')
+const { create, createStamp } = require('../dist')
 
 test('listeners - on and emit', t => {
   const masterFire = []

@@ -1,5 +1,5 @@
 const test = require('tape')
-const { create } = require('../../dist/index')
+const { create } = require('../../dist')
 
 test('subscriptions - options', t => {
   const masterFire = []

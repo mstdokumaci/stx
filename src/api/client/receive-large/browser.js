@@ -2,32 +2,25 @@ import maxSize from '../../server/max-size'
 
 let blobArray = false
 
-export default data => new Promise(resolve => {
+export default data => {
   if (!blobArray) blobArray = []
   blobArray.push(data)
 
   if (data.size < maxSize) {
-    let i = blobArray.length
-    let done = i
-    let stringArray = []
-
-    while (i--) {
+    return Promise.all(blobArray.map(blob => new Promise((resolve, reject) => {
       const reader = new FileReader() // eslint-disable-line
-
-      const onLoadEnd = ((i, e) => {
-        reader.removeEventListener('loadend', onLoadEnd, false)
-        if (!e.error) {
-          stringArray[i] = reader.result
-          if (--done === 0) resolve(stringArray.join(''))
-        }
-      }).bind(null, i)
-
-      reader.addEventListener('loadend', onLoadEnd, false)
-      reader.readAsText(blobArray[i])
-    }
-
-    blobArray = false
+      reader.addEventListener(
+        'loadend',
+        e => e.error ? reject(e.error) : resolve(reader.result),
+        false
+      )
+      reader.readAsText(blob)
+    })))
+      .then(stringArray => {
+        blobArray = false
+        return stringArray.join('')
+      })
   } else {
-    resolve()
+    return Promise.resolve()
   }
-})
+}

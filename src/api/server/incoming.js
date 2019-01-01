@@ -33,12 +33,11 @@ const switchBranch = (socketId, socket, master, branchKey) => {
 
 const setLeaves = (socket, leaves) => {
   if (socket.branch.clientCanUpdate) {
-    for (let id in leaves) {
-      id = Number(id)
-      const [ stamp, val, rT ] = leaves[id]
+    leaves.forEach(leaf => {
+      const [ id, stamp, val, rT ] = leaf
 
       if (socket.branch.leaves[id]) {
-        const leaf = socket.branch.leaves[id]
+        leaf = socket.branch.leaves[id]
         const setPath = path(socket.branch, id)
         const rule = socket.branch.clientCanUpdate.find(
           rule => rule.path.length === setPath.length && rule.path.every(
@@ -66,7 +65,7 @@ const setLeaves = (socket, leaves) => {
           }
         }
       }
-    }
+    })
   }
 }
 

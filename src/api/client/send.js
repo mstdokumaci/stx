@@ -19,7 +19,7 @@ const sendSetExisting = (type, stamp, leaf) => {
   if (type === 'set') {
     const { val, rT } = leaf.branch.leaves[leaf.id]
 
-    leaf.branch.client.queue.l[leaf.id] = [ stamp, val, rT ]
+    leaf.branch.client.queue.l.push([ leaf.id, stamp, val, rT ])
   }
 }
 
@@ -50,7 +50,7 @@ const drainQueue = client => {
     )
   ) {
     client.socket.send(JSON.stringify(client.queue))
-    client.queue = { s: [], l: {}, e: [] }
+    client.queue = { s: [], l: [], e: [] }
   }
 }
 

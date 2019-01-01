@@ -51,7 +51,6 @@ const removeLeaves = (branch, list) => {
 }
 
 const setLeaves = (branch, leaves) => {
-  delete branch.listeners.allData['client']
   for (let id in leaves) {
     id = Number(id)
     const [ key, parent, stamp, val, rT, keys, depth ] = leaves[id]
@@ -92,7 +91,6 @@ const setLeaves = (branch, leaves) => {
       }
     }
   }
-  branch.listeners.allData['client'] = sendSetExisting
 }
 
 const setStrings = strings => {
@@ -105,6 +103,8 @@ const incoming = (branch, data) => {
   const { t: stamp, h: heartbeat, l: leaves, c: clean, s: strings, r: remove } = data
 
   setOffset(branch.stamp, stamp)
+
+  delete branch.listeners.allData['client']
 
   if (clean) {
     cleanLeaves(branch, clean)
@@ -123,6 +123,7 @@ const incoming = (branch, data) => {
   }
 
   emitDataEvents(branch, stamp)
+  branch.listeners.allData['client'] = sendSetExisting
 
   if (heartbeat) {
     startHeartbeat(branch)

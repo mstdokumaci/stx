@@ -5,7 +5,7 @@ const handler = require('serve-handler')
 const http = require('http')
 const puppeteer = require('puppeteer')
 
-test('browser - data size', { timeout: 5000 }, async t => {
+test('browser - data size', { timeout: 3000 }, async t => {
   const master = create()
   const server = master.listen(7070)
 

@@ -61,7 +61,7 @@ const connect = (branch, url, reconnect = 50) => {
   const open = () => {
     socket.branch = branch
     branch.client.socket = socket
-    branch.client.queue = { s: [], l: {}, e: [] }
+    branch.client.queue = { s: [], l: [], e: [] }
 
     sendAllSubscriptions(branch)
     addAllDataListener(branch)

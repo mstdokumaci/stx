@@ -33,7 +33,7 @@ test('browser - data size', { timeout: 4000 }, async t => {
     'propriae periculis adversarium eos ex. Insolens percipitur efficiantur qui at, dicam ' +
     'qualisque appellantur ne per. In saepe delenit incorrupte eam, antiopam elaboraret id ' +
     'eum. Mazim noluisse definitiones has ad, vel id erat equidem. Ex qui inani iusto delenit.'
-  let i = 1e3
+  let i = 7e2
   while (i--) {
     const d = 1e11 + Math.round(Math.random() * 1e9) + i
     bigData[`key-${d}-longer-string-${d}`] = {

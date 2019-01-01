@@ -24,7 +24,7 @@ node_modules
 .npm
 
 # Distribute
-dist
+dist/*.js
 
 # IDE
 .idea

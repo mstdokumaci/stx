@@ -1,7 +1,15 @@
 import { root } from '../../id'
+import { createStamp } from '../../stamp'
 import { create, Leaf } from '../../leaf'
-import { setOwnExistingVal, setOwnExistingReference } from '../set/own-existing'
-import { emit } from '../listeners/emit'
+import {
+  setOwnExistingVal,
+  setOwnExistingReference
+} from '../set/own-existing'
+import {
+  setOverrideVal,
+  setOverrideReference
+} from '../set/override'
+import { emit, emitDataEvents } from '../listeners/emit'
 import { path } from '../serialize'
 import {
   syncSubscriptions,
@@ -31,41 +39,55 @@ const switchBranch = (socketId, socket, master, branchKey) => {
   return new Leaf(branch, root)
 }
 
-const setLeaves = (socket, leaves) => {
-  if (socket.branch.clientCanUpdate) {
+const setLeaves = (branch, socket, master, leaves) => {
+  if (branch.clientCanUpdate) {
     leaves.forEach(leaf => {
       const [ id, stamp, val, rT ] = leaf
 
-      if (socket.branch.leaves[id]) {
-        leaf = socket.branch.leaves[id]
-        const setPath = path(socket.branch, id)
-        const rule = socket.branch.clientCanUpdate.find(
-          rule => rule.path.length === setPath.length && rule.path.every(
-            (key, i) => key === '*' || key === setPath[i]
-          )
+      const setPath = path(branch, id)
+      const rule = branch.clientCanUpdate.find(
+        rule => rule.path.length === setPath.length && rule.path.every(
+          (key, i) => key === '*' || key === setPath[i]
         )
+      )
 
-        if (
-          rule &&
-          (
-            typeof rule.authorize !== 'function' ||
-            rule.authorize(new Leaf(socket.branch, id))
-          )
-        ) {
+      if (
+        rule &&
+        (
+          typeof rule.authorize !== 'function' ||
+          rule.authorize(new Leaf(branch, id))
+        )
+      ) {
+        if (branch.leaves[id]) {
+          leaf = branch.leaves[id]
           cache(socket, false, id, stamp)
 
           if (val !== null) {
-            setOwnExistingVal(socket.branch, leaf, id, val, stamp, 0)
+            setOwnExistingVal(branch, leaf, id, val, stamp, 0)
           } else if (rT) {
-            setOwnExistingReference(socket.branch, leaf, id, rT, stamp, 0)
+            setOwnExistingReference(branch, leaf, id, rT, stamp, 0)
           }
 
           if (typeof rule.after === 'function') {
-            rule.after(new Leaf(socket.branch, id))
+            rule.after(new Leaf(branch, id))
+          }
+        } else if (master.leaves[id]) {
+          leaf = master.leaves[id]
+          cache(socket, true, id, stamp)
+
+          if (val !== null) {
+            setOverrideVal(branch, leaf, id, val, stamp, 0)
+          } else if (rT) {
+            setOverrideReference(branch, leaf, id, rT, stamp, 0)
+          }
+
+          if (typeof rule.after === 'function') {
+            rule.after(new Leaf(branch, id))
           }
         }
       }
     })
+    emitDataEvents(branch, createStamp(branch.stamp))
   }
 }
 
@@ -93,7 +115,7 @@ const incoming = (server, socketId, socket, master, data) => {
   }
 
   if (leaves) {
-    setLeaves(socket, leaves)
+    setLeaves(socket.branch, socket, master, leaves)
   }
 
   if (emits && emits.length) {

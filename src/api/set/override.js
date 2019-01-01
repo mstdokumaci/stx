@@ -67,4 +67,8 @@ const setOverride = (branch, leaf, id, val, stamp, depth = 0) => {
   }
 }
 
-export { setOverride }
+export {
+  setOverrideVal,
+  setOverrideReference,
+  setOverride
+}

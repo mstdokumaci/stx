@@ -33,8 +33,11 @@ const defineApi = (leaf) => {
       stamp = createStamp(this.branch.stamp)
     }
 
+    const stopSending = this.branch.client.stopSending
+    this.branch.client.stopSending = false
     set(this.branch, this.id, val, stamp)
     emitDataEvents(this.branch, stamp)
+    this.branch.client.stopSending = stopSending
     return this
   })
 

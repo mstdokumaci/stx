@@ -16,7 +16,7 @@ const sendAllSubscriptions = branch => {
 }
 
 const sendSetExisting = (type, stamp, leaf) => {
-  if (type === 'set') {
+  if (!leaf.branch.client.stopSending && type === 'set') {
     const { val, rT } = leaf.branch.leaves[leaf.id]
 
     leaf.branch.client.queue.l.push([ leaf.id, stamp, val, rT ])

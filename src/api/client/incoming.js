@@ -6,7 +6,6 @@ import { setOwnExistingVal, setOwnExistingReference } from '../set/own-existing'
 import { setOwnNewVal, setOwnNewReference } from '../set/own-new'
 import { addDataEvent, emitDataEvents } from '../listeners/emit'
 import { addToStrings } from '../../cache'
-import { sendSetExisting } from './send'
 
 const heartbeatTimeout = 3e3
 
@@ -104,7 +103,7 @@ const incoming = (branch, data) => {
 
   setOffset(branch.stamp, stamp)
 
-  delete branch.listeners.allData['client']
+  branch.client.stopSending = true
 
   if (clean) {
     cleanLeaves(branch, clean)
@@ -123,7 +122,7 @@ const incoming = (branch, data) => {
   }
 
   emitDataEvents(branch, stamp)
-  branch.listeners.allData['client'] = sendSetExisting
+  branch.client.stopSending = false
 
   if (heartbeat) {
     startHeartbeat(branch)

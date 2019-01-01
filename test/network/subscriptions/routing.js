@@ -41,14 +41,18 @@ test('network - subscriptions - routing', t => {
 
   const server = sMaster.listen(7070)
 
-  const updateRoute = (val, _, item) => {
-    item.set([ '@', 'content', val ])
+  sMaster.branch.newBranchMiddleware = branchRoot => {
+    branchRoot.branch.clientCanUpdate = [
+      {
+        path: [ 'route' ]
+      }
+    ]
   }
 
-  server.switchBranch = (fromBranch, branchKey, switcher) => {
+  server.switchBranch = (_, branchKey, switcher) => {
     const toBranch = switcher(branchKey)
     toBranch.set({ branchKey })
-    toBranch.get('route').on('update', updateRoute)
+    return toBranch
   }
 
   const cMaster1 = create({ id: 'client1' })
@@ -70,7 +74,7 @@ test('network - subscriptions - routing', t => {
               'cm1.items.i3.title.compute() = Item 3'
             )
 
-            cm.emit('update', 'p3')
+            cMaster1.get('route').set([ '@', 'content', 'p3' ])
           } else if (cm.get('title').compute() === 'Page 3') {
             t.equals(
               cm.get([ 'items', 'i1', 'title' ]).compute(),
@@ -124,7 +128,7 @@ test('network - subscriptions - routing', t => {
               'cm2.items.i3.title.compute() = Item 3'
             )
 
-            cm.emit('update', 'p2')
+            cMaster2.get('route').set([ '@', 'content', 'p2' ])
           } else if (cm.get('title').compute() === 'Page 2') {
             t.equals(
               cm.get([ 'items', 'i1', 'title' ]).compute(),

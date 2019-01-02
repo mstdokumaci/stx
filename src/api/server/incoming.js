@@ -44,6 +44,10 @@ const setLeaves = (branch, socket, master, leaves) => {
     leaves.forEach(leaf => {
       const [ id, stamp, val, rT ] = leaf
 
+      if (!branch.leaves[id] && !master.leaves[id]) {
+        return
+      }
+
       const setPath = path(branch, id)
       const rule = branch.clientCanUpdate.find(
         rule => rule.path.length === setPath.length && rule.path.every(

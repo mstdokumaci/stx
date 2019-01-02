@@ -24,6 +24,7 @@ const setOverrideVal = (branch, leaf, id, val, stamp, depth) => {
   leaf.val = val
 
   addDataEvent(void 0, id, 'set', depth)
+  return true
 }
 
 const setOverrideReference = (branch, leaf, id, rT, stamp, depth) => {
@@ -43,6 +44,7 @@ const setOverrideReference = (branch, leaf, id, rT, stamp, depth) => {
   if (branch.branches.length) {
     fixBranchReferences(branch.branches, id, rT, rTold)
   }
+  return true
 }
 
 const setOverride = (branch, leaf, id, val, stamp, depth = 0) => {

@@ -23,6 +23,7 @@ const setOwnExistingVal = (branch, leaf, id, val, stamp, depth) => {
   leaf.stamp = stamp
 
   addDataEvent(void 0, id, 'set', depth)
+  return true
 }
 
 const setOwnExistingReference = (branch, leaf, id, rT, stamp, depth) => {
@@ -43,6 +44,7 @@ const setOwnExistingReference = (branch, leaf, id, rT, stamp, depth) => {
   if (branch.branches.length) {
     fixBranchReferences(branch.branches, id, rT, rTold)
   }
+  return true
 }
 
 const setOwnExisting = (branch, leaf, id, val, stamp, depth = 0) => {

@@ -58,32 +58,29 @@ const setLeaves = (branch, socket, master, leaves) => {
           rule.authorize(new Leaf(branch, id))
         )
       ) {
+        let changed
         if (branch.leaves[id]) {
           leaf = branch.leaves[id]
           cache(socket, false, id, stamp)
 
           if (val !== null) {
-            setOwnExistingVal(branch, leaf, id, val, stamp, 0)
+            changed = setOwnExistingVal(branch, leaf, id, val, stamp, 0)
           } else if (rT) {
-            setOwnExistingReference(branch, leaf, id, rT, stamp, 0)
-          }
-
-          if (typeof rule.after === 'function') {
-            rule.after(new Leaf(branch, id))
+            changed = setOwnExistingReference(branch, leaf, id, rT, stamp, 0)
           }
         } else if (master.leaves[id]) {
           leaf = master.leaves[id]
           cache(socket, true, id, stamp)
 
           if (val !== null) {
-            setOverrideVal(branch, leaf, id, val, stamp, 0)
+            changed = setOverrideVal(branch, leaf, id, val, stamp, 0)
           } else if (rT) {
-            setOverrideReference(branch, leaf, id, rT, stamp, 0)
+            changed = setOverrideReference(branch, leaf, id, rT, stamp, 0)
           }
+        }
 
-          if (typeof rule.after === 'function') {
-            rule.after(new Leaf(branch, id))
-          }
+        if (changed && typeof rule.after === 'function') {
+          rule.after(new Leaf(branch, id))
         }
       }
     })

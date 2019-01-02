@@ -5,7 +5,7 @@ const syncSubscriptions = (branch, socketId, socket, master, subscriptions) => {
 
   subscriptions.forEach(subscription => {
     const [ add, id, listenerId, keys, excludeKeys, depth, limit ] = subscription
-    if (add) {
+    if (add && (branch.leaves[id] || master.leaves[id])) {
       if (!branch.subscriptions[id]) {
         branch.subscriptions[id] = { listeners: {} }
       } else if (!branch.subscriptions[id].listeners) {

@@ -1,3 +1,4 @@
 *
 !dist/index.js
 !dist/browser.js
+!dist/es.js

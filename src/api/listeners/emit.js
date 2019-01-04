@@ -92,7 +92,9 @@ const emitDataEvents = (branch, stamp) => {
   )
   fireParentSubscriptions(branch, stamp)
   afterEmitEventsToRun.forEach(event => event())
-  drainQueue(branch.client)
+  if (branch.client.queue) {
+    drainQueue(branch.client)
+  }
 }
 
 export { emit, addDataEvent, emitDataEvents, addAfterEmitEvent }

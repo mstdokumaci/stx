@@ -42,7 +42,7 @@
     "vigour-ua": "^4.0.0"
   },
   "devDependencies": {
-    "coveralls": "^3.0.0",
+    "coveralls": "^3.0.2",
     "istanbul": "0.4.5",
     "nodemon": "^1.18.7",
     "rollup": "0.67.3",

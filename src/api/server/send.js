@@ -95,7 +95,7 @@ const sendLeaves = (socket, master, leaf, options, dataOverride) => {
   const depthLimit = depth || Infinity
   const data = dataOverride || { leaves: {}, strings: {} }
 
-  serializeParents(data, socket, master, branch, id, depthLimit)
+  serializeParents(data, socket, master, branch, id)
 
   keys = keys ? keys.filter(
     key => serializeWithAllChildren(data, socket, master, branch, key, depthLimit, 1)
@@ -138,14 +138,14 @@ const serializeWithAllChildren = (data, socket, master, branch, id, depthLimit, 
   return serializeLeaf(data, socket, master, branch, id, keys, depthLimit, depth)
 }
 
-const serializeParents = (data, socket, master, branch, id, depthLimit) => {
+const serializeParents = (data, socket, master, branch, id) => {
   let parent = getFromLeaves(branch, id).parent
   while (parent) {
     if (!data.leaves[id]) {
       break
     }
 
-    serializeLeaf(data, socket, master, branch, parent, [ id ], depthLimit, 0)
+    serializeLeaf(data, socket, master, branch, parent, [ id ], 0, 0)
 
     id = parent
     parent = getFromLeaves(branch, id).parent
@@ -167,7 +167,7 @@ const serializeLeaf = (data, socket, master, branch, id, keys, depthLimit, depth
         } else if (leaf.rT) {
           rT = leaf.rT
           serializeWithAllChildren(data, socket, master, oBranch, leaf.rT, depthLimit, depth)
-          serializeParents(data, socket, master, oBranch, leaf.rT, depthLimit)
+          serializeParents(data, socket, master, oBranch, leaf.rT)
         }
       }
 

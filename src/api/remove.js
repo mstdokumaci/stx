@@ -41,14 +41,22 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rT, stamp, depth) 
         const addKeys = keys.filter(keyId => branch.leaves[keyId])
         if (addKeys.length) {
           const branchLeaf = addOwnLeaf(branch, id, leaf.parent, leaf.key, stamp)
-          branchLeaf.keys = (branchLeaf.keys || []).concat(addKeys)
+          if (branchLeaf.keys) {
+            branchLeaf.keys.push(...addKeys)
+          } else {
+            branchLeaf.keys = [ ...addKeys ]
+          }
           keysNext = keys.filter(keyId => !branch.leaves[keyId])
         }
       }
       if (branch.leaves[id]) {
         if (parent) {
           const parentLeaf = addBranchLeaf(branch, parent, stamp)
-          parentLeaf.keys = (parentLeaf.keys || []).concat(id)
+          if (parentLeaf.keys) {
+            parentLeaf.keys.push(id)
+          } else {
+            parentLeaf.keys = [ id ]
+          }
           parentNext = void 0
         }
         if (

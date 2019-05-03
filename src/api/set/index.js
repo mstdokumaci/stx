@@ -38,7 +38,11 @@ const setKeys = (branch, leaf, id, val, stamp, depth, set) => {
     if (set === setOverride) {
       leaf = branch.leaves[id] || addOwnLeaf(branch, id, leaf.parent, leaf.key, stamp)
     }
-    leaf.keys = (leaf.keys || []).concat(keys)
+    if (leaf.keys) {
+      leaf.keys.push(...keys)
+    } else {
+      leaf.keys = [...keys]
+    }
     leaf.stamp = stamp
     cleanBranchKeys(branch.branches, id, keys, stamp)
     addDataEvent(void 0, id, 'add-key')

@@ -43,7 +43,11 @@ const setOwnNewKeys = (branch, leaf, id, val, stamp, depth) => {
     }
   }
   if (keys.length) {
-    leaf.keys = (leaf.keys || []).concat(keys)
+    if (leaf.keys) {
+      leaf.keys.push(...keys)
+    } else {
+      leaf.keys = [...keys]
+    }
     leaf.stamp = stamp
     cleanBranchKeys(branch.branches, id, keys, stamp)
     addDataEvent(void 0, id, 'add-key')

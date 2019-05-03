@@ -46,7 +46,7 @@ const inspect = (branch, id) => {
 const serialize = (branch, id) => {
   let val = getValOrRef(branch, id)
   if (val && val.id) {
-    val = [ '@' ].concat(path(branch, val.id))
+    val = [ '@', ...path(branch, val.id) ]
   }
   let child = false
   const result = {}

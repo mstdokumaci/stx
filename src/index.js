@@ -1,7 +1,12 @@
 import { create, Leaf } from './leaf'
-import { defineApi } from './api'
+import { defineApi, define, bulkSet } from './api'
 import { createStamp } from './stamp'
 
 defineApi(Leaf.prototype)
 
-export { create, createStamp }
+export {
+  create,
+  createStamp,
+  define,
+  bulkSet
+}

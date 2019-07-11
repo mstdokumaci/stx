@@ -18,7 +18,7 @@ const emitOwn = (branch, id, event, val, stamp, depth) => {
   }
 
   if (event === 'data' && val !== 'add-key' && val !== 'remove') {
-    subscriptions(branch, id, stamp, depth + 1)
+    subscriptions(branch, id, stamp, depth)
   }
 }
 

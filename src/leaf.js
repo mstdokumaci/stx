@@ -24,7 +24,7 @@ const Leaf = function (branch, id) {
 const create = function (val, stamp, inherits) {
   const branch = {
     branches: [],
-    leaves: { [ root ]: {} },
+    leaves: { [ root ]: { depth: 0 } },
     listeners: {},
     subscriptions: {},
     parentSubscriptions: [],

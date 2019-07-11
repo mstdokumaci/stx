@@ -113,7 +113,7 @@ const serializeAllChildren = (
 ) => {
   const keys = []
 
-  children(branch, id, (subBranch, leafId) => {
+  children(branch, id, (_, leafId) => {
     if (excludeKeys && ~excludeKeys.indexOf(leafId)) {
       return
     }
@@ -152,9 +152,9 @@ const serializeParents = (data, socket, master, branch, id) => {
   }
 }
 
-const serializeLeaf = (data, socket, master, branch, id, keys, depthLimit, depth) => {
+const serializeLeaf = (data, socket, master, branch, id, keys, depthLimit, sDepth) => {
   const oBranch = branch
-  let key, parent, stamp, val, rT, isMaster
+  let key, parent, stamp, val, rT, isMaster, depth
 
   while (branch) {
     const leaf = branch.leaves[id]
@@ -166,7 +166,7 @@ const serializeLeaf = (data, socket, master, branch, id, keys, depthLimit, depth
           val = leaf.val
         } else if (leaf.rT) {
           rT = leaf.rT
-          serializeWithAllChildren(data, socket, master, oBranch, leaf.rT, depthLimit, depth)
+          serializeWithAllChildren(data, socket, master, oBranch, leaf.rT, depthLimit, sDepth)
           serializeParents(data, socket, master, oBranch, leaf.rT)
         }
       }
@@ -176,6 +176,7 @@ const serializeLeaf = (data, socket, master, branch, id, keys, depthLimit, depth
         key = leaf.key
         parent = leaf.parent
         stamp = leaf.stamp
+        depth = leaf.depth
       }
     }
 

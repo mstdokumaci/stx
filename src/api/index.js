@@ -174,10 +174,9 @@ const defineApi = (leaf) => {
   })
 }
 
-const bulkSet = (branch, stamp, values) => {
-  values.forEach(({ id, value, stamp }) => {
-    set(branch, id, value, stamp)
-  })
+const bulkSet = (branch, values) => {
+  const stamp = createStamp(branch.stamp)
+  values.forEach(({ id, value }) => set(branch, id, value, stamp))
   emitDataEvents(branch, stamp)
 }
 

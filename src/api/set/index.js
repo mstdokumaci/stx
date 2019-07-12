@@ -18,24 +18,24 @@ const setKeys = (branch, leaf, id, val, stamp, set) => {
       if (subLeafBranch) {
         const fn = subLeafBranch === branch ? setOwnExisting : setOverride
         fn(
-          branch,
-          subLeafBranch.leaves[subLeafId],
-          subLeafId,
-          val[key],
-          stamp
+          branch, subLeafBranch.leaves[subLeafId], subLeafId, val[key], stamp
         )
       } else if (val[key] !== null && val[key] !== void 0) {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
         keys.push(subLeafId)
-        const subLeaf = addOwnLeaf(branch, subLeafId, id, keyId, leaf.depth + 1, stamp)
+        const subLeaf = addOwnLeaf(
+          branch, subLeafId, id, keyId, leaf.depth + 1, stamp
+        )
         setOwnNew(branch, subLeaf, subLeafId, val[key], stamp)
       }
     }
   }
   if (keys.length) {
     if (set === setOverride) {
-      leaf = branch.leaves[id] || addOwnLeaf(branch, id, leaf.parent, leaf.key, leaf.depth, stamp)
+      leaf = branch.leaves[id] || addOwnLeaf(
+        branch, id, leaf.parent, leaf.key, leaf.depth, stamp
+      )
     }
     if (leaf.keys) {
       leaf.keys.push(...keys)

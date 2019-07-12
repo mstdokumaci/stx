@@ -33,7 +33,7 @@ const setOwnNewKeys = (branch, leaf, id, val, stamp) => {
   for (let key in val) {
     if (key === 'val') {
       setOwnNew(branch, leaf, id, val.val, stamp)
-    } else if (val[key] !== null && val[key] !== void 0) {
+    } else if (val[key] !== void 0 && val[key] !== null) {
       const subLeafId = keyToId(key, id)
       const keyId = keyToId(key)
       addToStrings(keyId, key)

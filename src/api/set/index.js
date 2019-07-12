@@ -20,7 +20,7 @@ const setKeys = (branch, leaf, id, val, stamp, set) => {
         fn(
           branch, subLeafBranch.leaves[subLeafId], subLeafId, val[key], stamp
         )
-      } else if (val[key] !== null && val[key] !== void 0) {
+      } else if (val[key] !== void 0 && val[key] !== null) {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
         keys.push(subLeafId)

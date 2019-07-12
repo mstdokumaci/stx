@@ -16,11 +16,13 @@ const Subscription = function (branch, id, listenerId) {
 }
 
 define(Subscription.prototype, 'unsubscribe', function () {
-  delete this.branch.subscriptions[this.id].listeners[this.listenerId]
+  if (this.branch.subscriptions[this.id]) {
+    delete this.branch.subscriptions[this.id].listeners[this.listenerId]
 
-  if (this.branch.client.queue) {
-    removeSubscriptionToQueue(this.branch, this.id, this.listenerId)
-    drainQueue(this.branch.client)
+    if (this.branch.client.queue) {
+      removeSubscriptionToQueue(this.branch, this.id, this.listenerId)
+      drainQueue(this.branch.client)
+    }
   }
 })
 

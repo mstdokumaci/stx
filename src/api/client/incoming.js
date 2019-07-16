@@ -101,7 +101,9 @@ const setStrings = strings => {
 const incoming = (branch, data) => {
   const { t: stamp, h: heartbeat, l: leaves, c: clean, s: strings, r: remove } = data
 
-  setOffset(branch.stamp, stamp)
+  if (stamp !== void 0) {
+    setOffset(branch.stamp, stamp)
+  }
 
   branch.client.stopSending = true
 

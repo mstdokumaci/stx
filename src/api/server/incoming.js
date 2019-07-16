@@ -100,7 +100,7 @@ const fireEmits = (branch, emits) => {
   emits.forEach(([ id, event, val, stamp ]) => emit(branch, id, event, val, stamp))
 }
 
-const incoming = async (server, socketId, socket, master, data) => {
+const processIncoming = async (server, socketId, socket, master, data) => {
   const { b: branchKey, s: subscriptions, l: leaves, e: emits } = data
 
   if (
@@ -125,6 +125,21 @@ const incoming = async (server, socketId, socket, master, data) => {
 
   if (emits && emits.length) {
     fireEmits(socket.branch, emits)
+  }
+
+  if (socket.incoming.length) {
+    await processIncoming(server, socketId, socket, master, socket.incoming.shift())
+  }
+
+  socket.incoming = null
+}
+
+const incoming = (server, socketId, socket, master, data) => {
+  if (socket.incoming) {
+    socket.incoming.push(data)
+  } else {
+    socket.incoming = []
+    processIncoming(server, socketId, socket, master, data)
   }
 }
 

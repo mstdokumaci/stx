@@ -2,6 +2,7 @@ import { root } from './id'
 import { createStamp } from './stamp'
 import { set } from './api/set'
 import { emitDataEvents } from './api/listeners/emit'
+import { addToStrings, getString } from './cache'
 
 const cloneIds = (to, from, parent) => {
   for (const id in from) {
@@ -21,7 +22,17 @@ const Leaf = function (branch, id) {
   this.id = id
 }
 
-const create = function (val, stamp, inherits) {
+const setToNewBranch = (branch, val, stamp) => {
+  if (!stamp) {
+    stamp = createStamp(branch.stamp)
+  }
+
+  set(branch, root, val, stamp)
+  emitDataEvents(branch, stamp)
+  return new Leaf(branch, root)
+}
+
+const prepareNewBranch = inherits => {
   const branch = {
     branches: [],
     leaves: { [ root ]: { depth: 0 } },
@@ -42,17 +53,24 @@ const create = function (val, stamp, inherits) {
     branch.stamp = inherits.stamp
   }
 
-  if (!stamp) {
-    stamp = createStamp(branch.stamp)
-  }
-
   if (inherits && typeof inherits.newBranchMiddleware === 'function') {
     inherits.newBranchMiddleware(new Leaf(branch, root))
   }
 
-  set(branch, root, val, stamp)
-  emitDataEvents(branch, stamp)
-  return new Leaf(branch, root)
+  return branch
 }
 
-export { create, Leaf }
+const createPersist = (val, persist, stamp, inherits) => {
+  const branch = prepareNewBranch(stamp, inherits)
+
+  persist.start(new Leaf(branch, root), addToStrings, getString)
+  return persist
+    .load()
+    .then(() => setToNewBranch(branch, val, stamp))
+}
+
+const create = (val, stamp, inherits) => setToNewBranch(
+  prepareNewBranch(inherits), val, stamp
+)
+
+export { create, createPersist, Leaf }

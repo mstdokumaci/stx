@@ -80,7 +80,7 @@ const listen = (branch, port, forceHeartbeat) => {
           t: createStamp(socket.branch.stamp)
         }))
 
-        socket.on('message', (data) => {
+        socket.on('message', data => {
           try {
             data = JSON.parse(data)
             if (!data) return

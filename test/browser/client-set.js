@@ -51,8 +51,8 @@ test('browser - client set', async t => {
     ]
   }
 
-  hybrid.switchBranch = (_, branchKey, switcher) => {
-    const toBranch = switcher(branchKey)
+  hybrid.switchBranch = async (_, branchKey, switcher) => {
+    const toBranch = await switcher(branchKey)
     toBranch.set({
       id: branchKey
     })

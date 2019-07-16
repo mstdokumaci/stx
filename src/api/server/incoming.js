@@ -1,6 +1,6 @@
 import { root } from '../../id'
 import { createStamp } from '../../stamp'
-import { create, Leaf } from '../../leaf'
+import { create, createPersist, Leaf } from '../../leaf'
 import {
   setOwnExistingVal,
   setOwnExistingReference
@@ -18,11 +18,15 @@ import {
 } from './subscriptions'
 import { cache, reuseCache } from './cache'
 
-const switchBranch = (socketId, socket, master, branchKey) => {
+const switchBranch = async (socketId, socket, master, branchKey, persist) => {
   let branch = master.branches.find(branch => branch.key === branchKey)
 
   if (!branch) {
-    branch = create(void 0, void 0, master).branch
+    if (persist) {
+      branch = await createPersist(void 0, persist, void 0, master).branch
+    } else {
+      branch = create(void 0, void 0, master).branch
+    }
     branch.key = branchKey
   }
 
@@ -96,7 +100,7 @@ const fireEmits = (branch, emits) => {
   emits.forEach(([ id, event, val, stamp ]) => emit(branch, id, event, val, stamp))
 }
 
-const incoming = (server, socketId, socket, master, data) => {
+const incoming = async (server, socketId, socket, master, data) => {
   const { b: branchKey, s: subscriptions, l: leaves, e: emits } = data
 
   if (
@@ -104,7 +108,7 @@ const incoming = (server, socketId, socket, master, data) => {
     branchKey !== socket.branch.key &&
     typeof server.switchBranch === 'function'
   ) {
-    server.switchBranch(
+    await server.switchBranch(
       new Leaf(socket.branch, root),
       branchKey,
       switchBranch.bind(null, socketId, socket, master)

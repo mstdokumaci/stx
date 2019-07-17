@@ -26,8 +26,8 @@ test('path collusion', t => {
   state.set(arr)
   const structSet = Date.now() - d
   t.ok(
-    structSet < objSet * 30,
-    `1e5 sets (${structSet}ms) under 30x objSet (${objSet}ms)`
+    structSet < objSet * 35,
+    `1e5 sets (${structSet}ms) under 35x objSet (${objSet}ms)`
   )
 
   d = Date.now()

@@ -61,11 +61,10 @@ const prepareNewBranch = inherits => {
 }
 
 const createPersist = (val, persist, stamp, inherits) => {
-  const branch = prepareNewBranch(stamp, inherits)
+  const branch = prepareNewBranch(inherits)
 
-  persist.start(new Leaf(branch, root), addToStrings, getString)
-  return persist
-    .load()
+  return persist.start(new Leaf(branch, root), addToStrings, getString)
+    .then(() => persist.load())
     .then(() => setToNewBranch(branch, val, stamp))
 }
 

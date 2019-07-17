@@ -23,7 +23,8 @@ const switchBranch = async (socketId, socket, master, branchKey, persist) => {
 
   if (!branch) {
     if (persist) {
-      branch = await createPersist(void 0, persist, void 0, master).branch
+      branch = await createPersist(void 0, persist, void 0, master)
+      branch = branch.branch
     } else {
       branch = create(void 0, void 0, master).branch
     }

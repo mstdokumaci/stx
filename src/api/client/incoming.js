@@ -44,7 +44,7 @@ const removeLeaves = (branch, list) => {
     const stamp = list[id]
     if (branch.leaves[id]) {
       const leaf = branch.leaves[id]
-      remove(branch, leaf, id, stamp, 1)
+      remove(branch, leaf, id, stamp)
     }
   }
 }
@@ -58,9 +58,9 @@ const setLeaves = (branch, leaves) => {
       const leaf = branch.leaves[id]
 
       if (val !== null) {
-        setOwnExistingVal(branch, leaf, id, val, stamp, depth)
+        setOwnExistingVal(branch, leaf, id, val, stamp)
       } else if (rT) {
-        setOwnExistingReference(branch, leaf, id, rT, stamp, depth)
+        setOwnExistingReference(branch, leaf, id, rT, stamp)
       }
 
       if (keys && keys.length) {
@@ -76,12 +76,12 @@ const setLeaves = (branch, leaves) => {
         }
       }
     } else {
-      const leaf = addOwnLeaf(branch, id, parent, key, stamp)
+      const leaf = addOwnLeaf(branch, id, parent, key, depth, stamp)
 
       if (val !== null) {
-        setOwnNewVal(branch, leaf, id, val, stamp, depth)
+        setOwnNewVal(branch, leaf, id, val, stamp)
       } else if (rT) {
-        setOwnNewReference(branch, leaf, id, rT, stamp, depth)
+        setOwnNewReference(branch, leaf, id, rT, stamp)
       }
 
       if (keys && keys.length) {
@@ -101,7 +101,9 @@ const setStrings = strings => {
 const incoming = (branch, data) => {
   const { t: stamp, h: heartbeat, l: leaves, c: clean, s: strings, r: remove } = data
 
-  setOffset(branch.stamp, stamp)
+  if (stamp !== void 0) {
+    setOffset(branch.stamp, stamp)
+  }
 
   branch.client.stopSending = true
 

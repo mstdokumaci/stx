@@ -91,14 +91,13 @@ const parentSubscriptions = (branch, id, stamp, keys, parentList) => {
     if (!parentList[last]) {
       parentList[last] = []
     }
-    const depth = keys.reduce((depth, key) => depth > key[1] ? key[1] : depth, Infinity)
+    const depth = Math.min(...keys.map(key => key[1]))
     addParentSubscription(branch, parent, id, depth + 1, parentList[last])
   }
 }
 
 const fireParentSubscriptions = (branch, stamp) => {
   const parentList = branch.parentSubscriptions.splice(0)
-  branch.parentSubscriptions = []
   while (parentList.length) {
     const nextLevel = parentList.pop()
     if (nextLevel) {

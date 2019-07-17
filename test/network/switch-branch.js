@@ -7,11 +7,11 @@ test('network - switch branch', t => {
   })
   const server = sMaster.listen(7070)
 
-  server.switchBranch = (fromBranch, branchKey, switcher) => {
+  server.switchBranch = async (fromBranch, branchKey, switcher) => {
     fromBranch.set({
       clients: fromBranch.get('clients').compute() + 1
     })
-    const toBranch = switcher(branchKey)
+    const toBranch = await switcher(branchKey)
     toBranch.set({
       id: branchKey
     })

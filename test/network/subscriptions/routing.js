@@ -49,8 +49,8 @@ test('network - subscriptions - routing', t => {
     ]
   }
 
-  server.switchBranch = (_, branchKey, switcher) => {
-    const toBranch = switcher(branchKey)
+  server.switchBranch = async (_, branchKey, switcher) => {
+    const toBranch = await switcher(branchKey)
     toBranch.set({ branchKey })
     return toBranch
   }

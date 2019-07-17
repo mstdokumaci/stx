@@ -40,9 +40,9 @@ const listen = (branch, port, forceHeartbeat) => {
       const socketId = uid()
 
       socket.branch = branch
-      socket.leaves = {}
       socket.cleanLeaves = {}
       socket.removeLeaves = {}
+      socket.incoming = null
       socket.ua = ua(socket.upgradeReq && socket.upgradeReq.headers['user-agent'])
       server.sockets[socketId] = socket
       addAllDataListener(branch, socketId, socket, branch)
@@ -80,7 +80,7 @@ const listen = (branch, port, forceHeartbeat) => {
           t: createStamp(socket.branch.stamp)
         }))
 
-        socket.on('message', (data) => {
+        socket.on('message', data => {
           try {
             data = JSON.parse(data)
             if (!data) return

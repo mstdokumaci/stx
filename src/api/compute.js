@@ -3,7 +3,7 @@ import { getBranchForId, getRtFromLeaves } from './get'
 const getValOrRef = (branch, id) => {
   const oBranch = branch
   while (branch) {
-    let leaf = branch.leaves[id]
+    const leaf = branch.leaves[id]
     if (leaf) {
       if (leaf.val !== void 0) {
         return leaf.val

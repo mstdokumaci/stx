@@ -11,8 +11,8 @@ const respectOverrides = (branches, id, parent) =>
     }
   })
 
-const addOwnLeaf = (branch, id, parent, key, stamp) => {
-  branch.leaves[id] = { parent, key, stamp }
+const addOwnLeaf = (branch, id, parent, key, depth, stamp) => {
+  branch.leaves[id] = { parent, key, stamp, depth }
   if (branch.branches.length) {
     respectOverrides(branch.branches, id, parent)
   }
@@ -24,7 +24,9 @@ const addBranchLeaf = (branch, id, stamp) => {
     return branch.leaves[id]
   } else {
     const fromLeaf = getFromLeaves(branch, id)
-    return addOwnLeaf(branch, id, fromLeaf.parent, fromLeaf.key, stamp)
+    return addOwnLeaf(
+      branch, id, fromLeaf.parent, fromLeaf.key, fromLeaf.depth, stamp
+    )
   }
 }
 
@@ -67,7 +69,7 @@ const fixBranchReferences = (branches, rF, rT, rTold) =>
     }
   })
 
-const checkReferenceByLeaf = (oBranch, id, rTBranch, rT, cb) => {
+const checkReferenceByLeaf = (oBranch, rTBranch, rT, cb) => {
   let branch = oBranch
   while (branch) {
     if (branch.leaves[rT] === null) {

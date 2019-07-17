@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "coveralls": "^3.0.2",
-    "istanbul": "0.4.5",
+    "istanbul": "next",
     "nodemon": "^1.18.7",
     "puppeteer": "^1.17.0",
     "rollup": "0.67.3",

@@ -2,7 +2,7 @@ import { root } from './id'
 import { createStamp } from './stamp'
 import { set } from './api/set'
 import { emitDataEvents } from './api/listeners/emit'
-import { addToStrings, getString } from './cache'
+import { bindAllDataListener, loadLeaf } from './persist'
 
 const cloneIds = (to, from, parent) => {
   for (const id in from) {
@@ -63,8 +63,10 @@ const prepareNewBranch = inherits => {
 const createPersist = (val, persist, stamp, inherits) => {
   const branch = prepareNewBranch(inherits)
 
-  return persist.start(new Leaf(branch, root), addToStrings, getString)
-    .then(() => persist.load())
+  branch.persist = persist
+  return persist.start()
+    .then(() => persist.load((id, leaf) => loadLeaf(branch, id, leaf)))
+    .then(() => bindAllDataListener(branch, persist))
     .then(() => setToNewBranch(branch, val, stamp))
 }
 

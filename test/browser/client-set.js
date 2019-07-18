@@ -117,8 +117,10 @@ test('browser - client set', async t => {
               items.get([ 'i1', 'favourite' ]).set(false)
               items.get([ 'i1', 'favourite' ]).set(true)
 
-              setTimeout(resolve, 200)
-              window.client.socket.close()
+              setTimeout(() => {
+                window.client.socket.close()
+                resolve()
+              }, 200)
             }
           })
         }

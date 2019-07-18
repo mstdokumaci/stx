@@ -5,6 +5,9 @@ const respectOverrides = (branches, id, parent) =>
   branches.forEach(branch => {
     if (branch.leaves[parent] === null) {
       branch.leaves[id] = null
+      if (branch.persist) {
+        branch.persist.store(String(id), null)
+      }
     }
     if (branch.branches.length) {
       respectOverrides(branch.branches, id, parent)

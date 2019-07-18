@@ -102,6 +102,10 @@ const removeFromParent = (branch, parent, id, stamp, depth) => {
 const removeOwn = (branch, leaf, id, rT, stamp, ignoreParent) => {
   delete branch.leaves[id]
 
+  if (branch.persist) {
+    branch.persist.remove(String(id))
+  }
+
   const parent = ignoreParent ? void 0
     : removeFromParent(branch, leaf.parent, id, stamp, leaf.depth - 1)
 
@@ -125,6 +129,10 @@ const removeInherited = (branch, leaf, id, rT, stamp, ignoreParent) => {
   }
 
   branch.leaves[id] = null
+
+  if (branch.persist) {
+    branch.persist.store(String(id), null)
+  }
 }
 
 const removeChildren = (branch, id, stamp) => {

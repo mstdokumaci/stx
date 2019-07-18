@@ -8,18 +8,14 @@ const bindAllDataListener = (branch, persist) => {
   }
 
   branch.listeners.allData['persist'] = (type, _, item) => {
-    if (branch.leaves[item.id]) {
-      if (type === 'remove') {
-        persist.remove(String(item.id))
-      } else {
-        persist.store(
-          String(item.id),
-          Object.assign(
-            { keyString: getString(branch.leaves[item.id].key) },
-            branch.leaves[item.id]
-          )
+    if (type !== 'remove' && branch.leaves[item.id]) {
+      persist.store(
+        String(item.id),
+        Object.assign(
+          { keyString: getString(branch.leaves[item.id].key) },
+          branch.leaves[item.id]
         )
-      }
+      )
     }
   }
 }

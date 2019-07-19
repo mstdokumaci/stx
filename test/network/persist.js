@@ -12,6 +12,9 @@ test('network - persist set', async t => {
     second: {
       id: 2
     },
+    third: {
+      id: 3
+    },
     pointer: [ '@', 'first' ]
   }, masterPersist)
 
@@ -40,8 +43,9 @@ test('network - persist set', async t => {
           sub.unsubscribe()
 
           pointer.set([ '@', 'second' ])
+          cMaster.set({ third: null })
 
-          setTimeout(() => client.socket.close())
+          setTimeout(() => client.socket.close(), 50)
         }
       })
 
@@ -73,6 +77,11 @@ test('network - persist get', async t => {
         const id = pointer.get('id')
         if (id) {
           if (id.compute() === 2) {
+            t.equals(
+              cMaster.get('third'),
+              void 0,
+              'third = undefined'
+            )
             t.pass('id.compute() === 2')
             sMaster.get([ 'second', 'id' ]).set('updated 2')
           } else if (id.compute() === 'updated 2') {

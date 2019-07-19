@@ -120,7 +120,7 @@ test('browser - client set', async t => {
               setTimeout(() => {
                 window.client.socket.close()
                 resolve()
-              }, 200)
+              }, 50)
             }
           })
         }

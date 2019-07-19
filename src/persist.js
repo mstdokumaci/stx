@@ -21,16 +21,18 @@ const bindAllDataListener = (branch, persist) => {
 }
 
 const loadLeaf = (branch, id, leaf) => {
-  addToStrings(leaf.key, leaf.keyString)
-  delete leaf.keyString
+  if (leaf !== null) {
+    addToStrings(leaf.key, leaf.keyString)
+    delete leaf.keyString
 
-  if (leaf.val || leaf.rT) {
-    const rTold = getRtFromLeaves(branch, id)
-    if (rTold) {
-      delete branch.rF[rTold][id]
-    }
-    if (leaf.rT) {
-      addReferenceFrom(branch, id, leaf.rT)
+    if (leaf.val || leaf.rT) {
+      const rTold = getRtFromLeaves(branch, id)
+      if (rTold) {
+        delete branch.rF[rTold][id]
+      }
+      if (leaf.rT) {
+        addReferenceFrom(branch, id, leaf.rT)
+      }
     }
   }
 

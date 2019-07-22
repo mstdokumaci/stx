@@ -694,7 +694,7 @@ state<span class="token punctuation">.</span><span class="token keyword">get</sp
     <span class="token punctuation">}</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">)</span>
-</code></pre><h3 id="stateswitchBranchbranchKey"><a class="anchor hidden-xs" href="#stateswitchBranchbranchKey" title="stateswitchBranchbranchKey"><span class="octicon octicon-link"></span></a><code>state.switchBranch(branchKey)</code></h3><p>When this method is called with a branch key in the client, <code>server.switchBranch</code> method will be fired on the server and client will get into sync with returned branch on the server.</p><h4 id="Arguments12"><a class="anchor hidden-xs" href="#Arguments12" title="Arguments12"><span class="octicon octicon-link"></span></a>Arguments</h4><ul>
+</code></pre><h3 id="stateswitchBranchbranchKey"><a class="anchor hidden-xs" href="#stateswitchBranchbranchKey" title="stateswitchBranchbranchKey"><span class="octicon octicon-link"></span></a><code>state.switchBranch(branchKey)</code></h3><p>When this method is called with a branch key in the <strong>client</strong>, <code>server.switchBranch</code> method will be fired on the server and client will get into sync with returned branch on the server.</p><h4 id="Arguments12"><a class="anchor hidden-xs" href="#Arguments12" title="Arguments12"><span class="octicon octicon-link"></span></a>Arguments</h4><ul>
 <li><strong>branchKey</strong> <em>String <strong>required</strong></em><br>
 This should be a unique identifier to get a certain branch of master data. A further authentication might be performed on the server depending on this key passed by a client.</li>
 </ul><h4 id="Example5"><a class="anchor hidden-xs" href="#Example5" title="Example5"><span class="octicon octicon-link"></span></a>Example</h4><pre><code class="javascript hljs"><span class="token keyword">const</span> state <span class="token operator">=</span> <span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -707,12 +707,12 @@ state<span class="token punctuation">.</span><span class="token function">on</sp
     state<span class="token punctuation">.</span><span class="token function">switchBranch</span><span class="token punctuation">(</span><span class="token string">'branchKey'</span><span class="token punctuation">)</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span><span class="token punctuation">)</span>
-</code></pre><h3 id="serverswitchBranchmasterRoot-branchKey-switcher"><a class="anchor hidden-xs" href="#serverswitchBranchmasterRoot-branchKey-switcher" title="serverswitchBranchmasterRoot-branchKey-switcher"><span class="octicon octicon-link"></span></a><code>server.switchBranch(masterRoot, branchKey, switcher)</code></h3><p>This method should be implemented on server to define branch switching logic. If this method is <strong>not</strong> implemented on the server, <code>state.switchBranch</code> method on client <strong>will not do anything</strong>.</p><h4 id="Arguments13"><a class="anchor hidden-xs" href="#Arguments13" title="Arguments13"><span class="octicon octicon-link"></span></a>Arguments</h4><p>These arguments will be passed by stx to implemented method.</p><ul>
+</code></pre><h3 id="async-serverswitchBranchmasterRoot-branchKey-async-switcher"><a class="anchor hidden-xs" href="#async-serverswitchBranchmasterRoot-branchKey-async-switcher" title="async-serverswitchBranchmasterRoot-branchKey-async-switcher"><span class="octicon octicon-link"></span></a><code>async server.switchBranch(masterRoot, branchKey, async switcher)</code></h3><p>This method should be implemented on server to define branch switching logic. If this method is <strong>not</strong> implemented on the server, <code>state.switchBranch</code> method on client <strong>will not do anything</strong>.</p><h4 id="Arguments13"><a class="anchor hidden-xs" href="#Arguments13" title="Arguments13"><span class="octicon octicon-link"></span></a>Arguments</h4><p>These arguments will be passed by stx to implemented method.</p><ul>
 <li><strong>masterRoot</strong> <em>root</em><br>
 Root of master state.</li>
 <li><strong>branchKey</strong> <em>String</em><br>
 The branch key sent from client.</li>
-<li><strong>switcher</strong> <em>Function</em><br>
+<li><strong>switcher</strong> <em>async Function</em><br>
 A stx internal function which creates and returns a branch from master for a given identifier.<br>
 <code>switcher(branchKey)</code><br>
 - <strong>branchKey</strong> <em>String</em><br>
@@ -722,19 +722,20 @@ The branch key to create and/or retrieve the corresponding branch of the master 
 <span class="token comment">// Listen port 7171</span>
 <span class="token keyword">const</span> server <span class="token operator">=</span> state<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">7171</span><span class="token punctuation">)</span>
 
-server<span class="token punctuation">.</span><span class="token function-variable function">switchBranch</span> <span class="token operator">=</span> <span class="token punctuation">(</span>_<span class="token punctuation">,</span> branchKey<span class="token punctuation">,</span> switcher<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token function">switcher</span><span class="token punctuation">(</span>branchKey<span class="token punctuation">)</span>
+server<span class="token punctuation">.</span>switchBranch <span class="token operator">=</span> <span class="token keyword">async</span> <span class="token punctuation">(</span>_<span class="token punctuation">,</span> branchKey<span class="token punctuation">,</span> switcher<span class="token punctuation">)</span>
+    <span class="token operator">=&gt;</span> <span class="token function">switcher</span><span class="token punctuation">(</span>branchKey<span class="token punctuation">)</span>
 </code></pre><h5 id="Create-branch-with-translated-key"><a class="anchor hidden-xs" href="#Create-branch-with-translated-key" title="Create-branch-with-translated-key"><span class="octicon octicon-link"></span></a>Create branch with translated key</h5><p>If the client sends a username/password pair, a social media token or any other kind of claimed identifier, this is the function where it has to be verified and translated.</p><pre><code class="javascript hljs"><span class="token keyword">const</span> state <span class="token operator">=</span> <span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
 <span class="token comment">// Listen port 7171</span>
 <span class="token keyword">const</span> server <span class="token operator">=</span> state<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token number">7171</span><span class="token punctuation">)</span>
 
-server<span class="token punctuation">.</span><span class="token function-variable function">switchBranch</span> <span class="token operator">=</span> <span class="token punctuation">(</span>_<span class="token punctuation">,</span> branchKey<span class="token punctuation">,</span> switcher<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+server<span class="token punctuation">.</span>switchBranch <span class="token operator">=</span> <span class="token keyword">async</span> <span class="token punctuation">(</span>_<span class="token punctuation">,</span> branchKey<span class="token punctuation">,</span> switcher<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
     <span class="token comment">// derive a validated / translated branchKey</span>
     <span class="token comment">// using the branchKey recieved from client</span>
     <span class="token comment">// branchKey = ....</span>
     <span class="token keyword">return</span> <span class="token function">switcher</span><span class="token punctuation">(</span>derivedBranchKey<span class="token punctuation">)</span>
 <span class="token punctuation">}</span>
-</code></pre></div>
+</code></pre><h2 id="Persistency"><a class="anchor hidden-xs" href="#Persistency" title="Persistency"><span class="octicon octicon-link"></span></a>Persistency</h2><p>WIP</p></div>
     <div class="ui-toc dropup unselectable hidden-print" style="display:none;">
         <div class="pull-right dropdown">
             <a id="tocLabel" class="ui-toc-label btn btn-default" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" title="Table of content">

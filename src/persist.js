@@ -1,6 +1,6 @@
 import { addToStrings, getString } from './cache'
 import { getRtFromLeaves } from './api/get'
-import { addReferenceFrom } from './api/set/utils'
+import { addReferenceFrom, removeReferenceFrom } from './api/set/utils'
 
 const bindAllDataListener = (branch, persist) => {
   if (!branch.listeners.allData) {
@@ -25,10 +25,10 @@ const loadLeaf = (branch, id, leaf) => {
     addToStrings(leaf.key, leaf.keyString)
     delete leaf.keyString
 
-    if (leaf.val || leaf.rT) {
+    if (leaf.val !== void 0 || leaf.rT !== void 0) {
       const rTold = getRtFromLeaves(branch, id)
       if (rTold) {
-        delete branch.rF[rTold][id]
+        removeReferenceFrom(branch, id, rTold)
       }
       if (leaf.rT) {
         addReferenceFrom(branch, id, leaf.rT)

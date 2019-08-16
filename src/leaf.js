@@ -4,19 +4,6 @@ import { set } from './api/set'
 import { emitDataEvents } from './api/listeners/emit'
 import { bindAllDataListener, loadLeaf } from './persist'
 
-const cloneIds = (to, from, parent) => {
-  for (const id in from) {
-    if (!to[parent]) {
-      to[parent] = {}
-    }
-    if (!to[id]) {
-      to[id] = {}
-    }
-    to[parent][id] = to[id]
-    cloneIds(to, from[id], id)
-  }
-}
-
 const Leaf = function (branch, id) {
   this.branch = branch
   this.id = id
@@ -48,7 +35,7 @@ const prepareNewBranch = inherits => {
     branch.inherits = inherits
     inherits.branches.push(branch)
     for (const id in inherits.rF) {
-      cloneIds(branch.rF, inherits.rF[id], id)
+      branch.rF[id] = inherits.rF[id].slice(0)
     }
     branch.stamp = inherits.stamp
   }

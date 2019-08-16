@@ -1,5 +1,5 @@
 import { emit, addDataEvent } from './listeners/emit'
-import { addOwnLeaf, addBranchLeaf } from './set/utils'
+import { addOwnLeaf, addBranchLeaf, removeReferenceFrom } from './set/utils'
 import { children } from './array'
 import { getRtFromLeaves } from './get'
 
@@ -8,8 +8,8 @@ const removeListenersSubscriptions = (branch, id) => {
   delete branch.subscriptions[id]
 }
 
-const removeReferenceFrom = (branch, rF, rT) => {
-  delete branch.rF[rT][rF]
+const removeReferenceFromBranches = (branch, rF, rT) => {
+  removeReferenceFrom(branch, rF, rT)
 
   branch.branches.forEach(branch => {
     if (
@@ -22,7 +22,7 @@ const removeReferenceFrom = (branch, rF, rT) => {
         )
       )
     ) {
-      removeReferenceFrom(branch, rF, rT)
+      removeReferenceFromBranches(branch, rF, rT)
     }
   })
 }
@@ -60,13 +60,13 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rT, stamp) =>
           branch.leaves[id].val === void 0 &&
           branch.leaves[id].rT === void 0
         ) {
-          delete branch.rF[rT][id]
+          removeReferenceFrom(branch, id, rT)
         } else if (rT) {
           rTnext = void 0
         }
       } else {
         if (rT) {
-          delete branch.rF[rT][id]
+          removeReferenceFrom(branch, id, rT)
         }
         if (parent) {
           if (branch.leaves[parent]) {
@@ -151,9 +151,9 @@ const remove = (branch, leaf, id, stamp, ignoreParent) => {
   }
 
   if (rT) {
-    delete branch.rF[rT][id]
+    removeReferenceFrom(branch, id, rT)
   }
   removeListenersSubscriptions(branch, id)
 }
 
-export { remove, removeOwn, removeListenersSubscriptions, removeReferenceFrom }
+export { remove, removeOwn, removeListenersSubscriptions, removeReferenceFromBranches }

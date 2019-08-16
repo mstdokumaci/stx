@@ -57,12 +57,12 @@ const checkOptions = (options, id, depth) => {
 }
 
 const referenceSubscriptions = (branch, ids, stamp, keys, parentList) => {
-  for (const id in ids) {
+  ids.forEach(id => {
     if (!branch.subscriptions[id]) {
       branch.subscriptions[id] = {}
     }
     parentSubscriptions(branch, id, stamp, keys, parentList)
-  }
+  })
 }
 
 const parentSubscriptions = (branch, id, stamp, keys, parentList) => {

@@ -2,11 +2,12 @@ import { root } from '../../id'
 import { addDataEvent } from '../listeners/emit'
 import { getRtFromLeaves, getByPath } from '../get'
 import { getValOrRef } from '../compute'
-import { remove, removeReferenceFrom } from '../remove'
+import { remove, removeReferenceFromBranches } from '../remove'
 import { setKeys } from './'
 import {
   addOwnLeaf,
   addReferenceFrom,
+  removeReferenceFrom,
   checkReferenceByLeaf,
   fixBranchReferences
 } from './utils'
@@ -16,7 +17,7 @@ const setOverrideVal = (branch, leaf, id, val, stamp) => {
   if (val === valOrRef) {
     return
   } else if (valOrRef && valOrRef.id) {
-    removeReferenceFrom(branch, id, valOrRef.id)
+    removeReferenceFromBranches(branch, id, valOrRef.id)
     leaf.rT = void 0
   }
 
@@ -32,7 +33,7 @@ const setOverrideReference = (branch, leaf, id, rT, stamp) => {
   if (rTold === rT) {
     return
   } else if (rTold) {
-    delete branch.rF[rTold][id]
+    removeReferenceFrom(branch, id, rTold)
   }
 
   leaf = addOwnLeaf(branch, id, leaf.parent, leaf.key, leaf.depth, stamp)

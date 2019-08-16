@@ -50,10 +50,12 @@ const emitBranches = (branches, id, event, val, stamp, depth) =>
   })
 
 const emitReferences = (branch, ids, event, val, stamp, depth) => {
-  for (const id in ids) {
+  ids.forEach(id => {
     emitOwn(branch, id, event, val, stamp, depth)
-    emitReferences(branch, ids[id], event, val, stamp, depth)
-  }
+    if (branch.rF[id]) {
+      emitReferences(branch, branch.rF[id], event, val, stamp, depth)
+    }
+  })
 }
 
 const emit = (branch, id, event, val, stamp, depth, isKeys) => {

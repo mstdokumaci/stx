@@ -1,5 +1,10 @@
 import { setOffset } from '../../stamp'
-import { remove, removeOwn, removeListenersSubscriptions } from '../remove'
+import {
+  remove,
+  removeOwn,
+  removeReferenceFromBranches,
+  removeListenersSubscriptions
+} from '../remove'
 import { getRtFromLeaves } from '../get'
 import { addOwnLeaf } from '../set/utils'
 import { setOwnExistingVal, setOwnExistingReference } from '../set/own-existing'
@@ -31,7 +36,7 @@ const cleanLeaves = (branch, list) => {
       const rT = getRtFromLeaves(branch, id)
       removeOwn(branch, leaf, id, rT, stamp, 1, list[leaf.parent])
       if (rT) {
-        delete branch.rF[rT][id]
+        removeReferenceFromBranches(branch, id, rT)
       }
       removeListenersSubscriptions(branch, id)
     }

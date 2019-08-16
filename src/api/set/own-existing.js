@@ -3,19 +3,20 @@ import { addDataEvent } from '../listeners/emit'
 import { setKeys } from './'
 import {
   addReferenceFrom,
+  removeReferenceFrom,
   checkReferenceByLeaf,
   fixBranchReferences
 } from './utils'
 import { getRtFromLeaves, getByPath } from '../get'
 import { getValOrRef } from '../compute'
-import { remove, removeReferenceFrom } from '../remove'
+import { remove, removeReferenceFromBranches } from '../remove'
 
 const setOwnExistingVal = (branch, leaf, id, val, stamp) => {
   const valOrRef = getValOrRef(branch, id)
   if (val === valOrRef) {
     return
   } else if (valOrRef && valOrRef.id) {
-    removeReferenceFrom(branch, id, valOrRef.id)
+    removeReferenceFromBranches(branch, id, valOrRef.id)
     leaf.rT = void 0
   }
 
@@ -31,7 +32,7 @@ const setOwnExistingReference = (branch, leaf, id, rT, stamp) => {
   if (rTold === rT) {
     return
   } else if (rTold) {
-    delete branch.rF[rTold][id]
+    removeReferenceFrom(branch, id, rTold)
   } else {
     leaf.val = void 0
   }

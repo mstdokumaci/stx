@@ -35,13 +35,13 @@ const addBranchLeaf = (branch, id, stamp) => {
 
 const addReferenceFrom = (branch, rF, rT) => {
   if (!branch.rF[rT]) {
-    branch.rF[rT] = {}
+    branch.rF[rT] = []
   }
-  if (!branch.rF[rF]) {
-    branch.rF[rF] = {}
-  }
-  branch.rF[rT][rF] = branch.rF[rF]
+  branch.rF[rT].push(rF)
 }
+
+const removeReferenceFrom = (branch, rF, rT) =>
+  branch.rF[rT].splice(branch.rF[rT].indexOf(rF), 1)
 
 const fixBranchReferences = (branches, rF, rT, rTold) =>
   branches.forEach(branch => {
@@ -56,13 +56,13 @@ const fixBranchReferences = (branches, rF, rT, rTold) =>
         return
       } else {
         if (rTold) {
-          delete branch.rF[rTold][rF]
+          removeReferenceFrom(branch, rF, rTold)
         }
         addReferenceFrom(branch, rF, rT)
       }
     } else {
       if (rTold) {
-        delete branch.rF[rTold][rF]
+        removeReferenceFrom(branch, rF, rTold)
       }
       addReferenceFrom(branch, rF, rT)
     }
@@ -121,6 +121,7 @@ export {
   addOwnLeaf,
   addBranchLeaf,
   addReferenceFrom,
+  removeReferenceFrom,
   checkReferenceByLeaf,
   fixBranchReferences,
   cleanBranchKeys

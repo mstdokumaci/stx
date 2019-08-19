@@ -25,7 +25,7 @@ const loadLeaf = (branch, id, leaf) => {
     addToStrings(leaf.key, leaf.keyString)
     delete leaf.keyString
 
-    if (leaf.val !== void 0 || leaf.rT !== void 0) {
+    if (leaf.val !== void 0 || leaf.rT) {
       const rTold = getRtFromLeaves(branch, id)
       if (rTold) {
         removeReferenceFrom(branch, id, rTold)

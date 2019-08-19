@@ -161,22 +161,24 @@ const serializeLeaf = (data, socket, master, branch, id, keys, depthLimit, sDept
     if (leaf === null) {
       break
     } else if (leaf) {
-      if (val === void 0 && !rT) {
-        if (leaf.val !== void 0) {
-          val = leaf.val
-        } else if (leaf.rT) {
-          rT = leaf.rT
-          serializeWithAllChildren(data, socket, master, oBranch, leaf.rT, depthLimit, sDepth)
-          serializeParents(data, socket, master, oBranch, leaf.rT)
-        }
-      }
-
       if (!stamp && leaf.stamp) {
         isMaster = branch === master
         key = leaf.key
         parent = leaf.parent
         stamp = leaf.stamp
         depth = leaf.depth
+      }
+
+      if (val === void 0 && !rT) {
+        if (leaf.val !== void 0) {
+          val = leaf.val
+          break
+        } else if (leaf.rT) {
+          rT = leaf.rT
+          serializeWithAllChildren(data, socket, master, oBranch, leaf.rT, depthLimit, sDepth)
+          serializeParents(data, socket, master, oBranch, leaf.rT)
+          break
+        }
       }
     }
 

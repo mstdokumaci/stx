@@ -18,13 +18,13 @@ const setOverrideVal = (branch, leaf, id, val, stamp) => {
     return
   } else if (valOrRef && valOrRef.id) {
     removeReferenceFromBranches(branch, id, valOrRef.id)
-    leaf.rT = void 0
+    leaf.rT = undefined
   }
 
   leaf = addOwnLeaf(branch, id, leaf.parent, leaf.key, leaf.depth, stamp)
   leaf.val = val
 
-  addDataEvent(void 0, id, 'set', leaf.depth)
+  addDataEvent(undefined, id, 'set', leaf.depth)
   return true
 }
 
@@ -40,7 +40,7 @@ const setOverrideReference = (branch, leaf, id, rT, stamp) => {
 
   leaf.rT = rT
   addReferenceFrom(branch, id, rT)
-  addDataEvent(void 0, id, 'set', leaf.depth)
+  addDataEvent(undefined, id, 'set', leaf.depth)
 
   if (branch.branches.length) {
     fixBranchReferences(branch.branches, id, rT, rTold)

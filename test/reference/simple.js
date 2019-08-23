@@ -9,8 +9,8 @@ test('references - simple', t => {
       real: 'thing'
     },
     pointers: {
-      pointer1: [ '@', 'deep' ],
-      pointer2: [ '@', 'deep', 'real' ]
+      pointer1: ['@', 'deep'],
+      pointer2: ['@', 'deep', 'real']
     }
   })
 
@@ -21,70 +21,70 @@ test('references - simple', t => {
       real2: 'thing2'
     },
     pointers: {
-      pointer3: [ '@', 'deep', 'real' ],
-      pointer4: [ '@', 'deep', 'real2' ],
-      pointer5: master.get([ 'pointers', 'pointer1' ])
+      pointer3: ['@', 'deep', 'real'],
+      pointer4: ['@', 'deep', 'real2'],
+      pointer5: master.get(['pointers', 'pointer1'])
     }
   })
 
   t.equals(
-    branch1.get([ 'deep', 'real' ]).compute(),
-    master.get([ 'deep', 'real' ]).compute(),
+    branch1.get(['deep', 'real']).compute(),
+    master.get(['deep', 'real']).compute(),
     'branch1.deep.real = master.deep.real'
   )
   t.equals(
-    branch1.get([ 'deep', 'real2' ]).compute(),
+    branch1.get(['deep', 'real2']).compute(),
     'thing2',
     'branch1.deep.real2.compute() = thing2'
   )
   t.equals(
-    master.get([ 'deep', 'real2' ]),
-    void 0,
-    'master.deep.real2 = void 0'
+    master.get(['deep', 'real2']),
+    undefined,
+    'master.deep.real2 = undefined'
   )
 
   t.equals(
-    branch1.get([ 'pointers', 'pointer1', 'real' ]).compute(),
-    master.get([ 'pointers', 'pointer1', 'real' ]).compute(),
+    branch1.get(['pointers', 'pointer1', 'real']).compute(),
+    master.get(['pointers', 'pointer1', 'real']).compute(),
     'branch1.pointers.pointer1.real.compute() = master.pointers.pointer1.real.compute()'
   )
   t.equals(
-    branch1.get([ 'pointers', 'pointer2' ]).compute(),
-    master.get([ 'pointers', 'pointer2' ]).compute(),
+    branch1.get(['pointers', 'pointer2']).compute(),
+    master.get(['pointers', 'pointer2']).compute(),
     'branch1.pointers.pointer2.compute() = master.pointers.pointer2.compute()'
   )
 
   t.equals(
-    branch1.get([ 'pointers', 'pointer3' ]).compute(),
-    master.get([ 'deep', 'real' ]).compute(),
+    branch1.get(['pointers', 'pointer3']).compute(),
+    master.get(['deep', 'real']).compute(),
     'branch1.pointers.pointer3 = master.deep.real'
   )
   t.equals(
-    master.get([ 'pointers', 'pointer3' ]),
-    void 0,
-    'master.pointers.pointer3 = void 0'
+    master.get(['pointers', 'pointer3']),
+    undefined,
+    'master.pointers.pointer3 = undefined'
   )
 
   t.equals(
-    branch1.get([ 'pointers', 'pointer4' ]).compute(),
+    branch1.get(['pointers', 'pointer4']).compute(),
     'thing2',
     'branch1.pointers.pointer4.compute() = thing2'
   )
   t.equals(
-    master.get([ 'pointers', 'pointer4' ]),
-    void 0,
-    'master.pointers.pointer4 = void 0'
+    master.get(['pointers', 'pointer4']),
+    undefined,
+    'master.pointers.pointer4 = undefined'
   )
 
   t.equals(
-    branch1.get([ 'pointers', 'pointer5', 'real' ]).compute(),
-    master.get([ 'deep', 'real' ]).compute(),
+    branch1.get(['pointers', 'pointer5', 'real']).compute(),
+    master.get(['deep', 'real']).compute(),
     'branch1.pointers.pointer5.real.compute() = master.deep.real'
   )
   t.equals(
-    master.get([ 'pointers', 'pointer5' ]),
-    void 0,
-    'master.pointers.pointer5 = void 0'
+    master.get(['pointers', 'pointer5']),
+    undefined,
+    'master.pointers.pointer5 = undefined'
   )
 
   const branch2 = branch1.create({
@@ -99,53 +99,53 @@ test('references - simple', t => {
   })
 
   t.equals(
-    master.get([ 'deep', 'real' ]).compute(),
+    master.get(['deep', 'real']).compute(),
     'thing',
     'master.deep.real.compute() = thing'
   )
   t.equals(
-    branch1.get([ 'deep', 'real' ]).compute(),
+    branch1.get(['deep', 'real']).compute(),
     'thing',
     'branch1.deep.real.compute() = thing'
   )
   t.equals(
-    branch2.get([ 'deep', 'real' ]).compute(),
+    branch2.get(['deep', 'real']).compute(),
     'override',
     'branch2.deep.real.compute() = override'
   )
   t.equals(
-    branch2.get([ 'deep', 'real2' ]).compute(),
+    branch2.get(['deep', 'real2']).compute(),
     'thing2',
     'branch2.deep.real2.compute() = thing2'
   )
 
   t.equals(
-    branch2.get([ 'pointers', 'pointer1', 'real' ]).compute(),
+    branch2.get(['pointers', 'pointer1', 'real']).compute(),
     'reference-override',
     'branch2.pointers.pointer1.real.compute() = reference-override'
   )
   t.equals(
-    branch2.get([ 'pointers', 'pointer2' ]).compute(),
+    branch2.get(['pointers', 'pointer2']).compute(),
     'override',
     'branch2.pointers.pointer2.compute() = override'
   )
   t.equals(
-    branch2.get([ 'pointers', 'pointer3' ]).compute(),
+    branch2.get(['pointers', 'pointer3']).compute(),
     'override',
     'branch2.pointers.pointer3.compute() = override'
   )
   t.equals(
-    branch2.get([ 'pointers', 'pointer4' ]).compute(),
+    branch2.get(['pointers', 'pointer4']).compute(),
     'thing2',
     'branch2.pointers.pointer4.compute() = thing2'
   )
   t.equals(
-    branch2.get([ 'pointers', 'pointer5', 'real2' ]).compute(),
+    branch2.get(['pointers', 'pointer5', 'real2']).compute(),
     'thing2',
     'branch2.pointers.pointer5.real2.compute() = thing2'
   )
   t.equals(
-    branch2.get([ 'pointers', 'pointer5' ]).get('real2').compute(),
+    branch2.get(['pointers', 'pointer5']).get('real2').compute(),
     'thing2',
     'branch2.pointers.pointer5.real2.compute() = thing2'
   )
@@ -157,27 +157,27 @@ test('references - simple', t => {
   })
 
   t.equals(
-    branch2.get([ 'pointers', 'pointer5', 'real' ]).compute(),
+    branch2.get(['pointers', 'pointer5', 'real']).compute(),
     'reference-override',
     'branch2.pointers.pointer5.real = reference-override'
   )
   t.equals(
-    branch2.get([ 'pointers', 'pointer1', 'real2' ]),
-    void 0,
+    branch2.get(['pointers', 'pointer1', 'real2']),
+    undefined,
     'branch2.pointers.pointer1.real2 = undefined'
   )
   t.equals(
-    branch2.get([ 'pointers', 'pointer5' ]).get('real2'),
-    void 0,
+    branch2.get(['pointers', 'pointer5']).get('real2'),
+    undefined,
     'branch2.pointers.pointer5.real2 = undefined'
   )
   t.equals(
-    branch2.get([ 'pointers', 'pointer1' ]).compute(),
+    branch2.get(['pointers', 'pointer1']).compute(),
     'override',
     'branch2.pointers.pointer1.compute() = override'
   )
   t.equals(
-    branch2.get([ 'pointers', 'pointer5' ]).compute(),
+    branch2.get(['pointers', 'pointer5']).compute(),
     'override',
     'branch2.pointers.pointer5.compute() = override'
   )

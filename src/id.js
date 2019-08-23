@@ -28,10 +28,12 @@ const arrayToId = (arr) => {
   return (hash1 >>> 0) * 4096 + (hash2 >>> 0)
 }
 
-const pathToIds = (path, id = root) =>
-  [ id ].concat(path.map(key => {
+const pathToIds = (path, id = root) => [
+  id,
+  ...path.map(key => {
     id = keyToId(key, id)
     return id
-  }))
+  })
+]
 
 export { root, keyToId, arrayToId, pathToIds }

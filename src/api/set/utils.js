@@ -50,9 +50,9 @@ const fixBranchReferences = (branches, rF, rT, rTold) =>
     } else if (branch.leaves[rF]) {
       if (branch.leaves[rF].rT === rT) {
         addAfterEmitEvent(() => {
-          branch.leaves[rF].rT = void 0
+          branch.leaves[rF].rT = undefined
         })
-      } else if (branch.leaves[rF].rT !== void 0 || branch.leaves[rF].val !== void 0) {
+      } else if (branch.leaves[rF].rT !== undefined || branch.leaves[rF].val !== undefined) {
         return
       } else {
         if (rTold) {
@@ -87,7 +87,7 @@ const checkReferenceByLeaf = (oBranch, rTBranch, rT, cb) => {
 
 const cleanBranchKeys = (branches, id, keys, stamp) =>
   branches.forEach(branch => {
-    let keysNext = keys.slice()
+    const keysNext = keys.slice()
 
     if (branch.leaves[id] === null) {
       return

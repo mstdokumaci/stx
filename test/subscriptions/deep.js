@@ -15,37 +15,37 @@ test('subscriptions - deep fields', t => {
   })
 
   const l0 = (list, item) => {
-    const path = [ item.root().get('id').compute() ].concat(item.path()).join('-')
-    list.push(`${path}-${item.get([ 'deep', 'real', 'deeper' ]).compute()}`)
+    const path = [item.root().get('id').compute()].concat(item.path()).join('-')
+    list.push(`${path}-${item.get(['deep', 'real', 'deeper']).compute()}`)
   }
 
   const l1 = (list, item) => {
-    const path = [ item.root().get('id').compute() ].concat(item.path()).join('-')
-    list.push(`${path}-${item.get([ 'real', 'deeper' ]).compute()}`)
+    const path = [item.root().get('id').compute()].concat(item.path()).join('-')
+    list.push(`${path}-${item.get(['real', 'deeper']).compute()}`)
   }
 
   const l2 = (list, item) => {
-    const path = [ item.root().get('id').compute() ].concat(item.path()).join('-')
+    const path = [item.root().get('id').compute()].concat(item.path()).join('-')
     list.push(`${path}-${item.get('deeper').compute()}`)
   }
 
   const l3 = (list, item) => {
-    const path = [ item.root().get('id').compute() ].concat(item.path()).join('-')
+    const path = [item.root().get('id').compute()].concat(item.path()).join('-')
     list.push(`${path}-${item.compute()}`)
   }
 
   master.subscribe(item => l0(masterFire, item))
   master.get('deep').subscribe(item => l1(masterFire, item))
-  master.get([ 'deep', 'real' ]).subscribe(item => l2(masterFire, item))
-  master.get([ 'deep', 'real' ]).subscribe(item => l2(masterFire, item))
-  master.get([ 'deep', 'real', 'deeper' ]).subscribe(item => l3(masterFire, item))
+  master.get(['deep', 'real']).subscribe(item => l2(masterFire, item))
+  master.get(['deep', 'real']).subscribe(item => l2(masterFire, item))
+  master.get(['deep', 'real', 'deeper']).subscribe(item => l3(masterFire, item))
 
   const branch = master.create({ id: 'branch' })
 
   branch.subscribe(item => l0(branchFire, item))
   branch.get('deep').subscribe(item => l1(branchFire, item))
-  branch.get([ 'deep', 'real' ]).subscribe(item => l2(branchFire, item))
-  branch.get([ 'deep', 'real', 'deeper' ]).subscribe(item => l3(branchFire, item))
+  branch.get(['deep', 'real']).subscribe(item => l2(branchFire, item))
+  branch.get(['deep', 'real', 'deeper']).subscribe(item => l3(branchFire, item))
 
   branch.set({
     deep: {

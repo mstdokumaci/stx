@@ -22,7 +22,7 @@ const setToNewBranch = (branch, val, stamp) => {
 const prepareNewBranch = inherits => {
   const branch = {
     branches: [],
-    leaves: { [ root ]: { depth: 0 } },
+    leaves: { [root]: { depth: 0 } },
     listeners: {},
     subscriptions: {},
     parentSubscriptions: [],

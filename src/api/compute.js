@@ -5,7 +5,7 @@ const getValOrRef = (branch, id) => {
   while (branch) {
     const leaf = branch.leaves[id]
     if (leaf) {
-      if (leaf.val !== void 0) {
+      if (leaf.val !== undefined) {
         return leaf.val
       } else if (leaf.rT && getBranchForId(oBranch, leaf.rT)) {
         return { id: leaf.rT }
@@ -25,7 +25,7 @@ const compute = (branch, id) => {
   while (branch) {
     const leaf = branch.leaves[id]
     if (leaf) {
-      if (leaf.val !== void 0) {
+      if (leaf.val !== undefined) {
         return leaf.val
       } else if (leaf.rT) {
         return compute(oBranch, leaf.rT)

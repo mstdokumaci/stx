@@ -34,15 +34,15 @@ test('path collusion', t => {
   let leaf
   for (let i = 0; i < 1e4; i++) {
     leaf = state.get(i)
-    state.get([ i, 'a' ])
-    state.get([ i, 'b' ])
-    state.get([ i, 'c' ])
+    state.get([i, 'a'])
+    state.get([i, 'b'])
+    state.get([i, 'c'])
     leaf.get('nested')
-    leaf.get([ 'nested', 'x0' ])
-    leaf.get([ 'nested', 'x1' ])
-    leaf.get([ 'nested', 'x2' ])
-    leaf.get([ 'nested', 'x3' ])
-    leaf.get([ 'nested', 'x4' ])
+    leaf.get(['nested', 'x0'])
+    leaf.get(['nested', 'x1'])
+    leaf.get(['nested', 'x2'])
+    leaf.get(['nested', 'x3'])
+    leaf.get(['nested', 'x4'])
   }
   const structGet = Date.now() - d
   t.ok(

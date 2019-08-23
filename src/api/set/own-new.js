@@ -14,14 +14,14 @@ const setOwnNewVal = (branch, leaf, id, val, stamp) => {
   leaf.val = val
   leaf.stamp = stamp
 
-  addDataEvent(void 0, id, 'set', leaf.depth)
+  addDataEvent(undefined, id, 'set', leaf.depth)
 }
 
 const setOwnNewReference = (branch, leaf, id, rT, stamp) => {
   leaf.rT = rT
   leaf.stamp = stamp
   addReferenceFrom(branch, id, rT)
-  addDataEvent(void 0, id, 'set', leaf.depth)
+  addDataEvent(undefined, id, 'set', leaf.depth)
 
   if (branch.branches.length) {
     fixBranchReferences(branch.branches, id, rT)
@@ -29,11 +29,11 @@ const setOwnNewReference = (branch, leaf, id, rT, stamp) => {
 }
 
 const setOwnNewKeys = (branch, leaf, id, val, stamp) => {
-  let keys = []
-  for (let key in val) {
+  const keys = []
+  for (const key in val) {
     if (key === 'val') {
       setOwnNew(branch, leaf, id, val.val, stamp)
-    } else if (val[key] !== void 0 && val[key] !== null) {
+    } else if (val[key] !== undefined && val[key] !== null) {
       const subLeafId = keyToId(key, id)
       const keyId = keyToId(key)
       addToStrings(keyId, key)
@@ -50,7 +50,7 @@ const setOwnNewKeys = (branch, leaf, id, val, stamp) => {
     }
     leaf.stamp = stamp
     cleanBranchKeys(branch.branches, id, keys, stamp)
-    addDataEvent(void 0, id, 'add-key')
+    addDataEvent(undefined, id, 'add-key')
   }
 }
 

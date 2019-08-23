@@ -4,27 +4,27 @@ const { create } = require('../../../dist')
 test('network - subscriptions - routing', t => {
   const sMaster = create({
     id: 'master',
-    route: [ '@', 'content', 'p1' ],
+    route: ['@', 'content', 'p1'],
     content: {
       p1: {
         title: 'Page 1',
         items: {
-          i2: [ '@', 'content', 'i2' ],
-          i3: [ '@', 'content', 'i3' ]
+          i2: ['@', 'content', 'i2'],
+          i3: ['@', 'content', 'i3']
         }
       },
       p2: {
         title: 'Page 2',
         items: {
-          i1: [ '@', 'content', 'i1' ],
-          i3: [ '@', 'content', 'i3' ]
+          i1: ['@', 'content', 'i1'],
+          i3: ['@', 'content', 'i3']
         }
       },
       p3: {
         title: 'Page 3',
         items: {
-          i1: [ '@', 'content', 'i1' ],
-          i2: [ '@', 'content', 'i2' ]
+          i1: ['@', 'content', 'i1'],
+          i2: ['@', 'content', 'i2']
         }
       },
       i1: {
@@ -44,7 +44,7 @@ test('network - subscriptions - routing', t => {
   sMaster.branch.newBranchMiddleware = branchRoot => {
     branchRoot.branch.clientCanUpdate = [
       {
-        path: [ 'route' ]
+        path: ['route']
       }
     ]
   }
@@ -64,25 +64,25 @@ test('network - subscriptions - routing', t => {
         if (cm.get('title')) {
           if (cm.get('title').compute() === 'Page 1') {
             t.equals(
-              cm.get([ 'items', 'i2', 'title' ]).compute(),
+              cm.get(['items', 'i2', 'title']).compute(),
               'Item 2',
               'cm1.items.i2.title.compute() = Item 2'
             )
             t.equals(
-              cm.get([ 'items', 'i3', 'title' ]).compute(),
+              cm.get(['items', 'i3', 'title']).compute(),
               'Item 3',
               'cm1.items.i3.title.compute() = Item 3'
             )
 
-            cMaster1.get('route').set([ '@', 'content', 'p3' ])
+            cMaster1.get('route').set(['@', 'content', 'p3'])
           } else if (cm.get('title').compute() === 'Page 3') {
             t.equals(
-              cm.get([ 'items', 'i1', 'title' ]).compute(),
+              cm.get(['items', 'i1', 'title']).compute(),
               'Item 1',
               'cm1.items.i1.title.compute() = Item 1'
             )
             t.equals(
-              cm.get([ 'items', 'i2', 'title' ]).compute(),
+              cm.get(['items', 'i2', 'title']).compute(),
               'Item 2',
               'cm1.items.i2.title.compute() = Item 2'
             )
@@ -90,12 +90,12 @@ test('network - subscriptions - routing', t => {
             cMaster1.switchBranch('user2')
           } else if (cm.get('title').compute() === 'Page 2') {
             t.equals(
-              cm.get([ 'items', 'i1', 'title' ]).compute(),
+              cm.get(['items', 'i1', 'title']).compute(),
               'Item 1',
               'cm1.items.i1.title.compute() = Item 1'
             )
             t.equals(
-              cm.get([ 'items', 'i3', 'title' ]).compute(),
+              cm.get(['items', 'i3', 'title']).compute(),
               'Item 3',
               'cm1.items.i3.title.compute() = Item 3'
             )
@@ -118,25 +118,25 @@ test('network - subscriptions - routing', t => {
         if (cm.get('title')) {
           if (cm.get('title').compute() === 'Page 1') {
             t.equals(
-              cm.get([ 'items', 'i2', 'title' ]).compute(),
+              cm.get(['items', 'i2', 'title']).compute(),
               'Item 2',
               'cm2.items.i2.title.compute() = Item 2'
             )
             t.equals(
-              cm.get([ 'items', 'i3', 'title' ]).compute(),
+              cm.get(['items', 'i3', 'title']).compute(),
               'Item 3',
               'cm2.items.i3.title.compute() = Item 3'
             )
 
-            cMaster2.get('route').set([ '@', 'content', 'p2' ])
+            cMaster2.get('route').set(['@', 'content', 'p2'])
           } else if (cm.get('title').compute() === 'Page 2') {
             t.equals(
-              cm.get([ 'items', 'i1', 'title' ]).compute(),
+              cm.get(['items', 'i1', 'title']).compute(),
               'Item 1',
               'cm2.items.i1.title.compute() = Item 1'
             )
             t.equals(
-              cm.get([ 'items', 'i3', 'title' ]).compute(),
+              cm.get(['items', 'i3', 'title']).compute(),
               'Item 3',
               'cm2.items.i3.title.compute() = Item 3'
             )
@@ -144,12 +144,12 @@ test('network - subscriptions - routing', t => {
             cMaster2.switchBranch('user1')
           } else if (cm.get('title').compute() === 'Page 3') {
             t.equals(
-              cm.get([ 'items', 'i1', 'title' ]).compute(),
+              cm.get(['items', 'i1', 'title']).compute(),
               'Item 1',
               'cm2.items.i1.title.compute() = Item 1'
             )
             t.equals(
-              cm.get([ 'items', 'i2', 'title' ]).compute(),
+              cm.get(['items', 'i2', 'title']).compute(),
               'Item 2',
               'cm2.items.i2.title.compute() = Item 2'
             )

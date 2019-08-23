@@ -48,12 +48,12 @@ test('data listeners - set', t => {
 
   t.same(
     masterFire,
-    [ 'master-add-key-first', 'master-remove-key-first' ],
+    ['master-add-key-first', 'master-remove-key-first'],
     'masterFire = [ master-add-key-first, master-remove-key-first ]'
   )
   t.same(
     branch1Fire,
-    [ 'branch1-add-key-first', 'branch1-set-first-override', 'branch1-remove-key-first-override' ],
+    ['branch1-add-key-first', 'branch1-set-first-override', 'branch1-remove-key-first-override'],
     'branch1Fire = [ branch1-add-key-first, branch1-set-first-override, branch1-remove-key-first-override ]'
   )
 
@@ -95,12 +95,12 @@ test('data listeners - remove', t => {
 
   t.same(
     masterFire,
-    [ 'master-remove-1' ],
+    ['master-remove-1'],
     'masterFire = [ master-remove-1 ]'
   )
   t.same(
     branch1Fire,
-    [ 'branch1-remove-1' ],
+    ['branch1-remove-1'],
     'branch1Fire = [ branch1-remove-1 ]'
   )
 

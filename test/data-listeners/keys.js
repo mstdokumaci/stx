@@ -47,22 +47,22 @@ test('data listeners - add remove key', t => {
 
   t.same(
     masterFire,
-    [ 'master-add-key-1-2' ],
+    ['master-add-key-1-2'],
     'masterFire = [ master-add-key-1-2 ]'
   )
   t.same(
     branch1Fire,
-    [ 'branch1-add-key-1-2', 'branch1-add-key-31-1-2' ],
+    ['branch1-add-key-1-2', 'branch1-add-key-31-1-2'],
     'branch1Fire = [ branch1-add-key-1-2, branch1-add-key-31-1-2 ]'
   )
   t.same(
     branch2Fire,
-    [ 'branch2-add-key-1-2', 'branch2-add-key-31-1-2' ],
+    ['branch2-add-key-1-2', 'branch2-add-key-31-1-2'],
     'branch2Fire = [ branch2-add-key-1-2, branch2-add-key-31-1-2 ]'
   )
   t.same(
     branch3Fire,
-    [ 'branch3-add-key-1-2', 'branch3-add-key-31-1-2' ],
+    ['branch3-add-key-1-2', 'branch3-add-key-31-1-2'],
     'branch3Fire = [ branch3-add-key-1-2, branch3-add-key-31-1-2 ]'
   )
 
@@ -77,7 +77,7 @@ test('data listeners - add remove key', t => {
 
   t.same(
     masterFire,
-    [ 'master-add-key-1-2-3' ],
+    ['master-add-key-1-2-3'],
     'masterFire = [ master-add-key-1-2-3 ]'
   )
   t.same(branch1Fire, [], 'branch1Fire = []')
@@ -119,13 +119,13 @@ test('data listeners - add remove key', t => {
   t.same(masterFire, [], 'masterFire = []')
   t.same(
     branch1Fire,
-    [ 'branch1-remove-key-1-2' ],
+    ['branch1-remove-key-1-2'],
     'branch1Fire = [ branch1-remove-key-1-2 ]'
   )
   t.same(branch2Fire, [], 'branch2Fire = []')
   t.same(
     branch3Fire,
-    [ 'branch3-remove-key-43-53-1-2' ],
+    ['branch3-remove-key-43-53-1-2'],
     'branch3Fire = [ branch3-remove-key-43-53-1-2 ]'
   )
 
@@ -141,12 +141,12 @@ test('data listeners - add remove key', t => {
   t.same(masterFire, [], 'masterFire = []')
   t.same(
     branch1Fire,
-    [ 'branch1-add-key-51-1-2' ],
+    ['branch1-add-key-51-1-2'],
     'branch1Fire = [ branch1-add-key-51-1-2 ]'
   )
   t.same(
     branch2Fire,
-    [ 'branch2-add-key-32-51-1-2' ],
+    ['branch2-add-key-32-51-1-2'],
     'branch2Fire = [ branch2-add-key-32-51-1-2 ]'
   )
   t.same(branch3Fire, [], 'branch3Fire = []')

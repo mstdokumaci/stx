@@ -13,14 +13,14 @@ test('network - emit', t => {
 
   cMaster.on('connected', val => {
     if (val) {
-      sMaster.get([ 'deep', 'real' ]).on('event', val => {
+      sMaster.get(['deep', 'real']).on('event', val => {
         t.equals(val, 'value', 'event fired on master')
         client.socket.close()
         server.close()
         t.end()
       })
 
-      cMaster.get([ 'deep', 'real' ], {}).emit('event', 'value')
+      cMaster.get(['deep', 'real'], {}).emit('event', 'value')
     }
   })
 

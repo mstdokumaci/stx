@@ -104,7 +104,7 @@ test('browser - data size', { timeout: 4000 }, async t => {
 
   t.same(
     fired,
-    [ 'bigData.here it is', 'otherData.here it is' ],
+    ['bigData.here it is', 'otherData.here it is'],
     'fired = [ bigData.here it is, otherData.here it is ]'
   )
 

@@ -17,7 +17,7 @@ const isCached = (socket, isMaster, id) => socket.cache &&
   (isMaster ? socket.cache.master[id] : socket.cache.branch[id])
 
 const reuseCache = (socket) => {
-  if (!socket.cache) return void 0
+  if (!socket.cache) return undefined
 
   return {
     cache: {

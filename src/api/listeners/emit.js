@@ -30,8 +30,8 @@ const emitBranches = (branches, id, event, val, stamp, depth) =>
         event === 'data' &&
         branch.leaves[id] &&
         (
-          branch.leaves[id].val !== void 0 ||
-          branch.leaves[id].rT !== void 0
+          branch.leaves[id].val !== undefined ||
+          branch.leaves[id].rT !== undefined
         )
       )
     ) {
@@ -74,7 +74,7 @@ const dataEvents = []
 const afterEmitEvents = []
 
 const addDataEvent = (branch, id, val, depth) => {
-  dataEvents.push([ branch, id, val, depth ])
+  dataEvents.push([branch, id, val, depth])
 }
 
 const addAfterEmitEvent = (cb) => afterEmitEvents.push(cb)

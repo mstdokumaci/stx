@@ -22,7 +22,7 @@ const children = (oBranch, id, cb) => {
           if (cb) {
             return cb(subBranch, leafId)
           } else {
-            subLeaves.push([ subBranch, leafId ])
+            subLeaves.push([subBranch, leafId])
           }
         } else {
           exists[leafId] = true
@@ -75,7 +75,7 @@ const find = (branch, id, cb) => {
 }
 
 const reduce = (branch, id, cb, accumulator) => {
-  let skipFirst = accumulator === void 0
+  let skipFirst = accumulator === undefined
   children(branch, id, (subBranch, id) => {
     if (skipFirst) {
       accumulator = compute(subBranch, id)

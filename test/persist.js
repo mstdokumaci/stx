@@ -53,7 +53,7 @@ test('persist - set with reference', async t => {
 
   state.set({
     key2: 'value 2',
-    pointer: [ '@', 'key1' ]
+    pointer: ['@', 'key1']
   })
 
   await persist.stop()
@@ -74,7 +74,7 @@ test('persist - get with reference and update', async t => {
 
     listener.off()
 
-    state.set({ pointer: [ '@', 'key2' ] })
+    state.set({ pointer: ['@', 'key2'] })
 
     t.end()
   })

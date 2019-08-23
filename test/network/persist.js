@@ -15,7 +15,7 @@ test('network - persist set', async t => {
     third: {
       id: 3
     },
-    pointer: [ '@', 'first' ]
+    pointer: ['@', 'first']
   }, masterPersist)
 
   const server = sMaster.listen(7070)
@@ -28,7 +28,7 @@ test('network - persist set', async t => {
 
     toBranch.branch.clientCanUpdate = [
       {
-        path: [ 'pointer' ]
+        path: ['pointer']
       }
     ]
   }
@@ -44,7 +44,7 @@ test('network - persist set', async t => {
 
           sub.unsubscribe()
 
-          pointer.set([ '@', 'second' ])
+          pointer.set(['@', 'second'])
 
           setTimeout(() => client.socket.close(), 50)
         }
@@ -70,7 +70,7 @@ test('network - persist get', async t => {
     const toBranch = await switcher(branchKey, new Persist(branchKey))
     t.equals(
       toBranch.get('third'),
-      void 0,
+      undefined,
       'third = undefined'
     )
     return toBranch
@@ -85,7 +85,7 @@ test('network - persist get', async t => {
         if (id) {
           if (id.compute() === 2) {
             t.pass('id.compute() === 2')
-            sMaster.get([ 'second', 'id' ]).set('updated 2')
+            sMaster.get(['second', 'id']).set('updated 2')
           } else if (id.compute() === 'updated 2') {
             t.pass('id.compute() === updated 2')
             client.socket.close()

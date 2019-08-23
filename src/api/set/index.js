@@ -8,8 +8,8 @@ import { setOwnExisting } from './own-existing'
 import { setOverride } from './override'
 
 const setKeys = (branch, leaf, id, val, stamp, set) => {
-  let keys = []
-  for (let key in val) {
+  const keys = []
+  for (const key in val) {
     if (key === 'val') {
       set(branch, leaf, id, val.val, stamp)
     } else {
@@ -20,7 +20,7 @@ const setKeys = (branch, leaf, id, val, stamp, set) => {
         fn(
           branch, subLeafBranch.leaves[subLeafId], subLeafId, val[key], stamp
         )
-      } else if (val[key] !== void 0 && val[key] !== null) {
+      } else if (val[key] !== undefined && val[key] !== null) {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
         keys.push(subLeafId)
@@ -44,7 +44,7 @@ const setKeys = (branch, leaf, id, val, stamp, set) => {
     }
     leaf.stamp = stamp
     cleanBranchKeys(branch.branches, id, keys, stamp)
-    addDataEvent(void 0, id, 'add-key')
+    addDataEvent(undefined, id, 'add-key')
   }
 }
 

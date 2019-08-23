@@ -42,12 +42,12 @@ test('data listeners - references', t => {
 
   t.same(
     masterFire,
-    [ 'master-set-updated-thing' ],
+    ['master-set-updated-thing'],
     'masterFire = [ master-set-updated-thing ]'
   )
   t.same(
     branch1Fire,
-    [ 'branch1-set-updated-thing' ],
+    ['branch1-set-updated-thing'],
     'branch1Fire = [ branch1-set-updated-thing ]'
   )
 
@@ -107,12 +107,12 @@ test('data listeners - references', t => {
 
   t.same(
     masterFire,
-    [ 'master-add-key-updated-thing' ],
+    ['master-add-key-updated-thing'],
     'masterFire = [ master-add-key-updated-thing ]'
   )
   t.same(
     branch1Fire,
-    [ 'branch1-add-key-updated-thing', 'branch1-add-key-updated-thing' ],
+    ['branch1-add-key-updated-thing', 'branch1-add-key-updated-thing'],
     'branch1Fire = [ branch1-add-key-updated-thing, branch1-add-key-updated-thing ]'
   )
   t.same(
@@ -149,17 +149,17 @@ test('data listeners - references', t => {
 
   t.same(
     masterFire,
-    [ 'master-remove-updated-thing' ],
+    ['master-remove-updated-thing'],
     'masterFire = [ master-remove-updated-thing ]'
   )
   t.same(
     branch1Fire,
-    [ 'branch1-remove-updated-thing' ],
+    ['branch1-remove-updated-thing'],
     'branch1Fire = [ branch1-remove-updated-thing ]'
   )
   t.same(
     branch2Fire,
-    [ 'p4-branch2-set-updated2-thing', 'p8-branch2-set-updated2-thing' ],
+    ['p4-branch2-set-updated2-thing', 'p8-branch2-set-updated2-thing'],
     'branch2Fire = [ p4-branch2-set-updated2-thing, p8-branch2-set-updated2-thing ]'
   )
 
@@ -185,7 +185,7 @@ test('data listeners - reference inheritance', t => {
 
   branch12.set({
     pointers: {
-      pointer1: [ '@', 'deep' ]
+      pointer1: ['@', 'deep']
     }
   })
 
@@ -197,16 +197,16 @@ test('data listeners - reference inheritance', t => {
 
   branch22.set({
     pointers: {
-      pointer2: [ '@', 'deep' ]
+      pointer2: ['@', 'deep']
     }
   })
 
-  branch12.get([ 'pointers', 'pointer1' ]).on('data', (type, stamp, item) => {
+  branch12.get(['pointers', 'pointer1']).on('data', (type, stamp, item) => {
     const serialize = item.origin().map((i, key) => `${key}-${i.compute()}`).join('-')
     branch12Fire.push(`${item.root().get('id').compute()}-${type}-${serialize}`)
   })
 
-  branch22.get([ 'pointers', 'pointer2' ]).on('data', (type, stamp, item) => {
+  branch22.get(['pointers', 'pointer2']).on('data', (type, stamp, item) => {
     const serialize = item.origin().map((i, key) => `${key}-${i.compute()}`).join('-')
     branch22Fire.push(`${item.root().get('id').compute()}-${type}-${serialize}`)
   })
@@ -221,22 +221,22 @@ test('data listeners - reference inheritance', t => {
       real3: 0
     },
     pointers: {
-      pointer2: [ '@', 'deep' ]
+      pointer2: ['@', 'deep']
     }
   })
 
-  branch21.get([ 'deep', 'real' ]).set(null)
+  branch21.get(['deep', 'real']).set(null)
 
-  branch21.get([ 'deep', 'real' ]).set(null)
+  branch21.get(['deep', 'real']).set(null)
 
   master.get('pointers').set({
-    pointer3: [ '@', 'deep', 'real' ],
+    pointer3: ['@', 'deep', 'real'],
     pointer4: {}
   })
 
-  branch21.get([ 'pointers', 'pointer4' ]).set(null)
+  branch21.get(['pointers', 'pointer4']).set(null)
 
-  master.get([ 'pointers', 'pointer4' ]).set([ '@', 'pointers', 'pointer2' ])
+  master.get(['pointers', 'pointer4']).set(['@', 'pointers', 'pointer2'])
 
   t.same(
     branch12Fire,
@@ -257,20 +257,20 @@ test('data listeners - reference inheritance', t => {
   )
 
   t.same(
-    branch22.get([ 'pointers', 'pointer2' ]).serialize(),
-    [ '@', 'deep' ],
+    branch22.get(['pointers', 'pointer2']).serialize(),
+    ['@', 'deep'],
     'branch22.pointers.pointer2.serialize() = [ @, deep ]'
   )
 
   t.same(
-    branch22.get([ 'pointers', 'pointer2' ]).origin().serialize(),
+    branch22.get(['pointers', 'pointer2']).origin().serialize(),
     { real3: 0 },
     'branch22.pointers.pointer2.serialize() = { real3: 0 }'
   )
 
   t.equals(
-    branch22.get([ 'pointers', 'pointer4' ]),
-    void 0,
+    branch22.get(['pointers', 'pointer4']),
+    undefined,
     'branch22.pointers.pointer4 = undefined'
   )
 
@@ -287,36 +287,36 @@ test('data listeners - versatile references in branches', t => {
       fourth: 4
     },
     pointers: {
-      love: [ '@', 'content', 'second' ],
-      hate: [ '@', 'content', 'third' ]
+      love: ['@', 'content', 'second'],
+      hate: ['@', 'content', 'third']
     }
   })
 
   const branch11 = master.create({
     id: 'branch11',
     pointers: {
-      love: [ '@', 'content', 'first' ],
-      hate: [ '@', 'content', 'second' ]
+      love: ['@', 'content', 'first'],
+      hate: ['@', 'content', 'second']
     }
   })
   const branch12 = branch11.create({
     id: 'branch12',
     pointers: {
-      hate: [ '@', 'content', 'third' ]
+      hate: ['@', 'content', 'third']
     }
   })
   const branch21 = master.create({
     id: 'branch21',
     pointers: {
-      love: [ '@', 'content', 'fourth' ],
-      hate: [ '@', 'content', 'second' ]
+      love: ['@', 'content', 'fourth'],
+      hate: ['@', 'content', 'second']
     }
   })
   const branch22 = branch21.create({
     id: 'branch22',
     pointers: {
-      love: [ '@', 'content', 'second' ],
-      hate: [ '@', 'content', 'first' ]
+      love: ['@', 'content', 'second'],
+      hate: ['@', 'content', 'first']
     }
   })
 
@@ -326,43 +326,43 @@ test('data listeners - versatile references in branches', t => {
   const branch21Fire = []
   const branch22Fire = []
 
-  master.get([ 'pointers', 'love' ]).on('data', (type, stamp, item) => {
+  master.get(['pointers', 'love']).on('data', (type, stamp, item) => {
     masterFire.push(`${item.root().get('id').compute()}-love-${type}-${item.compute()}`)
   })
 
-  master.get([ 'pointers', 'hate' ]).on('data', (type, stamp, item) => {
+  master.get(['pointers', 'hate']).on('data', (type, stamp, item) => {
     masterFire.push(`${item.root().get('id').compute()}-hate-${type}-${item.compute()}`)
   })
 
-  branch11.get([ 'pointers', 'love' ]).on('data', (type, stamp, item) => {
+  branch11.get(['pointers', 'love']).on('data', (type, stamp, item) => {
     branch11Fire.push(`${item.root().get('id').compute()}-love-${type}-${item.compute()}`)
   })
 
-  branch11.get([ 'pointers', 'hate' ]).on('data', (type, stamp, item) => {
+  branch11.get(['pointers', 'hate']).on('data', (type, stamp, item) => {
     branch11Fire.push(`${item.root().get('id').compute()}-hate-${type}-${item.compute()}`)
   })
 
-  branch12.get([ 'pointers', 'love' ]).on('data', (type, stamp, item) => {
+  branch12.get(['pointers', 'love']).on('data', (type, stamp, item) => {
     branch12Fire.push(`${item.root().get('id').compute()}-love-${type}-${item.compute()}`)
   })
 
-  branch12.get([ 'pointers', 'hate' ]).on('data', (type, stamp, item) => {
+  branch12.get(['pointers', 'hate']).on('data', (type, stamp, item) => {
     branch12Fire.push(`${item.root().get('id').compute()}-hate-${type}-${item.compute()}`)
   })
 
-  branch21.get([ 'pointers', 'love' ]).on('data', (type, stamp, item) => {
+  branch21.get(['pointers', 'love']).on('data', (type, stamp, item) => {
     branch21Fire.push(`${item.root().get('id').compute()}-love-${type}-${item.compute()}`)
   })
 
-  branch21.get([ 'pointers', 'hate' ]).on('data', (type, stamp, item) => {
+  branch21.get(['pointers', 'hate']).on('data', (type, stamp, item) => {
     branch21Fire.push(`${item.root().get('id').compute()}-hate-${type}-${item.compute()}`)
   })
 
-  branch22.get([ 'pointers', 'love' ]).on('data', (type, stamp, item) => {
+  branch22.get(['pointers', 'love']).on('data', (type, stamp, item) => {
     branch22Fire.push(`${item.root().get('id').compute()}-love-${type}-${item.compute()}`)
   })
 
-  branch22.get([ 'pointers', 'hate' ]).on('data', (type, stamp, item) => {
+  branch22.get(['pointers', 'hate']).on('data', (type, stamp, item) => {
     branch22Fire.push(`${item.root().get('id').compute()}-hate-${type}-${item.compute()}`)
   })
 
@@ -375,27 +375,27 @@ test('data listeners - versatile references in branches', t => {
 
   t.same(
     masterFire,
-    [ 'master-love-set-2-1', 'master-hate-set-3-1' ],
+    ['master-love-set-2-1', 'master-hate-set-3-1'],
     'masterFire = [ master-love-set-2-1, master-hate-set-3-1 ]'
   )
   t.same(
     branch11Fire,
-    [ 'branch11-love-set-1-1', 'branch11-hate-set-2-1' ],
+    ['branch11-love-set-1-1', 'branch11-hate-set-2-1'],
     'branch11Fire = [ branch11-love-set-1-1, branch11-hate-set-2-1 ]'
   )
   t.same(
     branch12Fire,
-    [ 'branch12-love-set-1-1', 'branch12-hate-set-3-1' ],
+    ['branch12-love-set-1-1', 'branch12-hate-set-3-1'],
     'branch12Fire = [ branch12-love-set-1-1, branch12-hate-set-3-1 ]'
   )
   t.same(
     branch21Fire,
-    [ 'branch21-hate-set-2-1', 'branch21-love-set-4-1' ],
+    ['branch21-hate-set-2-1', 'branch21-love-set-4-1'],
     'branch21Fire = [ branch21-hate-set-2-1, branch21-love-set-4-1 ]'
   )
   t.same(
     branch22Fire,
-    [ 'branch22-hate-set-1-1', 'branch22-love-set-2-1' ],
+    ['branch22-hate-set-1-1', 'branch22-love-set-2-1'],
     'branch22Fire = [ branch22-hate-set-1-1, branch22-love-set-2-1 ]'
   )
 
@@ -405,36 +405,36 @@ test('data listeners - versatile references in branches', t => {
   branch21Fire.length = 0
   branch22Fire.length = 0
 
-  master.get(['pointers', 'love']).set([ '@', 'content', 'first' ])
-  master.get(['pointers', 'hate']).set([ '@', 'content', 'second' ])
-  branch11.get(['pointers', 'love']).set([ '@', 'content', 'third' ])
-  branch12.get(['pointers', 'love']).set([ '@', 'content', 'fourth' ])
-  branch21.get(['pointers', 'hate']).set([ '@', 'content', 'third' ])
-  branch22.get(['pointers', 'hate']).set([ '@', 'content', 'third' ])
+  master.get(['pointers', 'love']).set(['@', 'content', 'first'])
+  master.get(['pointers', 'hate']).set(['@', 'content', 'second'])
+  branch11.get(['pointers', 'love']).set(['@', 'content', 'third'])
+  branch12.get(['pointers', 'love']).set(['@', 'content', 'fourth'])
+  branch21.get(['pointers', 'hate']).set(['@', 'content', 'third'])
+  branch22.get(['pointers', 'hate']).set(['@', 'content', 'third'])
 
   t.same(
     masterFire,
-    [ 'master-love-set-1-1', 'master-hate-set-2-1' ],
+    ['master-love-set-1-1', 'master-hate-set-2-1'],
     'masterFire = [ master-love-set-1-1, master-hate-set-2-1 ]'
   )
   t.same(
     branch11Fire,
-    [ 'branch11-love-set-3-1' ],
+    ['branch11-love-set-3-1'],
     'branch11Fire = [ branch11-love-set-3-1 ]'
   )
   t.same(
     branch12Fire,
-    [ 'branch12-love-set-3-1', 'branch12-love-set-4-1' ],
+    ['branch12-love-set-3-1', 'branch12-love-set-4-1'],
     'branch12Fire = [ branch12-love-set-3-1, branch12-love-set-4-1 ]'
   )
   t.same(
     branch21Fire,
-    [ 'branch21-hate-set-3-1' ],
+    ['branch21-hate-set-3-1'],
     'branch21Fire = [ branch21-hate-set-3-1 ]'
   )
   t.same(
     branch22Fire,
-    [ 'branch22-hate-set-3-1' ],
+    ['branch22-hate-set-3-1'],
     'branch22Fire = [ branch22-hate-set-1-1 ]'
   )
 
@@ -461,12 +461,12 @@ test('data listeners - versatile references in branches', t => {
   )
   t.same(
     branch11Fire,
-    [ 'branch11-love-remove-3-1' ],
+    ['branch11-love-remove-3-1'],
     'branch11Fire = [ branch11-love-remove-3-1 ]'
   )
   t.same(
     branch12Fire,
-    [ 'branch12-hate-remove-3-1', 'branch12-love-set-411' ],
+    ['branch12-hate-remove-3-1', 'branch12-love-set-411'],
     'branch12Fire = [ branch12-hate-remove-3-1, branch12-love-set-411 ]'
   )
   t.same(
@@ -476,7 +476,7 @@ test('data listeners - versatile references in branches', t => {
   )
   t.same(
     branch22Fire,
-    [ 'branch22-love-set-221' ],
+    ['branch22-love-set-221'],
     'branch22Fire = [ branch22-love-set-221 ]'
   )
 

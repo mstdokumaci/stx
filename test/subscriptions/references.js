@@ -26,19 +26,19 @@ test('subscriptions - deep field references', t => {
   })
 
   const fire = (list, item) => {
-    const path = [ item.root().get('id').compute() ].concat(item.path()).join('-')
+    const path = [item.root().get('id').compute()].concat(item.path()).join('-')
     list.push(
-      `${path}-${item.get([ 'deeper', 'pointer1', 'deeper', 'field' ]).compute()}`
+      `${path}-${item.get(['deeper', 'pointer1', 'deeper', 'field']).compute()}`
     )
   }
 
-  const s1 = master.get([ 'pointers', 'pointer2' ]).subscribe(item => fire(masterFire, item))
-  master.get([ 'pointers', 'pointer3' ]).subscribe(item => fire(masterFire, item))
+  const s1 = master.get(['pointers', 'pointer2']).subscribe(item => fire(masterFire, item))
+  master.get(['pointers', 'pointer3']).subscribe(item => fire(masterFire, item))
 
   const branch = master.create({ id: 'branch' })
 
-  branch.get([ 'pointers', 'pointer2' ]).subscribe(item => fire(branchFire, item))
-  const s2 = branch.get([ 'pointers', 'pointer3' ]).subscribe(item => fire(branchFire, item))
+  branch.get(['pointers', 'pointer2']).subscribe(item => fire(branchFire, item))
+  const s2 = branch.get(['pointers', 'pointer3']).subscribe(item => fire(branchFire, item))
 
   branch.set({
     otherDeep: {
@@ -111,7 +111,7 @@ test('subscriptions - deep field references', t => {
 
   t.same(
     masterFire,
-    [ 'master-pointers-pointer3-update' ],
+    ['master-pointers-pointer3-update'],
     'masterFire = [ master-pointers-pointer3-update ]'
   )
   t.same(
@@ -133,12 +133,12 @@ test('subscriptions - deep field references', t => {
 
   t.same(
     masterFire,
-    [ 'master-pointers-pointer3-update' ],
+    ['master-pointers-pointer3-update'],
     'masterFire = [ master-pointers-pointer3-update ]'
   )
   t.same(
     branchFire,
-    [ 'branch-pointers-pointer2-override' ],
+    ['branch-pointers-pointer2-override'],
     'branchFire = [ branch-pointers-pointer2-override ]'
   )
 
@@ -186,7 +186,7 @@ test('subscriptions - circular references', t => {
   })
 
   master.get('ref').subscribe(item => {
-    if (item.get('id') === void 0) {
+    if (item.get('id') === undefined) {
       t.pass('master initial fire')
     } else {
       t.fail('master should not fire for branch')
@@ -199,18 +199,18 @@ test('subscriptions - circular references', t => {
   const branch22 = branch2.create()
 
   branch1.get('ref').subscribe(item => {
-    if (item.get('id') === void 0) {
+    if (item.get('id') === undefined) {
       branch1Fire.push('branch1.initial')
       t.pass('branch1 initial fire')
     } else if (item.get('id').compute() === 'i1') {
-      const val1 = item.get([ 'items', 'sub1', 'bf1' ]).compute()
+      const val1 = item.get(['items', 'sub1', 'bf1']).compute()
       branch1Fire.push(`branch1.i1.items.sub1.bf1=${val1}`)
-      const val2 = item.get([ 'items', 'sub2', 'bf2' ]).compute()
+      const val2 = item.get(['items', 'sub2', 'bf2']).compute()
       branch1Fire.push(`branch1.i1.items.sub2.bf2=${val2}`)
     } else if (item.get('id').compute() === 'i3') {
-      const val1 = item.get([ 'items', 'sub2', 'bf2' ]).compute()
+      const val1 = item.get(['items', 'sub2', 'bf2']).compute()
       branch1Fire.push(`branch1.i3.items.sub2.bf2=${val1}`)
-      const val2 = item.get([ 'items', 'sub4', 'sub', 'bf4' ]).compute()
+      const val2 = item.get(['items', 'sub4', 'sub', 'bf4']).compute()
       branch1Fire.push(`branch1.i3.items.sub4.sub.bf4=${val2}`)
     } else {
       t.fail('branch1 should not fire more')
@@ -218,13 +218,13 @@ test('subscriptions - circular references', t => {
   })
 
   branch2.get('ref').subscribe(item => {
-    if (item.get('id') === void 0) {
+    if (item.get('id') === undefined) {
       branch2Fire.push('branch2.initial')
     } else if (item.get('id').compute() === 'i2') {
-      const val = item.get([ 'items', 'sub3', 'bf3' ]).compute()
+      const val = item.get(['items', 'sub3', 'bf3']).compute()
       branch2Fire.push(`branch2.i2.items.sub3.bf3=${val}`)
     } else if (item.get('id').compute() === 'i3') {
-      const val = item.get([ 'items', 'sub2', 'items', 'sub3', 'bf3' ]).compute()
+      const val = item.get(['items', 'sub2', 'items', 'sub3', 'bf3']).compute()
       branch2Fire.push(`branch2.i3.items.sub2.items.sub3.bf3=${val}`)
     } else {
       t.fail('branch2 should not fire more')
@@ -232,13 +232,13 @@ test('subscriptions - circular references', t => {
   })
 
   branch21.get('ref').subscribe(item => {
-    if (item.get('id') === void 0) {
+    if (item.get('id') === undefined) {
       branch21Fire.push('branch21.initial')
     } else if (item.get('id').compute() === 'i2') {
-      const val = item.get([ 'items', 'sub4', 'f1' ]).compute()
+      const val = item.get(['items', 'sub4', 'f1']).compute()
       branch21Fire.push(`branch21.i2.items.sub4.f1=${val}`)
     } else if (item.get('id').compute() === 'i3') {
-      const val = item.get([ 'items', 'sub4', 'f1' ]).compute()
+      const val = item.get(['items', 'sub4', 'f1']).compute()
       branch21Fire.push(`branch21.i3.items.sub4.f1=${val}`)
     } else {
       t.fail('branch21 should not fire more')
@@ -246,13 +246,13 @@ test('subscriptions - circular references', t => {
   })
 
   branch22.get('ref').subscribe(item => {
-    if (item.get('id') === void 0) {
+    if (item.get('id') === undefined) {
       branch22Fire.push('branch22.initial')
     } else if (item.get('id').compute() === 'i2') {
-      const val = item.get([ 'items', 'sub3', 'bf3' ]).compute()
+      const val = item.get(['items', 'sub3', 'bf3']).compute()
       branch22Fire.push(`branch22.i2.items.sub3.bf3=${val}`)
     } else if (item.get('id').compute() === 'i1') {
-      const val = item.get([ 'items', 'sub2', 'items', 'sub3', 'bf3' ]).compute()
+      const val = item.get(['items', 'sub2', 'items', 'sub3', 'bf3']).compute()
       branch22Fire.push(`branch22.i1.items.sub2.items.sub3.bf3=${val}`)
     } else {
       t.fail('branch22 should not fire more')
@@ -319,11 +319,11 @@ test('subscriptions - circular references', t => {
   branch22Fire.length = 0
 
   branch21.set({
-    ref: [ '@', 'list', 'i3' ]
+    ref: ['@', 'list', 'i3']
   })
 
   branch22.set({
-    ref: [ '@', 'list', 'i1' ]
+    ref: ['@', 'list', 'i1']
   })
 
   branch1.set({
@@ -344,17 +344,17 @@ test('subscriptions - circular references', t => {
   )
   t.same(
     branch2Fire,
-    [ 'branch2.i3.items.sub2.items.sub3.bf3=false' ],
+    ['branch2.i3.items.sub2.items.sub3.bf3=false'],
     'branch2Fire = [ branch2.i3.items.sub2.items.sub3.bf3=false ]'
   )
   t.same(
     branch21Fire,
-    [ 'branch21.i3.items.sub4.f1=true' ],
+    ['branch21.i3.items.sub4.f1=true'],
     'branch21Fire = [ branch21.i3.items.sub4.f1=true ]'
   )
   t.same(
     branch22Fire,
-    [ 'branch22.i1.items.sub2.items.sub3.bf3=false' ],
+    ['branch22.i1.items.sub2.items.sub3.bf3=false'],
     'branch22Fire = [ branch22.i1.items.sub2.items.sub3.bf3=false ]'
   )
 

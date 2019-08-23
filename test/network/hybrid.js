@@ -18,10 +18,10 @@ test('network - hybrid', t => {
 
   const cMaster = create()
 
-  cMaster.subscribe({ keys: [ 'first' ] }, cm => {
+  cMaster.subscribe({ keys: ['first'] }, cm => {
     if (cm.get('first')) {
       t.equals(
-        cm.get([ 'first', 'id' ]).compute(),
+        cm.get(['first', 'id']).compute(),
         1,
         'cm.first.id.compute() = 1'
       )

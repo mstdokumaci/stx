@@ -11,22 +11,22 @@ test('data listeners - allData', t => {
       fourth: 4
     },
     pointers: {
-      love: [ '@', 'content', 'second' ],
-      hate: [ '@', 'content', 'third' ]
+      love: ['@', 'content', 'second'],
+      hate: ['@', 'content', 'third']
     }
   })
 
   const branch1 = master.create({
     id: 'branch1',
     pointers: {
-      love: [ '@', 'content', 'first' ],
-      hate: [ '@', 'content', 'second' ]
+      love: ['@', 'content', 'first'],
+      hate: ['@', 'content', 'second']
     }
   })
   const branch2 = master.create({
     id: 'branch2',
     pointers: {
-      hate: [ '@', 'content', 'first' ]
+      hate: ['@', 'content', 'first']
     }
   })
 
@@ -35,17 +35,17 @@ test('data listeners - allData', t => {
   const branch2Fire = []
 
   master.on('allData', (type, stamp, item) => {
-    const path = [ item.root().get('id').compute() ].concat(item.path()).join('-')
+    const path = [item.root().get('id').compute()].concat(item.path()).join('-')
     masterFire.push(`${path}-${type}-${item.compute()}`)
   })
 
   const listener1 = branch1.on('allData', (type, stamp, item) => {
-    const path = [ item.root().get('id').compute() ].concat(item.path()).join('-')
+    const path = [item.root().get('id').compute()].concat(item.path()).join('-')
     branch1Fire.push(`${path}-${type}-${item.compute()}`)
   })
 
   branch2.on('allData', (type, stamp, item) => {
-    const path = [ item.root().get('id').compute() ].concat(item.path()).join('-')
+    const path = [item.root().get('id').compute()].concat(item.path()).join('-')
     branch2Fire.push(`${path}-${type}-${item.compute()}`)
   })
 
@@ -102,26 +102,26 @@ test('data listeners - allData', t => {
   branch1Fire.length = 0
   branch2Fire.length = 0
 
-  master.get(['pointers', 'love']).set([ '@', 'content', 'first' ])
-  master.get(['pointers', 'hate']).set([ '@', 'content', 'second' ])
-  branch1.get(['pointers', 'love']).set([ '@', 'content', 'third' ])
-  branch2.get(['pointers', 'love']).set([ '@', 'content', 'fourth' ])
+  master.get(['pointers', 'love']).set(['@', 'content', 'first'])
+  master.get(['pointers', 'hate']).set(['@', 'content', 'second'])
+  branch1.get(['pointers', 'love']).set(['@', 'content', 'third'])
+  branch2.get(['pointers', 'love']).set(['@', 'content', 'fourth'])
 
   t.same(
     masterFire,
-    [ 'master-pointers-love-set-1-u', 'master-pointers-hate-set-2-u' ],
+    ['master-pointers-love-set-1-u', 'master-pointers-hate-set-2-u'],
     'masterFire = [ master-pointers-love-set-1-u, master-pointers-hate-set-2-u ]'
   )
 
   t.same(
     branch1Fire,
-    [ 'branch1-pointers-love-set-3-u' ],
+    ['branch1-pointers-love-set-3-u'],
     'branch1Fire = [ branch1-pointers-love-set-3-u ]'
   )
 
   t.same(
     branch2Fire,
-    [ 'branch2-pointers-love-set-1-u', 'branch2-pointers-love-set-4-u' ],
+    ['branch2-pointers-love-set-1-u', 'branch2-pointers-love-set-4-u'],
     'branch2Fire = [ branch2-pointers-love-set-1-u, branch2-pointers-love-set-4-u ]'
   )
 
@@ -130,11 +130,11 @@ test('data listeners - allData', t => {
   branch2Fire.length = 0
   listener1.off()
 
-  master.get(['pointers', 'hate']).set([ '@', 'content', 'fourth' ])
+  master.get(['pointers', 'hate']).set(['@', 'content', 'fourth'])
 
   t.same(
     masterFire,
-    [ 'master-pointers-hate-set-4-u' ],
+    ['master-pointers-hate-set-4-u'],
     'masterFire = [ master-pointers-hate-set-4-u ]'
   )
 

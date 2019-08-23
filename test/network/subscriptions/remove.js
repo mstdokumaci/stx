@@ -20,7 +20,7 @@ test('network - remove subscriptions', t => {
   })
 
   cMaster.subscribe(
-    { keys: [ 'fourth', 'fifth' ] },
+    { keys: ['fourth', 'fifth'] },
     cm => {
       if (cm.get('fifth')) {
         t.equals(
@@ -43,7 +43,7 @@ test('network - remove subscriptions', t => {
   )
 
   const s1 = cMaster.subscribe(
-    { excludeKeys: [ 'first' ] },
+    { excludeKeys: ['first'] },
     cm => {
       if (cm.get('fourth')) {
         t.same(

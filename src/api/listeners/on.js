@@ -30,7 +30,7 @@ const on = (branch, id, event, cb) => {
     listeners.allData[listenerId] = cb
   } else {
     if (!listeners[id]) {
-      listeners[id] = { [ event ]: {} }
+      listeners[id] = { [event]: {} }
     } else if (!listeners[id][event]) {
       listeners[id][event] = {}
     }

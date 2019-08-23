@@ -5,8 +5,8 @@ test('references - override', t => {
   const master = create({
     real1: 'thing1',
     real2: 'thing2',
-    pointer1: [ '@', 'real2' ],
-    pointer2: [ '@', 'real1' ]
+    pointer1: ['@', 'real2'],
+    pointer2: ['@', 'real1']
   })
 
   const branch1 = master.create()
@@ -19,7 +19,7 @@ test('references - override', t => {
   })
 
   branch1.set({
-    pointer1: [ '@', 'real1' ]
+    pointer1: ['@', 'real1']
   })
 
   t.equals(
@@ -35,7 +35,7 @@ test('references - override', t => {
   )
 
   t.equals(
-    branch2.get([ 'pointer2', 'deep' ]).compute(),
+    branch2.get(['pointer2', 'deep']).compute(),
     'thing4',
     'branch2.pointer2.deep.compute() = thing4'
   )
@@ -76,12 +76,12 @@ test('references - override', t => {
 
   t.equals(
     branch2.get('pointer2').compute(),
-    void 0,
+    undefined,
     'branch2.pointer2.compute() = undefined'
   )
 
   t.equals(
-    branch2.get([ 'pointer2', 'deep' ]).compute(),
+    branch2.get(['pointer2', 'deep']).compute(),
     'thing4',
     'branch2.pointer2.deep.compute() = thing4'
   )
@@ -93,7 +93,7 @@ test('references - override', t => {
   )
 
   t.equals(
-    branch3.get([ 'pointer2', 'deep' ]).compute(),
+    branch3.get(['pointer2', 'deep']).compute(),
     'thing4',
     'branch3.pointer2.deep.compute() = thing4'
   )

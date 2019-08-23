@@ -26,17 +26,17 @@ test('network - subscriptions - simple', t => {
   const items2 = cMaster2.get('items', {})
 
   items1.subscribe({
-    keys: [ 'first', 'third' ]
+    keys: ['first', 'third']
   }, i1 => {
     if (i1.get('first')) {
-      if (i1.get([ 'first', 'items' ])) {
+      if (i1.get(['first', 'items'])) {
         t.same(
           i1.serialize(),
           {
             first: {
               title: 'item 1 with items',
               items: {
-                third: [ '@', 'items', 'third' ]
+                third: ['@', 'items', 'third']
               }
             },
             third: { title: 'item 3', id: 3 }
@@ -67,11 +67,11 @@ test('network - subscriptions - simple', t => {
   cMaster2.on('connected', val => {
     if (val) {
       items2.subscribe({
-        excludeKeys: [ 'third' ],
+        excludeKeys: ['third'],
         depth: 2
       }, i2 => {
         if (i2.get('first')) {
-          if (!i2.get([ 'second', 'title' ])) {
+          if (!i2.get(['second', 'title'])) {
             t.same(
               i2.serialize(),
               { first: { title: 'item 1 with items', items: {} }, second: { id: 2 } },
@@ -82,7 +82,7 @@ test('network - subscriptions - simple', t => {
             client2.socket.close()
             server.close()
             t.end()
-          } else if (i2.get([ 'first', 'items' ])) {
+          } else if (i2.get(['first', 'items'])) {
             t.same(
               i2.serialize(),
               { first: { title: 'item 1 with items', items: {} }, second: { title: 'item 2' } },
@@ -101,7 +101,7 @@ test('network - subscriptions - simple', t => {
                   first: {
                     title: 'item 1 with items',
                     items: {
-                      third: [ '@', 'items', 'third' ]
+                      third: ['@', 'items', 'third']
                     }
                   },
                   third: {
@@ -139,10 +139,10 @@ test('network - subscriptions - on branch', t => {
   const cMaster2 = create({ id: 'client2' })
 
   cMaster1.subscribe(
-    { excludeKeys: [ 'id', 'i2' ] },
+    { excludeKeys: ['id', 'i2'] },
     cm => {
       if (cm.get('i1')) {
-        if (cm.get([ 'i1', 'title' ]).compute() === 'item 1') {
+        if (cm.get(['i1', 'title']).compute() === 'item 1') {
           t.same(
             cm.serialize(),
             { id: 'client1', i1: { title: 'item 1' } },
@@ -181,17 +181,17 @@ test('network - subscriptions - on branch', t => {
   )
 
   cMaster2.subscribe(
-    { keys: [ 'i2', 'i3' ] },
+    { keys: ['i2', 'i3'] },
     cm => {
       if (cm.get('i3')) {
         t.equals(
-          cm.get([ 'i3', 'title' ]).compute(),
+          cm.get(['i3', 'title']).compute(),
           'item 3',
           'cm2.i3.title.compute() = item 3'
         )
       } else if (cm.get('i2')) {
         t.equals(
-          cm.get([ 'i2', 'title' ]).compute(),
+          cm.get(['i2', 'title']).compute(),
           'item 2',
           'cm2.i2.title.compute() = item 2'
         )

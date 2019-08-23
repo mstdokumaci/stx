@@ -7,7 +7,7 @@ const bindAllDataListener = (branch, persist) => {
     branch.listeners.allData = {}
   }
 
-  branch.listeners.allData['persist'] = (type, _, item) => {
+  branch.listeners.allData.persist = (type, _, item) => {
     if (type !== 'remove' && branch.leaves[item.id]) {
       persist.store(
         String(item.id),
@@ -25,7 +25,7 @@ const loadLeaf = (branch, id, leaf) => {
     addToStrings(leaf.key, leaf.keyString)
     delete leaf.keyString
 
-    if (leaf.val !== void 0 || leaf.rT) {
+    if (leaf.val !== undefined || leaf.rT) {
       const rTold = getRtFromLeaves(branch, id)
       if (rTold) {
         removeReferenceFrom(branch, id, rTold)

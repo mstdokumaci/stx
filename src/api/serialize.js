@@ -26,12 +26,12 @@ const inspect = (branch, id) => {
     let keys = []
     if (subLeaves.length > 10) {
       const len = subLeaves.length
-      keys = subLeaves.slice(0, 5).map(([ branch, id ]) =>
+      keys = subLeaves.slice(0, 5).map(([branch, id]) =>
         getString(branch.leaves[id].key)
       )
       keys.push(`... ${len - 5} more items`)
     } else {
-      keys = subLeaves.map(([ branch, id ]) => getString(branch.leaves[id].key))
+      keys = subLeaves.map(([branch, id]) => getString(branch.leaves[id].key))
     }
     return val
       ? `${start}{ val: ${val}, ${keys.join(', ')} }`
@@ -46,7 +46,7 @@ const inspect = (branch, id) => {
 const serialize = (branch, id) => {
   let val = getValOrRef(branch, id)
   if (val && val.id) {
-    val = [ '@', ...path(branch, val.id) ]
+    val = ['@', ...path(branch, val.id)]
   }
   let child = false
   const result = {}
@@ -55,11 +55,11 @@ const serialize = (branch, id) => {
     result[getString(subBranch.leaves[subId].key)] = serialize(branch, subId)
   })
   if (child) {
-    if (val !== void 0) {
+    if (val !== undefined) {
       result.val = val
     }
     return result
-  } else if (val !== void 0) {
+  } else if (val !== undefined) {
     return val
   } else {
     return {}

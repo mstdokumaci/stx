@@ -22,7 +22,7 @@ const getRtFromLeaves = (branch, id) => {
     } else if (branch.leaves[id]) {
       if (branch.leaves[id].rT) {
         return branch.leaves[id].rT
-      } else if (branch.leaves[id].val !== void 0) {
+      } else if (branch.leaves[id].val !== undefined) {
         return
       }
     }
@@ -43,8 +43,8 @@ const getByKey = (branch, id, key, val, stamp, inReference) => {
       }
     }
 
-    if (!inReference && val !== void 0) {
-      set(branch, id, { [ key ]: val }, stamp)
+    if (!inReference && val !== undefined) {
+      set(branch, id, { [key]: val }, stamp)
       return leafId
     }
   }
@@ -58,7 +58,7 @@ const setByPath = (branch, ids, path, val, stamp, inReference) => {
       return
     }
     // buble hack
-    const newVal = { [ path.pop() ]: val }
+    const newVal = { [path.pop()]: val }
     val = newVal
     if (getBranchForId(branch, ids[i])) {
       set(branch, ids[i], val, stamp)
@@ -82,7 +82,7 @@ const getByPath = (branch, id, path, val, stamp, inReference) => {
         }
       }
     }
-    if (val !== void 0) {
+    if (val !== undefined) {
       return setByPath(branch, ids, path, val, stamp, inReference)
     }
   }

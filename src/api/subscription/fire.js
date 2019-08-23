@@ -4,13 +4,13 @@ import { getFromLeaves } from '../get'
 const addParentSubscription = (branch, parent, child, depth, parentList) => {
   if (branch.subscriptions[parent]) {
     if (branch.subscriptions[parent].keys) {
-      branch.subscriptions[parent].keys.push([ child, depth ])
+      branch.subscriptions[parent].keys.push([child, depth])
     } else {
-      branch.subscriptions[parent].keys = [ [ child, depth ] ]
+      branch.subscriptions[parent].keys = [[child, depth]]
       parentList.push(parent)
     }
   } else {
-    branch.subscriptions[parent] = { keys: [ [ child, depth ] ] }
+    branch.subscriptions[parent] = { keys: [[child, depth]] }
     parentList.push(parent)
   }
 }

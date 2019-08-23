@@ -43,7 +43,7 @@ const defineApi = (leaf) => {
 
   // GET
   define(leaf, 'get', function (path, val, stamp) {
-    if (!stamp && val !== void 0) {
+    if (!stamp && val !== undefined) {
       stamp = createStamp(this.branch.stamp)
     }
 
@@ -148,7 +148,7 @@ const defineApi = (leaf) => {
     emit(this.branch, this.id, event, val, stamp)
 
     if (this.branch.client.queue && event !== 'data') {
-      this.branch.client.queue.e.push([ this.id, event, val, stamp ])
+      this.branch.client.queue.e.push([this.id, event, val, stamp])
       drainQueue(this.branch.client)
     }
 

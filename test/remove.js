@@ -118,9 +118,9 @@ test('remove on branch', t => {
   )
 
   t.equals(
-    branch1.get([ 'content', 'second', 'name' ]),
-    void 0,
-    'branch1.second.name = void 0'
+    branch1.get(['content', 'second', 'name']),
+    undefined,
+    'branch1.second.name = undefined'
   )
 
   const branch2 = branch1.create({
@@ -140,9 +140,9 @@ test('remove on branch', t => {
   })
 
   t.equals(
-    branch1.get([ 'content', 'second', 'title' ]),
-    void 0,
-    'branch1.second.title = void 0'
+    branch1.get(['content', 'second', 'title']),
+    undefined,
+    'branch1.second.title = undefined'
   )
 
   t.same(
@@ -156,15 +156,15 @@ test('remove on branch', t => {
   )
 
   t.equals(
-    branch2.get([ 'content', 'second', 'name' ]),
-    void 0,
-    'branch2.second.name = void 0'
+    branch2.get(['content', 'second', 'name']),
+    undefined,
+    'branch2.second.name = undefined'
   )
 
   t.equals(
-    branch2.get([ 'content', 'second', 'title' ]),
-    void 0,
-    'branch2.second.title = void 0'
+    branch2.get(['content', 'second', 'title']),
+    undefined,
+    'branch2.second.title = undefined'
   )
 
   branch1.get('content').set({
@@ -206,7 +206,7 @@ test('remove- transfer keys', t => {
     content: {
       fourth: {
         val: 42,
-        refToContent: [ '@', 'content' ]
+        refToContent: ['@', 'content']
       }
     }
   })
@@ -220,7 +220,7 @@ test('remove- transfer keys', t => {
   )
   t.same(
     branch2.get('content').serialize(),
-    { fourth: { val: 42, refToContent: [ '@', 'content' ] }, second: 21, third: 31 },
+    { fourth: { val: 42, refToContent: ['@', 'content'] }, second: 21, third: 31 },
     'branch2.content.serialize() = correct'
   )
 

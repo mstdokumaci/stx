@@ -57,7 +57,7 @@ const removeLeaves = (branch, list) => {
 const setLeaves = (branch, leaves) => {
   for (let id in leaves) {
     id = Number(id)
-    const [ key, parent, stamp, val, rT, keys, depth ] = leaves[id]
+    const [key, parent, stamp, val, rT, keys, depth] = leaves[id]
 
     if (branch.leaves[id]) {
       const leaf = branch.leaves[id]
@@ -73,11 +73,11 @@ const setLeaves = (branch, leaves) => {
           const added = keys.filter(key => !~leaf.keys.indexOf(key))
           if (added.length) {
             leaf.keys.push(...added)
-            addDataEvent(void 0, id, 'add-key')
+            addDataEvent(undefined, id, 'add-key')
           }
         } else {
           leaf.keys = keys
-          addDataEvent(void 0, id, 'add-key')
+          addDataEvent(undefined, id, 'add-key')
         }
       }
     } else {
@@ -91,7 +91,7 @@ const setLeaves = (branch, leaves) => {
 
       if (keys && keys.length) {
         leaf.keys = keys
-        addDataEvent(void 0, id, 'add-key')
+        addDataEvent(undefined, id, 'add-key')
       }
     }
   }
@@ -106,7 +106,7 @@ const setStrings = strings => {
 const incoming = (branch, data) => {
   const { t: stamp, h: heartbeat, l: leaves, c: clean, s: strings, r: remove } = data
 
-  if (stamp !== void 0) {
+  if (stamp !== undefined) {
     setOffset(branch.stamp, stamp)
   }
 

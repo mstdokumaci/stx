@@ -145,7 +145,7 @@ const serializeParents = (data, socket, master, branch, id) => {
       break
     }
 
-    serializeLeaf(data, socket, master, branch, parent, [ id ], 0, 0)
+    serializeLeaf(data, socket, master, branch, parent, [id], 0, 0)
 
     id = parent
     parent = getFromLeaves(branch, id).parent
@@ -169,8 +169,8 @@ const serializeLeaf = (data, socket, master, branch, id, keys, depthLimit, sDept
         depth = leaf.depth
       }
 
-      if (val === void 0 && !rT) {
-        if (leaf.val !== void 0) {
+      if (val === undefined && !rT) {
+        if (leaf.val !== undefined) {
           val = leaf.val
           break
         } else if (leaf.rT) {
@@ -185,9 +185,9 @@ const serializeLeaf = (data, socket, master, branch, id, keys, depthLimit, sDept
     branch = branch.inherits
   }
 
-  if (stamp && (val !== void 0 || rT || keys.length)) {
+  if (stamp && (val !== undefined || rT || keys.length)) {
     if (!isCachedForStamp(socket, isMaster, id, stamp)) {
-      data.leaves[id] = [ key, parent, stamp, val, rT, keys, depth ]
+      data.leaves[id] = [key, parent, stamp, val, rT, keys, depth]
       if (socket.cleanLeaves[id]) {
         delete socket.cleanLeaves[id]
       }

@@ -24,7 +24,7 @@ test('browser - client set', async t => {
 
   master.branch.clientCanUpdate = [
     {
-      path: [ 'items', '*', 'favCount' ]
+      path: ['items', '*', 'favCount']
     }
   ]
 
@@ -45,7 +45,7 @@ test('browser - client set', async t => {
   hMaster.branch.newBranchMiddleware = newBranch => {
     newBranch.branch.clientCanUpdate = [
       {
-        path: [ 'items', '*', 'favourite' ],
+        path: ['items', '*', 'favourite'],
         after: updateFavCount
       }
     ]
@@ -90,10 +90,10 @@ test('browser - client set', async t => {
             const items = window.master.get('items')
 
             if (id.compute() === 'user1') {
-              items.get([ 'i2', 'favourite' ]).set(true)
-              items.get([ 'i1', 'favourite' ]).set(true)
-              items.get([ 'i2', 'favourite' ]).set(false)
-              items.get([ 'i1', 'favourite' ]).set(false)
+              items.get(['i2', 'favourite']).set(true)
+              items.get(['i1', 'favourite']).set(true)
+              items.get(['i2', 'favourite']).set(false)
+              items.get(['i1', 'favourite']).set(false)
               items.set({
                 i1: {
                   favourite: false
@@ -113,9 +113,9 @@ test('browser - client set', async t => {
 
               window.master.switchBranch('user2')
             } else if (id.compute() === 'user2') {
-              items.get([ 'i1', 'favourite' ]).set(true)
-              items.get([ 'i1', 'favourite' ]).set(false)
-              items.get([ 'i1', 'favourite' ]).set(true)
+              items.get(['i1', 'favourite']).set(true)
+              items.get(['i1', 'favourite']).set(false)
+              items.get(['i1', 'favourite']).set(true)
 
               setTimeout(() => {
                 window.client.socket.close()

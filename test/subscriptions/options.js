@@ -18,11 +18,11 @@ test('subscriptions - options', t => {
   })
 
   const pushPath = (list, item) => {
-    list.push([ item.root().get('id').compute() ].concat(item.path()).join('-'))
+    list.push([item.root().get('id').compute()].concat(item.path()).join('-'))
   }
 
   master.get('first').subscribe(
-    { depth: 2, keys: [ 'second' ] },
+    { depth: 2, keys: ['second'] },
     item => pushPath(masterFire, item)
   )
 
@@ -30,28 +30,28 @@ test('subscriptions - options', t => {
   const branch2 = master.create({ id: 'branch2' })
 
   branch1.get('first').subscribe(
-    { depth: 3, excludeKeys: [ 'second2' ] },
+    { depth: 3, excludeKeys: ['second2'] },
     item => pushPath(branch1Fire, item)
   )
 
   branch2.get('first').subscribe(
-    { depth: 4, keys: [ 'second', 'second2' ], excludeKeys: [ 'second2' ] },
+    { depth: 4, keys: ['second', 'second2'], excludeKeys: ['second2'] },
     item => pushPath(branch2Fire, item)
   )
 
   t.same(
     masterFire,
-    [ 'master-first' ],
+    ['master-first'],
     'master.first fired for initial'
   )
   t.same(
     branch1Fire,
-    [ 'branch1-first' ],
+    ['branch1-first'],
     'branch1.first fired for initial'
   )
   t.same(
     branch2Fire,
-    [ 'branch2-first' ],
+    ['branch2-first'],
     'branch2.first fired for initial'
   )
 
@@ -59,7 +59,7 @@ test('subscriptions - options', t => {
   branch1Fire.length = 0
   branch2Fire.length = 0
 
-  master.get([ 'first', 'second', 'third', 'fourth' ]).set('updated')
+  master.get(['first', 'second', 'third', 'fourth']).set('updated')
 
   t.same(
     masterFire,
@@ -68,12 +68,12 @@ test('subscriptions - options', t => {
   )
   t.same(
     branch1Fire,
-    [ 'branch1-first' ],
+    ['branch1-first'],
     'branch1.first fired for depth:3'
   )
   t.same(
     branch2Fire,
-    [ 'branch2-first' ],
+    ['branch2-first'],
     'branch2.first fired for depth:3'
   )
 
@@ -120,7 +120,7 @@ test('subscriptions - options', t => {
   )
   t.same(
     branch1Fire,
-    [ 'branch1-first' ],
+    ['branch1-first'],
     'branch1.first fired for second3'
   )
   t.same(
@@ -146,17 +146,17 @@ test('subscriptions - options', t => {
 
   t.same(
     masterFire,
-    [ 'master-first' ],
+    ['master-first'],
     'master.first fired for depth:2'
   )
   t.same(
     branch1Fire,
-    [ 'branch1-first' ],
+    ['branch1-first'],
     'branch1.first fired for depth:2'
   )
   t.same(
     branch2Fire,
-    [ 'branch2-first' ],
+    ['branch2-first'],
     'branch2.first fired for depth:2'
   )
 
@@ -173,29 +173,29 @@ test('subscriptions - options with references', t => {
     i1: {
       title: 'item 1',
       items: {
-        i2: [ '@', 'i2' ]
+        i2: ['@', 'i2']
       }
     },
     i2: {
       title: 'item 2',
       items: {
-        i1: [ '@', 'i1' ]
+        i1: ['@', 'i1']
       }
     },
     i3: {
       title: 'item 3',
       items: {
-        i1: [ '@', 'i1' ]
+        i1: ['@', 'i1']
       }
     }
   })
 
   const pushPath = (list, item) => {
-    list.push([ item.root().get('id').compute() ].concat(item.path()).join('-'))
+    list.push([item.root().get('id').compute()].concat(item.path()).join('-'))
   }
 
   master.get('i1').subscribe(
-    { depth: 3, keys: [ 'id', 'items' ] },
+    { depth: 3, keys: ['id', 'items'] },
     item => pushPath(masterFire, item)
   )
 
@@ -203,33 +203,33 @@ test('subscriptions - options with references', t => {
   const branch2 = master.create({ id: 'branch2' })
 
   branch1.get('i2').subscribe(
-    { depth: 2, excludeKeys: [ 'title' ] },
+    { depth: 2, excludeKeys: ['title'] },
     item => pushPath(branch1Fire, item)
   )
 
   branch2.get('i3').subscribe(
-    { depth: 5, keys: [ 'id', 'items' ] },
+    { depth: 5, keys: ['id', 'items'] },
     item => pushPath(branch2Fire, item)
   )
 
   branch2.get('i3').subscribe(
-    { depth: 4, keys: [ 'items' ] },
+    { depth: 4, keys: ['items'] },
     item => pushPath(branch2Fire, item)
   )
 
   t.same(
     masterFire,
-    [ 'master-i1' ],
+    ['master-i1'],
     'master.i1 fired for initial'
   )
   t.same(
     branch1Fire,
-    [ 'branch1-i2' ],
+    ['branch1-i2'],
     'branch1.i2 fired for initial'
   )
   t.same(
     branch2Fire,
-    [ 'branch2-i3', 'branch2-i3' ],
+    ['branch2-i3', 'branch2-i3'],
     'branch2.i3 fired for initial'
   )
 
@@ -245,7 +245,7 @@ test('subscriptions - options with references', t => {
 
   t.same(
     masterFire,
-    [ 'master-i1' ],
+    ['master-i1'],
     'master.i1 fired for update'
   )
   t.same(
@@ -255,7 +255,7 @@ test('subscriptions - options with references', t => {
   )
   t.same(
     branch2Fire,
-    [ 'branch2-i3' ],
+    ['branch2-i3'],
     'branch2.i3 fired for update'
   )
 
@@ -266,7 +266,7 @@ test('subscriptions - options with references', t => {
   branch1.get('i2').set({
     title: 'item 2 override',
     items: {
-      i3: [ '@', 'i3' ]
+      i3: ['@', 'i3']
     }
   })
 
@@ -277,7 +277,7 @@ test('subscriptions - options with references', t => {
   )
   t.same(
     branch1Fire,
-    [ 'branch1-i2' ],
+    ['branch1-i2'],
     'branch1.i2 fired for override'
   )
   t.same(
@@ -293,7 +293,7 @@ test('subscriptions - options with references', t => {
   branch2.get('i3').set({
     title: 'item 3 update',
     items: {
-      i2: [ '@', 'i2' ]
+      i2: ['@', 'i2']
     }
   })
 
@@ -309,7 +309,7 @@ test('subscriptions - options with references', t => {
   )
   t.same(
     branch2Fire,
-    [ 'branch2-i3', 'branch2-i3' ],
+    ['branch2-i3', 'branch2-i3'],
     'branch2.i3 fired for override'
   )
 

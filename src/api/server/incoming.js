@@ -23,10 +23,10 @@ const switchBranch = async (socketId, socket, master, branchKey, persist) => {
 
   if (!branch) {
     if (persist) {
-      branch = await createPersist(void 0, persist, void 0, master)
+      branch = await createPersist(undefined, persist, undefined, master)
       branch = branch.branch
     } else {
-      branch = create(void 0, void 0, master).branch
+      branch = create(undefined, undefined, master).branch
     }
     branch.key = branchKey
   }
@@ -47,7 +47,7 @@ const switchBranch = async (socketId, socket, master, branchKey, persist) => {
 const setLeaves = (branch, socket, master, leaves) => {
   if (branch.clientCanUpdate) {
     leaves.forEach(leaf => {
-      const [ id, stamp, val, rT ] = leaf
+      const [id, stamp, val, rT] = leaf
 
       if (!branch.leaves[id] && !master.leaves[id]) {
         return
@@ -98,14 +98,14 @@ const setLeaves = (branch, socket, master, leaves) => {
 }
 
 const fireEmits = (branch, emits) => {
-  emits.forEach(([ id, event, val, stamp ]) => emit(branch, id, event, val, stamp))
+  emits.forEach(([id, event, val, stamp]) => emit(branch, id, event, val, stamp))
 }
 
 const processIncoming = async (server, socketId, socket, master, data) => {
   const { b: branchKey, s: subscriptions, l: leaves, e: emits } = data
 
   if (
-    branchKey !== void 0 &&
+    branchKey !== undefined &&
     branchKey !== socket.branch.key &&
     typeof server.switchBranch === 'function'
   ) {

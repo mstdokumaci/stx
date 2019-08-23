@@ -9,8 +9,8 @@ test('references - merge', t => {
       rB: { name: 'B' }
     },
     pointer: {
-      p1: [ '@', 'real', 'rA' ],
-      p2: [ '@', 'real', 'rB' ]
+      p1: ['@', 'real', 'rA'],
+      p2: ['@', 'real', 'rB']
     }
   })
 
@@ -40,25 +40,25 @@ test('references - merge', t => {
 
   master.set({
     pointer: {
-      p1: [ '@', 'real', 'rB' ],
-      p2: [ '@', 'real', 'rA' ]
+      p1: ['@', 'real', 'rB'],
+      p2: ['@', 'real', 'rA']
     }
   })
 
   t.equals(
-    branch3.get([ 'pointer', 'p2', 'pField' ]).compute(), false,
+    branch3.get(['pointer', 'p2', 'pField']).compute(), false,
     'branch3 p2 pField is correct'
   )
   t.equals(
-    branch3.get([ 'pointer', 'p2', 'field' ]).compute(), 1,
+    branch3.get(['pointer', 'p2', 'field']).compute(), 1,
     'branch3 p2 field is correct'
   )
   t.equals(
-    branch4.get([ 'pointer', 'p1', 'pField' ]).compute(), true,
+    branch4.get(['pointer', 'p1', 'pField']).compute(), true,
     'branch4 p1 pField is correct'
   )
   t.equals(
-    branch4.get([ 'pointer', 'p1', 'field' ]).compute(), 2,
+    branch4.get(['pointer', 'p1', 'field']).compute(), 2,
     'branch4 p1 field is correct'
   )
 

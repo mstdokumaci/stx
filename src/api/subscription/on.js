@@ -29,7 +29,7 @@ define(Subscription.prototype, 'unsubscribe', function () {
 const parseOptions = (id, options, cb) => {
   if (options.excludeKeys) {
     if (options.keys) {
-      options.keys = options.keys.filter(key => !~options.excludeKeys.indexOf(key))
+      options.keys = options.keys.filter(key => !options.excludeKeys.includes(key))
       delete options.excludeKeys
     } else {
       options.excludeKeys = options.excludeKeys.map(key => keyToId(key, id))

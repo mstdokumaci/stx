@@ -70,7 +70,7 @@ const setLeaves = (branch, leaves) => {
 
       if (keys && keys.length) {
         if (leaf.keys && leaf.keys.length) {
-          const added = keys.filter(key => !~leaf.keys.indexOf(key))
+          const added = keys.filter(key => !leaf.keys.includes(key))
           if (added.length) {
             leaf.keys.push(...added)
             addDataEvent(undefined, id, 'add-key')

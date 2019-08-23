@@ -114,7 +114,7 @@ const serializeAllChildren = (
   const keys = []
 
   children(branch, id, (_, leafId) => {
-    if (excludeKeys && ~excludeKeys.indexOf(leafId)) {
+    if (excludeKeys && excludeKeys.includes(leafId)) {
       return
     }
 

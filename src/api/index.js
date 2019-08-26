@@ -3,7 +3,7 @@ import { root } from '../id'
 import define from '../define'
 import { createStamp } from '../stamp'
 import { set } from './set'
-import { getBranchForId, getApi } from './get'
+import { getApi, getFromLeaves } from './get'
 import { origin, compute } from './compute'
 import { forEach, map, filter, find, reduce } from './array'
 import { path, inspect, serialize } from './serialize'
@@ -58,9 +58,9 @@ const defineApi = (leaf) => {
 
   // PARENT
   define(leaf, 'parent', function () {
-    const leafBranch = getBranchForId(this.branch, this.id)
-    if (leafBranch.leaves[this.id].parent) {
-      return new Leaf(this.branch, leafBranch.leaves[this.id].parent)
+    const leaf = getFromLeaves(this.branch, this.id)
+    if (leaf.parent) {
+      return new Leaf(this.branch, leaf.parent)
     }
   })
 

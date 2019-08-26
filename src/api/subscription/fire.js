@@ -105,7 +105,7 @@ const fireParentSubscriptions = (branch, stamp) => {
         parentList.push([])
       }
       nextLevel.forEach(id => {
-        const keys = branch.subscriptions[id].keys.splice(0)
+        const keys = branch.subscriptions[id].keys
         delete branch.subscriptions[id].keys
         parentSubscriptions(branch, Number(id), stamp, keys, parentList)
       })

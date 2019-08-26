@@ -36,4 +36,8 @@ const pathToIds = (path, id = root) => [
   })
 ]
 
-export { root, keyToId, arrayToId, pathToIds }
+const pathToId = (path, id = root) => path.reduce(
+  (id, key) => keyToId(key, id), id
+)
+
+export { root, keyToId, arrayToId, pathToIds, pathToId }

@@ -1,4 +1,4 @@
-import { keyToId } from '../../id'
+import { keyToId, pathToId } from '../../id'
 import define from '../../define'
 import { Leaf } from '../../leaf'
 import {
@@ -38,6 +38,14 @@ const parseOptions = (id, options, cb) => {
 
   if (options.keys) {
     options.keys = options.keys.map(key => keyToId(key, id))
+  }
+
+  if (options.sort && options.sort.path) {
+    options.sort.path = pathToId(options.sort.path, id)
+
+    if (![Number, String].includes(options.sort.type)) {
+      options.sort.type = String
+    }
   }
 
   options.cb = cb

@@ -32,9 +32,8 @@ const cleanLeaves = (branch, list) => {
     id = Number(id)
     const stamp = list[id]
     if (branch.leaves[id]) {
-      const leaf = branch.leaves[id]
       const rT = getRtFromLeaves(branch, id)
-      removeOwn(branch, leaf, id, rT, stamp, 1, list[leaf.parent])
+      removeOwn(branch, id, rT, stamp, 1, list[branch.leaves[id].parent])
       if (rT) {
         removeReferenceFromBranches(branch, id, rT)
       }

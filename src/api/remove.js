@@ -91,7 +91,8 @@ const removeFromParent = (branch, parent, id, stamp, depth) => {
   }
 }
 
-const removeOwn = (branch, leaf, id, rT, stamp, ignoreParent) => {
+const removeOwn = (branch, id, rT, stamp, ignoreParent) => {
+  const leaf = branch.leaves[id]
   delete branch.leaves[id]
 
   if (branch.persist) {
@@ -106,7 +107,8 @@ const removeOwn = (branch, leaf, id, rT, stamp, ignoreParent) => {
   }
 }
 
-const removeInherited = (branch, leaf, id, rT, stamp, ignoreParent) => {
+const removeInherited = (branch, id, rT, stamp, ignoreParent) => {
+  const leaf = branch.leaves[id]
   if (!ignoreParent) {
     if (branch.leaves[leaf.parent]) {
       branch.leaves[leaf.parent].stamp = stamp
@@ -128,12 +130,12 @@ const removeInherited = (branch, leaf, id, rT, stamp, ignoreParent) => {
 }
 
 const removeChildren = (branch, id, stamp) => {
-  children(branch, id, subId =>
-    remove(branch, branch.leaves[subId], subId, stamp, true)
-  )
+  for (const key in branch.leaves[id].keys) {
+    remove(branch, key, stamp, true)
+  }
 }
 
-const remove = (branch, leaf, id, stamp, ignoreParent) => {
+const remove = (branch, id, stamp, ignoreParent) => {
   emit(branch, id, 'data', 'remove', stamp)
 
   removeChildren(branch, id, stamp)
@@ -141,9 +143,9 @@ const remove = (branch, leaf, id, stamp, ignoreParent) => {
   const rT = getRtFromLeaves(branch, id)
 
   if (branch.inherits && branch.inherits.leaves[id] === branch.leaves[id]) {
-    removeInherited(branch, leaf, id, rT, stamp, ignoreParent)
+    removeInherited(branch, id, rT, stamp, ignoreParent)
   } else {
-    removeOwn(branch, leaf, id, rT, stamp, ignoreParent)
+    removeOwn(branch, id, rT, stamp, ignoreParent)
   }
 
   if (rT) {

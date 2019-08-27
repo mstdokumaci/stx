@@ -49,7 +49,7 @@ const setOwnExistingReference = (branch, leaf, id, rT, stamp) => {
 const setOwnExisting = (branch, leaf, id, val, stamp) => {
   if (typeof val === 'object') {
     if (!val) {
-      remove(branch, leaf, id, stamp)
+      remove(branch, id, stamp)
     } else if (Array.isArray(val)) {
       if (val[0] === '@') {
         const rT = getByPath(branch, root, val.slice(1), {}, stamp)

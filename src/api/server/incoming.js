@@ -78,13 +78,12 @@ const setLeaves = (branch, socket, master, leaves) => {
             changed = setOwnExistingReference(branch, leaf, id, rT, stamp, 0)
           }
         } else if (master.leaves[id]) {
-          leaf = master.leaves[id]
           cache(socket, true, id, stamp)
 
           if (val !== null) {
-            changed = setOverrideVal(branch, leaf, id, val, stamp, 0)
+            changed = setOverrideVal(branch, id, val, stamp, 0)
           } else if (rT) {
-            changed = setOverrideReference(branch, leaf, id, rT, stamp, 0)
+            changed = setOverrideReference(branch, id, rT, stamp, 0)
           }
         }
 

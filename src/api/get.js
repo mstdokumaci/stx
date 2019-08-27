@@ -61,7 +61,7 @@ const getByPath = (branch, id, path, val, stamp, inReference) => {
     return ids[i]
   } else {
     while (i--) {
-      if (branch.leaves[ids[i]].rT) {
+      if (branch.leaves[ids[i]] && branch.leaves[ids[i]].rT) {
         const originId = getByPath(
           branch, branch.leaves[ids[i]].rT, path.slice(i), val, stamp, true
         )

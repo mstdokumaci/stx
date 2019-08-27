@@ -1,6 +1,5 @@
 import { root } from '../id'
 import { getString } from '../cache'
-import { children } from './array'
 
 const path = (branch, id) => {
   const path = []
@@ -12,11 +11,18 @@ const path = (branch, id) => {
 }
 
 const inspect = (branch, id) => {
-  const subLeaves = children(branch, id)
+  const subLeaves = []
   const start = 'stx ' + (branch.leaves[id].key ? getString(branch.leaves[id].key) + ' ' : '')
-  const val = branch.leaves[id].rT
-    ? inspect(branch, branch.leaves[id].rT)
-    : branch.leaves[id].val
+  let val
+  if (branch.leaves[id]) {
+    val = branch.leaves[id].rT
+      ? inspect(branch, branch.leaves[id].rT)
+      : branch.leaves[id].val
+
+    for (const key in branch.leaves[id].keys) {
+      subLeaves.push(key)
+    }
+  }
   if (subLeaves.length) {
     let keys = []
     if (subLeaves.length > 10) {
@@ -37,16 +43,19 @@ const inspect = (branch, id) => {
 }
 
 const serialize = (branch, id) => {
-  const val = branch.leaves[id].rT
-    ? ['@', ...path(branch, branch.leaves[id].rT)]
-    : branch.leaves[id].val
-
+  let val
   let child = false
   const result = {}
-  children(branch, id, subId => {
-    child = true
-    result[getString(branch.leaves[subId].key)] = serialize(branch, subId)
-  })
+  if (branch.leaves[id]) {
+    val = branch.leaves[id].rT
+      ? ['@', ...path(branch, branch.leaves[id].rT)]
+      : branch.leaves[id].val
+
+    for (const key in branch.leaves[id].keys) {
+      child = true
+      result[getString(branch.leaves[key].key)] = serialize(branch, key)
+    }
+  }
   if (child) {
     if (val !== undefined) {
       result.val = val

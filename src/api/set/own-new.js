@@ -18,14 +18,14 @@ const setOwnNewVal = (_, leaf, id, val, stamp) => {
 }
 
 const setOwnNewReference = (branch, leaf, id, rT, stamp) => {
+  if (branch.branches.length) {
+    fixBranchReferences(branch.branches, id, rT)
+  }
+
   leaf.rT = rT
   leaf.stamp = stamp
   addReferenceFrom(branch, id, rT)
   addDataEvent(undefined, id, 'set', leaf.depth)
-
-  if (branch.branches.length) {
-    fixBranchReferences(branch.branches, id, rT)
-  }
 }
 
 const setOwnNewKeys = (branch, leaf, id, val, stamp) => {

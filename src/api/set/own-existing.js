@@ -35,14 +35,14 @@ const setOwnExistingReference = (branch, leaf, id, rT, stamp) => {
     leaf.val = undefined
   }
 
+  if (branch.branches.length) {
+    fixBranchReferences(branch.branches, id, rT, rTold)
+  }
+
   leaf.rT = rT
   leaf.stamp = stamp
   addReferenceFrom(branch, id, rT)
   addDataEvent(undefined, id, 'set', leaf.depth)
-
-  if (branch.branches.length) {
-    fixBranchReferences(branch.branches, id, rT, rTold)
-  }
   return true
 }
 

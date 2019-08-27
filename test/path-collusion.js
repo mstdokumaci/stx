@@ -52,8 +52,8 @@ test('path collusion', t => {
 
   t.equals(
     state.inspect(),
-    'stx { 0, 1, 2, 3, 4, ... 9995 more items }',
-    'state.inspect() = stx { 0, 1, 2, 3, 4, ... 9995 more items }'
+    'stx { 9637, 9636, 9639, 9638, 9633, ... 9995 more items }',
+    'state.inspect() = stx { 9637, 9636, 9639, 9638, 9633, ... 9995 more items }'
   )
 
   t.equals(

@@ -34,15 +34,15 @@ const setOverrideReference = (branch, id, rT, stamp) => {
     removeReferenceFrom(branch, id, rTold)
   }
 
+  if (branch.branches.length) {
+    fixBranchReferences(branch.branches, id, rT, rTold)
+  }
+
   branch.leaves[id] = Object.create(branch.leaves[id])
   branch.leaves[id].rT = rT
   branch.leaves[id].stamp = stamp
   addReferenceFrom(branch, id, rT)
   addDataEvent(undefined, id, 'set', branch.leaves[id].depth)
-
-  if (branch.branches.length) {
-    fixBranchReferences(branch.branches, id, rT, rTold)
-  }
   return true
 }
 

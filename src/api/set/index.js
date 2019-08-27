@@ -31,7 +31,7 @@ const setKeys = (branch, leaf, id, val, stamp, set) => {
   }
   if (keys.length) {
     if (set === setOverride) {
-      if (branch.inherits && branch.leaves[id] === branch.inherits.leaves[id]) {
+      if (branch.leaves[id] === branch.inherits.leaves[id]) {
         branch.leaves[id] = Object.create(branch.inherits.leaves[id])
         branch.leaves[id].keys = Object.create(branch.inherits.leaves[id].keys)
       }

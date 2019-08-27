@@ -1,4 +1,3 @@
-import { getFromLeaves } from '../get'
 import { addAfterEmitEvent, addDataEvent } from '../listeners/emit'
 
 const respectOverrides = (branches, id, parent) =>
@@ -15,22 +14,11 @@ const respectOverrides = (branches, id, parent) =>
   })
 
 const addOwnLeaf = (branch, id, parent, key, depth, stamp) => {
-  branch.leaves[id] = { parent, key, stamp, depth }
+  branch.leaves[id] = { parent, key, stamp, depth, keys: {} }
   if (branch.branches.length) {
     respectOverrides(branch.branches, id, parent)
   }
   return branch.leaves[id]
-}
-
-const addBranchLeaf = (branch, id, stamp) => {
-  if (branch.leaves[id]) {
-    return branch.leaves[id]
-  } else {
-    const fromLeaf = getFromLeaves(branch, id)
-    return addOwnLeaf(
-      branch, id, fromLeaf.parent, fromLeaf.key, fromLeaf.depth, stamp
-    )
-  }
 }
 
 const addReferenceFrom = (branch, rF, rT) => {
@@ -47,7 +35,7 @@ const fixBranchReferences = (branches, rF, rT, rTold) =>
   branches.forEach(branch => {
     if (branch.leaves[rF] === null) {
       return
-    } else if (branch.leaves[rF]) {
+    } else if (branch.leaves[rF] !== branch.inherits.leaves[rF]) {
       if (branch.leaves[rF].rT === rT) {
         addAfterEmitEvent(() => {
           branch.leaves[rF].rT = undefined
@@ -88,28 +76,23 @@ const checkReferenceByLeaf = (oBranch, rTBranch, rT, cb) => {
 const cleanBranchKeys = (branches, id, keys, stamp) =>
   branches.forEach(branch => {
     const keysNext = keys.slice()
-
     if (branch.leaves[id] === null) {
       return
-    } else if (branch.leaves[id]) {
-      if (branch.leaves[id].keys) {
-        const firstLength = branch.leaves[id].keys.length
-        branch.leaves[id].keys = branch.leaves[id].keys.filter(key => {
-          const index = keys.indexOf(key)
-          if (~index) {
-            keysNext.splice(index, 1)
-          } else {
-            return true
-          }
-        })
-        if (branch.leaves[id].keys.length === firstLength) {
-          addDataEvent(branch, id, 'add-key')
+    } else if (branch.leaves[id] === branch.inherits.leaves[id]) {
+      addDataEvent(branch, id, 'add-key')
+    } else {
+      Object.keys(branch.leaves[id].keys).forEach(key => {
+        const index = keysNext.indexOf(key)
+        if (~index) {
+          keysNext.splice(index, 1)
+        } else {
+          delete branch.leaves[id].keys[key]
         }
-      } else {
+      })
+
+      if (keysNext.length) {
         addDataEvent(branch, id, 'add-key')
       }
-    } else {
-      addDataEvent(branch, id, 'add-key')
     }
 
     if (branch.branches.length && keysNext.length) {
@@ -119,7 +102,6 @@ const cleanBranchKeys = (branches, id, keys, stamp) =>
 
 export {
   addOwnLeaf,
-  addBranchLeaf,
   addReferenceFrom,
   removeReferenceFrom,
   checkReferenceByLeaf,

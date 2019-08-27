@@ -1,5 +1,5 @@
 import { emit, addDataEvent } from './listeners/emit'
-import { addOwnLeaf, addBranchLeaf, removeReferenceFrom } from './set/utils'
+import { addOwnLeaf, removeReferenceFrom } from './set/utils'
 import { children } from './array'
 import { getRtFromLeaves } from './get'
 
@@ -47,12 +47,8 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rT, stamp) =>
       }
       if (branch.leaves[id]) {
         if (parent) {
-          const parentLeaf = addBranchLeaf(branch, parent, stamp)
-          if (parentLeaf.keys) {
-            parentLeaf.keys.push(id)
-          } else {
-            parentLeaf.keys = [id]
-          }
+          branch.leaves[parent] = Object.create(branch.leaves[parent])
+          branch.leaves[parent].keys[id] = true
           parentNext = undefined
         }
         if (
@@ -132,8 +128,8 @@ const removeInherited = (branch, leaf, id, rT, stamp, ignoreParent) => {
 }
 
 const removeChildren = (branch, id, stamp) => {
-  children(branch, id, (subBranch, subId) =>
-    remove(branch, subBranch.leaves[subId], subId, stamp, true)
+  children(branch, id, subId =>
+    remove(branch, branch.leaves[subId], subId, stamp, true)
   )
 }
 
@@ -144,10 +140,10 @@ const remove = (branch, leaf, id, stamp, ignoreParent) => {
 
   const rT = getRtFromLeaves(branch, id)
 
-  if (branch.leaves[id] === leaf) {
-    removeOwn(branch, leaf, id, rT, stamp, ignoreParent)
-  } else {
+  if (branch.inherits && branch.inherits.leaves[id] === branch.leaves[id]) {
     removeInherited(branch, leaf, id, rT, stamp, ignoreParent)
+  } else {
+    removeOwn(branch, leaf, id, rT, stamp, ignoreParent)
   }
 
   if (rT) {

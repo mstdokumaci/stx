@@ -1,5 +1,4 @@
 import { Leaf } from '../../leaf'
-import { getFromLeaves } from '../get'
 
 const addParentSubscription = (branch, parent, child, depth, parentList) => {
   if (branch.subscriptions[parent]) {
@@ -31,7 +30,7 @@ const subscriptions = (branch, id, stamp, depth) => {
     }
   }
 
-  const parent = getFromLeaves(branch, id).parent
+  const parent = branch.leaves[id].parent
   if (parent) {
     if (!branch.parentSubscriptions[depth]) {
       branch.parentSubscriptions[depth] = []
@@ -85,7 +84,7 @@ const parentSubscriptions = (branch, id, stamp, keys, parentList) => {
     referenceSubscriptions(branch, branch.rF[id], stamp, keys, parentList)
   }
 
-  const parent = getFromLeaves(branch, id).parent
+  const parent = branch.leaves[id].parent
   if (parent) {
     const last = parentList.length - 1
     if (!parentList[last]) {

@@ -2,7 +2,6 @@ import { getString } from '../../cache'
 import { createStamp } from '../../stamp'
 import { children } from '../array'
 import maxSize from './max-size'
-import { getFromLeaves } from '../get'
 import {
   cache,
   isCachedForStamp,
@@ -139,7 +138,7 @@ const serializeWithAllChildren = (data, socket, master, branch, id, depthLimit, 
 }
 
 const serializeParents = (data, socket, master, branch, id) => {
-  let parent = getFromLeaves(branch, id).parent
+  let parent = branch.leaves[id].parent
   while (parent) {
     if (!data.leaves[id]) {
       break
@@ -148,7 +147,7 @@ const serializeParents = (data, socket, master, branch, id) => {
     serializeLeaf(data, socket, master, branch, parent, [id], 0, 0)
 
     id = parent
-    parent = getFromLeaves(branch, id).parent
+    parent = branch.leaves[id].parent
   }
 }
 

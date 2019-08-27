@@ -1,5 +1,6 @@
 import { root } from '../../id'
 import { addDataEvent } from '../listeners/emit'
+import { getByPath } from '../get'
 import { setKeys } from './'
 import {
   addReferenceFrom,
@@ -7,16 +8,13 @@ import {
   checkReferenceByLeaf,
   fixBranchReferences
 } from './utils'
-import { getRtFromLeaves, getByPath } from '../get'
-import { getValOrRef } from '../compute'
 import { remove, removeReferenceFromBranches } from '../remove'
 
 const setOwnExistingVal = (branch, leaf, id, val, stamp) => {
-  const valOrRef = getValOrRef(branch, id)
-  if (val === valOrRef) {
+  if (val === leaf.val) {
     return
-  } else if (valOrRef && valOrRef.id) {
-    removeReferenceFromBranches(branch, id, valOrRef.id)
+  } else if (leaf.rT) {
+    removeReferenceFromBranches(branch, id, leaf.rT)
     leaf.rT = undefined
   }
 
@@ -28,12 +26,12 @@ const setOwnExistingVal = (branch, leaf, id, val, stamp) => {
 }
 
 const setOwnExistingReference = (branch, leaf, id, rT, stamp) => {
-  const rTold = getRtFromLeaves(branch, id)
-  if (rTold === rT) {
+  const rTold = leaf.rT
+  if (rT === rTold) {
     return
   } else if (rTold) {
     removeReferenceFrom(branch, id, rTold)
-  } else {
+  } else if (leaf.val) {
     leaf.val = undefined
   }
 

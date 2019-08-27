@@ -10,7 +10,7 @@ import {
   cleanBranchKeys
 } from './utils'
 
-const setOwnNewVal = (branch, leaf, id, val, stamp) => {
+const setOwnNewVal = (_, leaf, id, val, stamp) => {
   leaf.val = val
   leaf.stamp = stamp
 
@@ -43,11 +43,7 @@ const setOwnNewKeys = (branch, leaf, id, val, stamp) => {
     }
   }
   if (keys.length) {
-    if (leaf.keys) {
-      leaf.keys.push(...keys)
-    } else {
-      leaf.keys = [...keys]
-    }
+    keys.forEach(key => { leaf.keys[key] = true })
     leaf.stamp = stamp
     cleanBranchKeys(branch.branches, id, keys, stamp)
     addDataEvent(undefined, id, 'add-key')

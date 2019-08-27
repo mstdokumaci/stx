@@ -1,38 +1,16 @@
-import { getBranchForId, getRtFromLeaves } from './get'
-
-const getValOrRef = (branch, id) => {
-  const oBranch = branch
-  while (branch) {
-    const leaf = branch.leaves[id]
-    if (leaf) {
-      if (leaf.val !== undefined) {
-        return leaf.val
-      } else if (leaf.rT && getBranchForId(oBranch, leaf.rT)) {
-        return { id: leaf.rT }
-      }
-    }
-    branch = branch.inherits
-  }
-}
-
 const origin = (branch, id) => {
-  const originId = getRtFromLeaves(branch, id)
-  return getBranchForId(branch, originId) ? origin(branch, originId) : id
+  return (branch.leaves[id].rT && branch.leaves[branch.leaves[id].rT])
+    ? origin(branch, branch.leaves[id].rT) : id
 }
 
 const compute = (branch, id) => {
-  const oBranch = branch
-  while (branch) {
-    const leaf = branch.leaves[id]
-    if (leaf) {
-      if (leaf.val !== undefined) {
-        return leaf.val
-      } else if (leaf.rT) {
-        return compute(oBranch, leaf.rT)
-      }
+  if (branch.leaves[id]) {
+    if (branch.leaves[id].val !== undefined) {
+      return branch.leaves[id].val
+    } else if (branch.leaves[id].rT) {
+      return compute(branch, branch.leaves[id].rT)
     }
-    branch = branch.inherits
   }
 }
 
-export { getValOrRef, compute, origin }
+export { compute, origin }

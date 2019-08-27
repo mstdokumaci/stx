@@ -1,6 +1,5 @@
 import { addToStrings } from '../../cache'
 import { keyToId } from '../../id'
-import { getBranchForId, getFromLeaves } from '../get'
 import { addDataEvent } from '../listeners/emit'
 import { addOwnLeaf, cleanBranchKeys } from './utils'
 import { setOwnNew } from './own-new'
@@ -14,11 +13,10 @@ const setKeys = (branch, leaf, id, val, stamp, set) => {
       set(branch, leaf, id, val.val, stamp)
     } else {
       const subLeafId = keyToId(key, id)
-      const subLeafBranch = getBranchForId(branch, subLeafId)
-      if (subLeafBranch) {
-        const fn = subLeafBranch === branch ? setOwnExisting : setOverride
+      if (branch.leaves[subLeafId]) {
+        const fn = branch.inherits && branch.leaves[subLeafId] === branch.inherits.leaves[subLeafId] ? setOverride : setOwnExisting
         fn(
-          branch, subLeafBranch.leaves[subLeafId], subLeafId, val[key], stamp
+          branch, branch.leaves[subLeafId], subLeafId, val[key], stamp
         )
       } else if (val[key] !== undefined && val[key] !== null) {
         const keyId = keyToId(key)
@@ -33,26 +31,23 @@ const setKeys = (branch, leaf, id, val, stamp, set) => {
   }
   if (keys.length) {
     if (set === setOverride) {
-      leaf = branch.leaves[id] || addOwnLeaf(
-        branch, id, leaf.parent, leaf.key, leaf.depth, stamp
-      )
+      if (branch.inherits && branch.leaves[id] === branch.inherits.leaves[id]) {
+        branch.leaves[id] = Object.create(branch.inherits.leaves[id])
+        branch.leaves[id].keys = Object.create(branch.inherits.leaves[id].keys)
+      }
     }
-    if (leaf.keys) {
-      leaf.keys.push(...keys)
-    } else {
-      leaf.keys = [...keys]
-    }
-    leaf.stamp = stamp
+    keys.forEach(key => { branch.leaves[id].keys[key] = true })
+    branch.leaves[id].stamp = stamp
     cleanBranchKeys(branch.branches, id, keys, stamp)
     addDataEvent(undefined, id, 'add-key')
   }
 }
 
 const set = (branch, id, val, stamp) => {
-  if (branch.leaves[id]) {
-    setOwnExisting(branch, branch.leaves[id], id, val, stamp)
+  if (branch.inherits && branch.leaves[id] === branch.inherits.leaves[id]) {
+    setOverride(branch, branch.leaves[id], id, val, stamp)
   } else {
-    setOverride(branch, getFromLeaves(branch.inherits, id), id, val, stamp)
+    setOwnExisting(branch, branch.leaves[id], id, val, stamp)
   }
 }
 

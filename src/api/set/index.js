@@ -1,7 +1,7 @@
 import { addToStrings } from '../../cache'
 import { keyToId } from '../../id'
 import { addDataEvent } from '../listeners/emit'
-import { addOwnLeaf, cleanBranchKeys } from './utils'
+import { addOwnLeaf, addOverrideLeaf, cleanBranchKeys } from './utils'
 import { setOwnNew } from './own-new'
 import { setOwnExisting } from './own-existing'
 import { setOverride } from './override'
@@ -14,7 +14,7 @@ const setKeys = (branch, leaf, id, val, stamp, set) => {
     } else {
       const subLeafId = keyToId(key, id)
       if (branch.leaves[subLeafId]) {
-        const fn = branch.inherits && branch.leaves[subLeafId] === branch.inherits.leaves[subLeafId] ? setOverride : setOwnExisting
+        const fn = Object.prototype.hasOwnProperty.call(branch.leaves, subLeafId) ? setOwnExisting : setOverride
         fn(
           branch, branch.leaves[subLeafId], subLeafId, val[key], stamp
         )
@@ -31,23 +31,24 @@ const setKeys = (branch, leaf, id, val, stamp, set) => {
   }
   if (keys.length) {
     if (set === setOverride) {
-      if (branch.leaves[id] === branch.inherits.leaves[id]) {
-        branch.leaves[id] = Object.create(branch.inherits.leaves[id])
-        branch.leaves[id].keys = Object.create(branch.inherits.leaves[id].keys)
+      if (!Object.prototype.hasOwnProperty.call(branch.leaves, id)) {
+        leaf = addOverrideLeaf(branch, id, true)
+      } else if (!Object.prototype.hasOwnProperty.call(branch.leaves[id], 'keys')) {
+        leaf = addOverrideLeaf(branch, id, true, false)
       }
     }
-    keys.forEach(key => { branch.leaves[id].keys[key] = true })
-    branch.leaves[id].stamp = stamp
+    keys.forEach(key => { leaf.keys[key] = true })
+    leaf.stamp = stamp
     cleanBranchKeys(branch.branches, id, keys, stamp)
     addDataEvent(undefined, id, 'add-key')
   }
 }
 
 const set = (branch, id, val, stamp) => {
-  if (branch.inherits && branch.leaves[id] === branch.inherits.leaves[id]) {
-    setOverride(branch, branch.leaves[id], id, val, stamp)
-  } else {
+  if (Object.prototype.hasOwnProperty.call(branch.leaves, id)) {
     setOwnExisting(branch, branch.leaves[id], id, val, stamp)
+  } else {
+    setOverride(branch, branch.leaves[id], id, val, stamp)
   }
 }
 

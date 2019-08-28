@@ -21,6 +21,36 @@ const addOwnLeaf = (branch, id, parent, key, depth, stamp) => {
   return branch.leaves[id]
 }
 
+const overrideBranches = (branch, id, keys, leaf) => {
+  branch.branches.forEach(subBranch => {
+    if (Object.prototype.hasOwnProperty.call(subBranch.leaves, id)) {
+      if (leaf) {
+        Object.setPrototypeOf(subBranch.leaves[id], branch.leaves[id])
+      }
+      if (keys && Object.prototype.hasOwnProperty.call(subBranch.leaves[id], 'keys')) {
+        Object.setPrototypeOf(subBranch.leaves[id].keys, branch.leaves[id].keys)
+      } else if (subBranch.branches.length) {
+        overrideBranches(subBranch, id, keys, false)
+      }
+    } else if (subBranch.branches.length) {
+      overrideBranches(subBranch, id, keys)
+    }
+  })
+}
+
+const addOverrideLeaf = (branch, id, keys, leaf = true) => {
+  if (leaf) {
+    branch.leaves[id] = Object.create(branch.leaves[id])
+  }
+  if (keys) {
+    branch.leaves[id].keys = Object.create(branch.inherits.leaves[id].keys)
+  }
+  if (branch.branches.length) {
+    overrideBranches(branch, id, keys, leaf)
+  }
+  return branch.leaves[id]
+}
+
 const addReferenceFrom = (branch, rF, rT) => {
   if (!branch.rF[rT]) {
     branch.rF[rT] = []
@@ -35,10 +65,10 @@ const fixBranchReferences = (branches, rF, rT, rTold) =>
   branches.forEach(branch => {
     if (branch.leaves[rF] === null) {
       return
-    } else if (branch.leaves[rF] !== branch.inherits.leaves[rF]) {
+    } else if (Object.prototype.hasOwnProperty.call(branch.leaves, rF)) {
       if (branch.leaves[rF].rT === rT) {
         addAfterEmitEvent(() => {
-          branch.leaves[rF].rT = undefined
+          delete branch.leaves[rF].rT
         })
       } else if (branch.leaves[rF].rT !== undefined || branch.leaves[rF].val !== undefined) {
         return
@@ -78,7 +108,7 @@ const cleanBranchKeys = (branches, id, keys, stamp) =>
     const keysNext = keys.slice()
     if (branch.leaves[id] === null) {
       return
-    } else if (branch.leaves[id] === branch.inherits.leaves[id]) {
+    } else if (!Object.prototype.hasOwnProperty.call(branch.leaves, id)) {
       addDataEvent(branch, id, 'add-key')
     } else {
       Object.keys(branch.leaves[id].keys).forEach(key => {
@@ -102,6 +132,7 @@ const cleanBranchKeys = (branches, id, keys, stamp) =>
 
 export {
   addOwnLeaf,
+  addOverrideLeaf,
   addReferenceFrom,
   removeReferenceFrom,
   checkReferenceByLeaf,

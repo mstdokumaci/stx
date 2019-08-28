@@ -40,7 +40,7 @@ const prepareNewBranch = inherits => {
       branch.rF[id] = inherits.rF[id].slice(0)
     }
   } else {
-    const leaves = Object.create(null)
+    const leaves = { [root]: { keys: {}, depth: 0 } }
     leaves[root] = { keys: {}, depth: 0 }
     Object.defineProperties(branch, {
       leaves: { value: leaves },

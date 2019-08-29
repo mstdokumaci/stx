@@ -32,7 +32,7 @@ const cleanLeaves = (branch, list) => {
     const stamp = list[id]
     if (branch.leaves[id]) {
       const rT = branch.leaves[id].rT
-      removeOwn(branch, id, rT, stamp, 1, list[branch.leaves[id].parent])
+      removeOwn(branch, id, rT, stamp, list[branch.leaves[id].parent])
       if (rT) {
         removeReferenceFromBranches(branch, id, rT)
       }
@@ -46,8 +46,7 @@ const removeLeaves = (branch, list) => {
     id = Number(id)
     const stamp = list[id]
     if (branch.leaves[id]) {
-      const leaf = branch.leaves[id]
-      remove(branch, leaf, id, stamp)
+      remove(branch, id, stamp)
     }
   }
 }
@@ -67,14 +66,14 @@ const setLeaves = (branch, leaves) => {
       }
 
       if (keys && keys.length) {
-        if (leaf.keys && leaf.keys.length) {
-          const added = keys.filter(key => !leaf.keys.includes(key))
-          if (added.length) {
-            leaf.keys.push(...added)
-            addDataEvent(undefined, id, 'add-key')
+        let added = false
+        keys.forEach(key => {
+          if (!(key in leaf.keys)) {
+            added = true
+            leaf.keys[key] = true
           }
-        } else {
-          leaf.keys = keys
+        })
+        if (added) {
           addDataEvent(undefined, id, 'add-key')
         }
       }
@@ -88,7 +87,9 @@ const setLeaves = (branch, leaves) => {
       }
 
       if (keys && keys.length) {
-        leaf.keys = keys
+        for (const key in keys) {
+          leaf.keys[key] = true
+        }
         addDataEvent(undefined, id, 'add-key')
       }
     }

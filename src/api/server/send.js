@@ -1,6 +1,5 @@
 import { getString } from '../../cache'
 import { createStamp } from '../../stamp'
-import { children } from '../array'
 import maxSize from './max-size'
 import {
   cache,
@@ -166,7 +165,7 @@ const serializeLeaf = (data, socket, master, branch, id, keys, depthLimit, sDept
     }
 
     if (!isCachedForStamp(socket, isMaster, id, leaf.stamp)) {
-      data.leaves[id] = [leaf.key, leaf.parent, leaf.stamp, leaf.val, leaf.rT, leaf.keys, leaf.depth]
+      data.leaves[id] = [leaf.key, leaf.parent, leaf.stamp, leaf.val, leaf.rT, keys, leaf.depth]
       if (socket.cleanLeaves[id]) {
         delete socket.cleanLeaves[id]
       }

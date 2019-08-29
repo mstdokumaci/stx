@@ -116,7 +116,7 @@ const serializeAllChildren = (
       continue
     }
 
-    if (excludeKeys && excludeKeys.includes(leafId)) {
+    if (excludeKeys && excludeKeys.includes(Number(leafId))) {
       continue
     }
 

@@ -87,9 +87,7 @@ const setLeaves = (branch, leaves) => {
       }
 
       if (keys && keys.length) {
-        for (const key in keys) {
-          leaf.keys[key] = true
-        }
+        keys.forEach(key => { leaf.keys[key] = true })
         addDataEvent(undefined, id, 'add-key')
       }
     }

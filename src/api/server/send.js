@@ -132,7 +132,7 @@ const serializeAllChildren = (
 }
 
 const serializeWithAllChildren = (data, socket, master, branch, id, depthLimit, depth) => {
-  if (data[id] || branch.leaves[id] === null || depthLimit < depth) {
+  if (data[id] || !(id in branch.leaves) || branch.leaves[id] === null || depthLimit < depth) {
     return
   }
 
@@ -154,13 +154,13 @@ const serializeParents = (data, socket, master, branch, id) => {
   }
 }
 
-const serializeLeaf = (data, socket, master, branch, id, keys, depthLimit, sDepth) => {
+const serializeLeaf = (data, socket, master, branch, id, keys, depthLimit, depth) => {
   const leaf = branch.leaves[id]
   const isMaster = !Object.prototype.hasOwnProperty.call(branch.leaves, id)
 
   if (leaf !== null && (leaf.val !== undefined || leaf.rT || keys.length)) {
     if (leaf.rT) {
-      serializeWithAllChildren(data, socket, master, branch, leaf.rT, depthLimit, sDepth)
+      serializeWithAllChildren(data, socket, master, branch, leaf.rT, depthLimit, depth)
       serializeParents(data, socket, master, branch, leaf.rT)
     }
 

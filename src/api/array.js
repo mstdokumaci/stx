@@ -6,7 +6,7 @@ const children = (branch, id, cb) => {
   const keys = []
   let found
   for (const key in branch.leaves[id].keys) {
-    if (branch.leaves[key] !== null) {
+    if (key in branch.leaves && branch.leaves[key] !== null) {
       if (cb) {
         if (cb(key)) {
           found = key
@@ -17,11 +17,7 @@ const children = (branch, id, cb) => {
       }
     }
   }
-  if (found) {
-    return found
-  } else {
-    return keys
-  }
+  return found || keys
 }
 
 const forEach = (branch, id, cb) => {

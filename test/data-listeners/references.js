@@ -227,8 +227,6 @@ test('data listeners - reference inheritance', t => {
 
   branch21.get(['deep', 'real']).set(null)
 
-  branch21.get(['deep', 'real']).set(null)
-
   master.get('pointers').set({
     pointer3: ['@', 'deep', 'real'],
     pointer4: {}
@@ -242,7 +240,7 @@ test('data listeners - reference inheritance', t => {
     branch12Fire,
     [
       'branch12-add-key-real-11-real2-11',
-      'branch12-add-key-real2-11-real-11-real3-0'
+      'branch12-add-key-real-11-real2-11-real3-0'
     ],
     'branch12Fire = correct'
   )

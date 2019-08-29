@@ -1,5 +1,4 @@
 import { addToStrings, getString } from './cache'
-import { getRtFromLeaves } from './api/get'
 import { addReferenceFrom, removeReferenceFrom } from './api/set/utils'
 
 const bindAllDataListener = (branch, persist) => {
@@ -26,7 +25,7 @@ const loadLeaf = (branch, id, leaf) => {
     delete leaf.keyString
 
     if (leaf.val !== undefined || leaf.rT) {
-      const rTold = getRtFromLeaves(branch, id)
+      const rTold = branch.leaves[id] && branch.leaves[id].rT
       if (rTold) {
         removeReferenceFrom(branch, id, rTold)
       }

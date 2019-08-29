@@ -21,7 +21,7 @@ const setKeys = (branch, leaf, id, val, stamp, set) => {
       } else if (val[key] !== undefined && val[key] !== null) {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
-        keys.push(subLeafId)
+        keys.push(String(subLeafId))
         const subLeaf = addOwnLeaf(
           branch, subLeafId, id, keyId, leaf.depth + 1, stamp
         )
@@ -39,7 +39,9 @@ const setKeys = (branch, leaf, id, val, stamp, set) => {
     }
     keys.forEach(key => { leaf.keys[key] = true })
     leaf.stamp = stamp
-    cleanBranchKeys(branch.branches, id, keys, stamp)
+    if (branch.branches.length) {
+      cleanBranchKeys(branch.branches, id, keys, stamp)
+    }
     addDataEvent(undefined, id, 'add-key')
   }
 }

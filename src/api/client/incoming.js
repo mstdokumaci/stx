@@ -5,7 +5,6 @@ import {
   removeReferenceFromBranches,
   removeListenersSubscriptions
 } from '../remove'
-import { getRtFromLeaves } from '../get'
 import { addOwnLeaf } from '../set/utils'
 import { setOwnExistingVal, setOwnExistingReference } from '../set/own-existing'
 import { setOwnNewVal, setOwnNewReference } from '../set/own-new'
@@ -32,7 +31,7 @@ const cleanLeaves = (branch, list) => {
     id = Number(id)
     const stamp = list[id]
     if (branch.leaves[id]) {
-      const rT = getRtFromLeaves(branch, id)
+      const rT = branch.leaves[id].rT
       removeOwn(branch, id, rT, stamp, 1, list[branch.leaves[id].parent])
       if (rT) {
         removeReferenceFromBranches(branch, id, rT)

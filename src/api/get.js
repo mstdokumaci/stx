@@ -1,21 +1,6 @@
 import { keyToId, pathToIds } from '../id'
 import { set } from './set'
 
-const getRtFromLeaves = (branch, id) => {
-  while (branch) {
-    if (branch.leaves[id] === null) {
-      return
-    } else if (branch.leaves[id]) {
-      if (branch.leaves[id].rT) {
-        return branch.leaves[id].rT
-      } else if (branch.leaves[id].val !== undefined) {
-        return
-      }
-    }
-    branch = branch.inherits
-  }
-}
-
 const getByKey = (branch, id, key, val, stamp, inReference) => {
   const leafId = keyToId(key, id)
   if (branch.leaves[leafId]) {
@@ -84,4 +69,4 @@ const getApi = (branch, id, path, val, stamp) => {
   }
 }
 
-export { getRtFromLeaves, getByPath, getApi }
+export { getByPath, getApi }

@@ -1,11 +1,11 @@
 import { sendData, sendLeaves, removeLeaves } from './send'
 
-const syncSubscriptions = (branch, socketId, socket, master, subscriptions) => {
+const syncSubscriptions = (branch, socketId, socket, subscriptions) => {
   const data = { leaves: {}, strings: {} }
 
   subscriptions.forEach(subscription => {
     const [add, id, listenerId, keys, excludeKeys, depth, limit] = subscription
-    if (add && (branch.leaves[id] || master.leaves[id])) {
+    if (add && (id in branch.leaves)) {
       if (!branch.subscriptions[id]) {
         branch.subscriptions[id] = { listeners: {} }
       } else if (!branch.subscriptions[id].listeners) {
@@ -17,12 +17,11 @@ const syncSubscriptions = (branch, socketId, socket, master, subscriptions) => {
         excludeKeys,
         depth,
         limit,
-        cb: sendLeaves.bind(null, socket, master)
+        cb: sendLeaves.bind(null, socket)
       }
 
       sendLeaves(
         socket,
-        master,
         { branch, id },
         { keys, excludeKeys, depth, limit },
         data

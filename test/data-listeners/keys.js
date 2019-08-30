@@ -117,9 +117,22 @@ test('data listeners - add remove key', t => {
   })
 
   t.same(masterFire, [], 'masterFire = []')
-  t.same(branch1Fire, [], 'branch1Fire = []')
+  t.same(
+    branch1Fire,
+    ['branch1-remove-key-1-2'],
+    'branch1Fire = [ branch1-remove-key-1-2 ]'
+  )
   t.same(branch2Fire, [], 'branch2Fire = []')
-  t.same(branch3Fire, [], 'branch3Fire = []')
+  t.same(
+    branch3Fire,
+    ['branch3-remove-key-43-53-1-2'],
+    'branch3Fire = [ branch3-remove-key-43-53-1-2 ]'
+  )
+
+  masterFire.length = 0
+  branch1Fire.length = 0
+  branch2Fire.length = 0
+  branch3Fire.length = 0
 
   list1.set({
     fifth: 51

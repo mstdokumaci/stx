@@ -82,7 +82,7 @@ const sendData = (socket, branch, data) => {
   }
 }
 
-const sendLeaves = (socket, master, leaf, options, dataOverride) => {
+const sendLeaves = (socket, leaf, options, dataOverride) => {
   const { branch, id } = leaf
   if (branch.leaves[id] === null) {
     return
@@ -93,13 +93,13 @@ const sendLeaves = (socket, master, leaf, options, dataOverride) => {
   const depthLimit = depth || Infinity
   const data = dataOverride || { leaves: {}, strings: {} }
 
-  serializeParents(data, socket, master, branch, id)
+  serializeParents(data, socket, branch, id)
 
   keys = keys ? keys.filter(
-    key => serializeWithAllChildren(data, socket, master, branch, key, depthLimit, 1)
-  ) : serializeAllChildren(data, socket, master, branch, id, depthLimit, 0, excludeKeys, limit)
+    key => serializeWithAllChildren(data, socket, branch, key, depthLimit, 1)
+  ) : serializeAllChildren(data, socket, branch, id, depthLimit, 0, excludeKeys, limit)
 
-  serializeLeaf(data, socket, master, branch, id, keys, depthLimit, 0)
+  serializeLeaf(data, socket, branch, id, keys, depthLimit, 0)
 
   if (!dataOverride) {
     sendData(socket, branch, data)
@@ -107,21 +107,24 @@ const sendLeaves = (socket, master, leaf, options, dataOverride) => {
 }
 
 const serializeAllChildren = (
-  data, socket, master, branch, id, depthLimit, depth, excludeKeys, limit = Infinity
+  data, socket, branch, id, depthLimit, depth, excludeKeys, limit = Infinity
 ) => {
   const keys = []
 
   for (const leafId in branch.leaves[id].keys) {
-    if (branch.leaves[leafId] === null) {
+    if (
+      branch.leaves[leafId] === null ||
+      (
+        excludeKeys &&
+        excludeKeys.includes(Number(leafId))
+      )
+    ) {
       continue
     }
 
-    if (excludeKeys && excludeKeys.includes(Number(leafId))) {
-      continue
+    if (serializeWithAllChildren(data, socket, branch, leafId, depthLimit, depth + 1)) {
+      keys.push(leafId)
     }
-
-    keys.push(leafId)
-    serializeWithAllChildren(data, socket, master, branch, leafId, depthLimit, depth + 1)
 
     if (!--limit) {
       break
@@ -131,37 +134,46 @@ const serializeAllChildren = (
   return keys
 }
 
-const serializeWithAllChildren = (data, socket, master, branch, id, depthLimit, depth) => {
-  if (data[id] || !(id in branch.leaves) || branch.leaves[id] === null || depthLimit < depth) {
+const serializeWithAllChildren = (data, socket, branch, id, depthLimit, depth) => {
+  if (!(id in branch.leaves) || branch.leaves[id] === null || depthLimit < depth) {
     return
   }
 
-  const keys = serializeAllChildren(data, socket, master, branch, id, depthLimit, depth)
-  return serializeLeaf(data, socket, master, branch, id, keys, depthLimit, depth)
+  const keys = serializeAllChildren(data, socket, branch, id, depthLimit, depth)
+  return serializeLeaf(data, socket, branch, id, keys, depthLimit, depth)
 }
 
-const serializeParents = (data, socket, master, branch, id) => {
+const serializeParents = (data, socket, branch, id) => {
   let parent = branch.leaves[id].parent
   while (parent) {
-    if (!data.leaves[id]) {
+    if (serializeLeaf(data, socket, branch, parent, [id], 0, 0)) {
       break
     }
-
-    serializeLeaf(data, socket, master, branch, parent, [id], 0, 0)
 
     id = parent
     parent = branch.leaves[id].parent
   }
 }
 
-const serializeLeaf = (data, socket, master, branch, id, keys, depthLimit, depth) => {
+const serializeLeaf = (data, socket, branch, id, keys, depthLimit, depth) => {
   const leaf = branch.leaves[id]
   const isMaster = !Object.prototype.hasOwnProperty.call(branch.leaves, id)
 
-  if (leaf !== null && (leaf.val !== undefined || leaf.rT || keys.length)) {
+  if (
+    leaf !== null &&
+    (
+      leaf.val !== undefined ||
+      leaf.rT ||
+      keys.length ||
+      (
+        Object.prototype.hasOwnProperty.call(branch.leaves, id) &&
+        Object.prototype.hasOwnProperty.call(branch.leaves[id], 'keys')
+      )
+    )
+  ) {
     if (leaf.rT) {
-      serializeWithAllChildren(data, socket, master, branch, leaf.rT, depthLimit, depth)
-      serializeParents(data, socket, master, branch, leaf.rT)
+      serializeWithAllChildren(data, socket, branch, leaf.rT, depthLimit, depth)
+      serializeParents(data, socket, branch, leaf.rT)
     }
 
     if (!isCachedForStamp(socket, isMaster, id, leaf.stamp)) {

@@ -6,7 +6,7 @@ const children = (branch, id, cb) => {
   const keys = []
   let found
   for (const key in branch.leaves[id].keys) {
-    if (key in branch.leaves && branch.leaves[key] !== null) {
+    if (branch.leaves[key] !== null) {
       if (cb) {
         if (cb(key)) {
           found = key

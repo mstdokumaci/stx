@@ -30,6 +30,10 @@ const setOwnExistingReference = (branch, leaf, id, rT, stamp) => {
   if (rT === rTold) {
     return
   } else if (rTold) {
+    if (!(rTold in branch.rF)) {
+      console.log(rT, rTold)
+      console.log(branch.rF)
+    }
     removeReferenceFrom(branch, id, rTold)
   } else if (leaf.val) {
     leaf.val = undefined

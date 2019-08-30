@@ -112,7 +112,7 @@ const removeOwn = (branch, id, rT, stamp, ignoreParent) => {
     removeFromBranches(branch.branches, leaf, id, parent, keys, rT, stamp)
   }
 
-  branch.leaves[id] = null
+  delete branch.leaves[id]
 
   if (branch.persist) {
     branch.persist.store(String(id), null)

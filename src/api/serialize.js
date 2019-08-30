@@ -20,7 +20,7 @@ const inspect = (branch, id) => {
       : branch.leaves[id].val
 
     for (const key in branch.leaves[id].keys) {
-      if (key in branch.leaves && branch.leaves[key] !== null) {
+      if (branch.leaves[key] !== null) {
         subLeaves.push(key)
       }
     }
@@ -54,7 +54,7 @@ const serialize = (branch, id) => {
       : branch.leaves[id].val
 
     for (const key in branch.leaves[id].keys) {
-      if (key in branch.leaves && branch.leaves[key] !== null) {
+      if (branch.leaves[key] !== null) {
         child = true
         result[getString(branch.leaves[key].key)] = serialize(branch, key)
       }

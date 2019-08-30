@@ -11,8 +11,7 @@ import {
   fixBranchReferences
 } from './utils'
 
-const setOverrideVal = (branch, id, val, stamp) => {
-  let leaf = branch.leaves[id]
+const setOverrideVal = (branch, leaf, id, val, stamp) => {
   if (val === leaf.val) {
     return
   } else if (leaf.rT) {
@@ -28,8 +27,8 @@ const setOverrideVal = (branch, id, val, stamp) => {
   return true
 }
 
-const setOverrideReference = (branch, id, rT, stamp) => {
-  const rTold = branch.leaves[id].rT
+const setOverrideReference = (branch, leaf, id, rT, stamp) => {
+  const rTold = leaf.rT
   if (rT === rTold) {
     return
   } else if (rTold) {
@@ -40,9 +39,10 @@ const setOverrideReference = (branch, id, rT, stamp) => {
     fixBranchReferences(branch.branches, id, rT, rTold)
   }
 
-  const leaf = addOverrideLeaf(branch, id)
+  leaf = addOverrideLeaf(branch, id)
   leaf.rT = rT
   leaf.stamp = stamp
+
   addReferenceFrom(branch, id, rT)
   addDataEvent(undefined, id, 'set', leaf.depth)
   return true
@@ -55,18 +55,18 @@ const setOverride = (branch, leaf, id, val, stamp) => {
     } else if (Array.isArray(val)) {
       if (val[0] === '@') {
         const rT = getByPath(branch, root, val.slice(1), {}, stamp)
-        setOverrideReference(branch, id, rT, stamp)
+        setOverrideReference(branch, leaf, id, rT, stamp)
       } else {
-        setOverrideVal(branch, id, val, stamp)
+        setOverrideVal(branch, leaf, id, val, stamp)
       }
     } else if (val.isLeaf) {
       checkReferenceByLeaf(branch, val.branch, val.id, () =>
-        setOverrideReference(branch, id, val.id, stamp))
+        setOverrideReference(branch, leaf, id, val.id, stamp))
     } else {
       setKeys(branch, leaf, id, val, stamp, setOverride)
     }
   } else {
-    setOverrideVal(branch, id, val, stamp)
+    setOverrideVal(branch, leaf, id, val, stamp)
   }
 }
 

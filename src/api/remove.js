@@ -13,11 +13,8 @@ const removeReferenceFromBranches = (branch, rF, rT) => {
     if (
       branch.leaves[rF] !== null &&
       (
-        !branch.leaves[rF] ||
-        (
-          branch.leaves[rF].val === undefined &&
-          branch.leaves[rF].rT === undefined
-        )
+        branch.leaves[rF].val === undefined &&
+        branch.leaves[rF].rT === undefined
       )
     ) {
       removeReferenceFromBranches(branch, rF, rT)
@@ -146,7 +143,7 @@ const removeInherited = (branch, id, rT, stamp, ignoreParent) => {
 
 const removeChildren = (branch, id, stamp) => {
   for (const key in branch.leaves[id].keys) {
-    if (branch.leaves[id] !== null) {
+    if (branch.leaves[key] !== null) {
       remove(branch, key, stamp, true)
     }
   }

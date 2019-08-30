@@ -193,7 +193,7 @@ const serializeLeaf = (data, socket, branch, id, keys, depthLimit, depth) => {
   }
 }
 
-const removeLeaves = (socket, master, type, stamp, leaf) => {
+const removeLeaves = (socket, type, stamp, leaf) => {
   if (type === 'remove') {
     const { branch, id } = leaf
     if (isCached(socket, !Object.prototype.hasOwnProperty.call(branch.leaves, id), id)) {

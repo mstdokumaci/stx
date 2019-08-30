@@ -38,7 +38,7 @@ const addAllDataListener = (branch, socketId, socket, master) => {
   if (!branch.listeners.allData) {
     branch.listeners.allData = {}
   }
-  branch.listeners.allData[socketId] = removeLeaves.bind(null, socket, master)
+  branch.listeners.allData[socketId] = removeLeaves.bind(null, socket)
 }
 
 const removeSubscriptionsAndAllDataListener = (branch, socketId) => {

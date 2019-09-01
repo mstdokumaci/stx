@@ -85,12 +85,12 @@ const defineApi = (leaf) => {
 
   // INSPECT
   define(leaf, 'inspect', function () {
-    return inspect(this.branch, this.id)
+    return inspect(this.branch, this.branch.leaves[this.id])
   })
 
   // SERIALIZE
   define(leaf, 'serialize', function () {
-    return serialize(this.branch, this.id)
+    return serialize(this.branch, this.branch.leaves[this.id])
   })
 
   // FOREACH

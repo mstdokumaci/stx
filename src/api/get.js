@@ -6,9 +6,10 @@ const getByKey = (branch, id, key, val, stamp, inReference) => {
   if (branch.leaves[leafId]) {
     return leafId
   } else {
-    if (branch.leaves[id].rT) {
+    const rT = branch.leaves[id].rT
+    if (rT) {
       const originId = getByKey(
-        branch, branch.leaves[id].rT, key, val, stamp, true
+        branch, rT, key, val, stamp, true
       )
       if (originId) {
         return originId
@@ -46,9 +47,10 @@ const getByPath = (branch, id, path, val, stamp, inReference) => {
     return ids[i]
   } else {
     while (i--) {
-      if (branch.leaves[ids[i]] && branch.leaves[ids[i]].rT) {
+      const leaf = branch.leaves[ids[i]]
+      if (leaf && leaf.rT) {
         const originId = getByPath(
-          branch, branch.leaves[ids[i]].rT, path.slice(i), val, stamp, true
+          branch, leaf.rT, path.slice(i), val, stamp, true
         )
         if (originId) {
           return originId

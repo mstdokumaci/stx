@@ -27,12 +27,11 @@ const startHeartbeat = branch => {
 }
 
 const cleanLeaves = (branch, list) => {
-  for (let id in list) {
-    id = Number(id)
-    const stamp = list[id]
-    if (branch.leaves[id]) {
-      const rT = branch.leaves[id].rT
-      removeOwn(branch, id, rT, stamp, list[branch.leaves[id].parent])
+  for (const id in list) {
+    const leaf = branch.leaves[id]
+    if (leaf) {
+      const rT = leaf.rT
+      removeOwn(branch, id, rT, list[id], list[leaf.parent])
       if (rT) {
         removeReferenceFromBranches(branch, id, rT)
       }
@@ -42,8 +41,7 @@ const cleanLeaves = (branch, list) => {
 }
 
 const removeLeaves = (branch, list) => {
-  for (let id in list) {
-    id = Number(id)
+  for (const id in list) {
     const stamp = list[id]
     if (branch.leaves[id]) {
       remove(branch, id, stamp)
@@ -56,7 +54,7 @@ const setLeaves = (branch, leaves) => {
     id = Number(id)
     const [key, parent, stamp, val, rT, keys, depth] = leaves[id]
 
-    if (branch.leaves[id]) {
+    if (id in branch.leaves) {
       const leaf = branch.leaves[id]
 
       if (val !== null) {

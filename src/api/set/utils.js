@@ -69,22 +69,22 @@ const removeReferenceFrom = (branch, rF, rT) =>
 
 const fixBranchReferences = (branches, rF, rT, rTold) =>
   branches.forEach(branch => {
-    if (branch.leaves[rF] === null) {
+    const leaf = branch.leaves[rF]
+    if (leaf === null) {
       return
     } else if (!Object.prototype.hasOwnProperty.call(branch.leaves, rF)) {
       if (rTold) {
         removeReferenceFrom(branch, rF, rTold)
       }
       addReferenceFrom(branch, rF, rT)
-    } else if (Object.prototype.hasOwnProperty.call(branch.leaves[rF], 'rT')) {
-      if (branch.leaves[rF].rT === rT) {
+    } else if (Object.prototype.hasOwnProperty.call(leaf, 'rT')) {
+      if (leaf.rT === rT) {
         addAfterEmitEvent(() => {
-          delete branch.leaves[rF].rT
+          delete leaf.rT
         })
-      } else {
-        return
       }
-    } else if (Object.prototype.hasOwnProperty.call(branch.leaves[rF], 'val')) {
+      return
+    } else if (Object.prototype.hasOwnProperty.call(leaf, 'val')) {
       return
     } else {
       if (rTold) {
@@ -115,16 +115,17 @@ const checkReferenceByLeaf = (branch, rTBranch, rT, cb) => {
 const cleanBranchKeys = (branches, id, keys, stamp) =>
   branches.forEach(branch => {
     const keysNext = keys.slice()
-    if (branch.leaves[id] === null) {
+    const leaf = branch.leaves[id]
+    if (leaf === null) {
       return
     } else if (
       Object.prototype.hasOwnProperty.call(branch.leaves, id) &&
-      Object.prototype.hasOwnProperty.call(branch.leaves[id], 'keys')
+      Object.prototype.hasOwnProperty.call(leaf, 'keys')
     ) {
-      Object.keys(branch.leaves[id].keys).forEach(key => {
+      Object.keys(leaf.keys).forEach(key => {
         const index = keysNext.indexOf(key)
         if (~index) {
-          delete branch.leaves[id].keys[key]
+          delete leaf.keys[key]
           keysNext.splice(index, 1)
         }
       })

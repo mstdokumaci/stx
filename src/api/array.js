@@ -47,12 +47,13 @@ const find = (branch, id, cb) => {
 const reduce = (branch, id, cb, accumulator) => {
   let skipFirst = accumulator === undefined
   for (const key in branch.leaves[id].keys) {
-    if (branch.leaves[key] !== null) {
+    const leaf = branch.leaves[key]
+    if (leaf !== null) {
       if (skipFirst) {
-        accumulator = compute(branch, branch.leaves[key])
+        accumulator = compute(branch, leaf)
         skipFirst = null
       } else {
-        accumulator = cb(accumulator, new Leaf(branch, key), getString(branch.leaves[key].key))
+        accumulator = cb(accumulator, new Leaf(branch, key), getString(leaf.key))
       }
     }
   }

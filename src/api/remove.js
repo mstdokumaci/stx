@@ -10,11 +10,14 @@ const removeReferenceFromBranches = (branch, rF, rT) => {
   removeReferenceFrom(branch, rF, rT)
 
   branch.branches.forEach(branch => {
+    const leaf = branch.leaves[rF]
     if (
-      branch.leaves[rF] !== null &&
-      (
-        branch.leaves[rF].val === undefined &&
-        branch.leaves[rF].rT === undefined
+      leaf !== null && (
+        !Object.prototype.hasOwnProperty.call(branch.leaves, rF) ||
+        (
+          !Object.prototype.hasOwnProperty.call(leaf, 'val') &&
+          !Object.prototype.hasOwnProperty.call(leaf, 'rT')
+        )
       )
     ) {
       removeReferenceFromBranches(branch, rF, rT)

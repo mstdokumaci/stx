@@ -167,7 +167,7 @@ const serializeLeaf = (data, socket, branch, id, keys, depthLimit, depth) => {
       keys.length ||
       (
         Object.prototype.hasOwnProperty.call(branch.leaves, id) &&
-        Object.prototype.hasOwnProperty.call(branch.leaves[id], 'keys')
+        Object.prototype.hasOwnProperty.call(leaf, 'keys')
       )
     )
   ) {

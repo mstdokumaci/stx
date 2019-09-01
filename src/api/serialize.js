@@ -10,16 +10,14 @@ const path = (branch, id) => {
   return path
 }
 
-const inspect = (branch, id) => {
+const inspect = (branch, leaf) => {
   const subLeaves = []
-  const start = 'stx ' + (branch.leaves[id].key ? getString(branch.leaves[id].key) + ' ' : '')
+  const start = 'stx ' + (leaf.key ? getString(leaf.key) + ' ' : '')
   let val
-  if (branch.leaves[id]) {
-    val = branch.leaves[id].rT
-      ? inspect(branch, branch.leaves[id].rT)
-      : branch.leaves[id].val
+  if (leaf) {
+    val = leaf.rT ? inspect(branch, branch.leaves[leaf.rT]) : leaf.val
 
-    for (const key in branch.leaves[id].keys) {
+    for (const key in leaf.keys) {
       if (branch.leaves[key] !== null) {
         subLeaves.push(key)
       }
@@ -44,19 +42,18 @@ const inspect = (branch, id) => {
   }
 }
 
-const serialize = (branch, id) => {
+const serialize = (branch, leaf) => {
   let val
   let child = false
   const result = {}
-  if (branch.leaves[id]) {
-    val = branch.leaves[id].rT
-      ? ['@', ...path(branch, branch.leaves[id].rT)]
-      : branch.leaves[id].val
+  if (leaf) {
+    val = leaf.rT ? ['@', ...path(branch, leaf.rT)] : leaf.val
 
-    for (const key in branch.leaves[id].keys) {
-      if (branch.leaves[key] !== null) {
+    for (const key in leaf.keys) {
+      const subLeaf = branch.leaves[key]
+      if (subLeaf !== null) {
         child = true
-        result[getString(branch.leaves[key].key)] = serialize(branch, key)
+        result[getString(subLeaf.key)] = serialize(branch, subLeaf)
       }
     }
   }

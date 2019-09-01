@@ -75,7 +75,7 @@ const defineApi = (leaf) => {
 
   // COMPUTE
   define(leaf, 'compute', function () {
-    return compute(this.branch, this.id)
+    return compute(this.branch, this.branch.leaves[this.id])
   })
 
   // PATH

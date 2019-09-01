@@ -61,8 +61,8 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rT, stamp) =>
         if (rT) {
           removeReferenceFrom(branch, id, rT)
         }
-        if (parent) {
-          if (Object.prototype.hasOwnProperty.call(branch.leaves, parent) && branch.leaves[parent]) {
+        if (parent && branch.leaves[parent]) {
+          if (Object.prototype.hasOwnProperty.call(branch.leaves, parent)) {
             branch.leaves[parent].stamp = stamp
           }
           addDataEvent(branch, parent, 'remove-key', leaf.depth)

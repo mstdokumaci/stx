@@ -49,7 +49,7 @@ const reduce = (branch, id, cb, accumulator) => {
   for (const key in branch.leaves[id].keys) {
     if (branch.leaves[key] !== null) {
       if (skipFirst) {
-        accumulator = compute(branch, key)
+        accumulator = compute(branch, branch.leaves[key])
         skipFirst = null
       } else {
         accumulator = cb(accumulator, new Leaf(branch, key), getString(branch.leaves[key].key))

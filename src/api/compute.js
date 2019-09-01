@@ -1,14 +1,13 @@
 const origin = (branch, id) => {
-  return (branch.leaves[id].rT && branch.leaves[branch.leaves[id].rT])
-    ? origin(branch, branch.leaves[id].rT) : id
+  return branch.leaves[id].rT ? origin(branch, branch.leaves[id].rT) : id
 }
 
-const compute = (branch, id) => {
-  if (branch.leaves[id]) {
-    if (branch.leaves[id].val !== undefined) {
-      return branch.leaves[id].val
-    } else if (branch.leaves[id].rT) {
-      return compute(branch, branch.leaves[id].rT)
+const compute = (branch, leaf) => {
+  if (leaf) {
+    if (leaf.val !== undefined) {
+      return leaf.val
+    } else if (leaf.rT) {
+      return compute(branch, branch.leaves[leaf.rT])
     }
   }
 }

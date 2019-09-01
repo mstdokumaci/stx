@@ -13,22 +13,22 @@ const respectOverrides = (branches, id, parent) =>
     }
   })
 
-const overrideBranches = (branch, id, keys, leaf = true) => {
-  branch.branches.forEach(subBranch => {
-    if (subBranch.leaves[id] === null) {
+const overrideBranches = (branches, id, keys, leaf = true) => {
+  branches.forEach(branch => {
+    if (branch.leaves[id] === null) {
       return
     }
-    if (Object.prototype.hasOwnProperty.call(subBranch.leaves, id)) {
+    if (Object.prototype.hasOwnProperty.call(branch.leaves, id)) {
       if (leaf) {
-        Object.setPrototypeOf(subBranch.leaves[id], branch.leaves[id])
+        Object.setPrototypeOf(branch.leaves[id], branch.inherits.leaves[id])
       }
-      if (keys && Object.prototype.hasOwnProperty.call(subBranch.leaves[id], 'keys')) {
-        Object.setPrototypeOf(subBranch.leaves[id].keys, branch.leaves[id].keys)
-      } else if (subBranch.branches.length) {
-        overrideBranches(subBranch, id, keys, false)
+      if (keys && Object.prototype.hasOwnProperty.call(branch.leaves[id], 'keys')) {
+        Object.setPrototypeOf(branch.leaves[id].keys, branch.inherits.leaves[id].keys)
+      } else if (branch.branches.length) {
+        overrideBranches(branch, id, keys, false)
       }
-    } else if (subBranch.branches.length) {
-      overrideBranches(subBranch, id, keys)
+    } else if (branch.branches.length) {
+      overrideBranches(branch.branches, id, keys)
     }
   })
 }
@@ -39,7 +39,7 @@ const addOwnLeaf = (branch, id, parent, key, depth, stamp) => {
     respectOverrides(branch.branches, id, parent)
   }
   if (branch.branches.length) {
-    overrideBranches(branch, id, true)
+    overrideBranches(branch.branches, id, true)
   }
   return branch.leaves[id]
 }
@@ -52,7 +52,7 @@ const addOverrideLeaf = (branch, id, keys, leaf = true) => {
     branch.leaves[id].keys = Object.create(branch.inherits.leaves[id].keys)
   }
   if (branch.branches.length) {
-    overrideBranches(branch, id, keys)
+    overrideBranches(branch.branches, id, keys)
   }
   return branch.leaves[id]
 }

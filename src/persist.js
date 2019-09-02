@@ -24,13 +24,13 @@ const loadLeaf = (branch, id, leaf) => {
     addToStrings(leaf.key, leaf.keyString)
     delete leaf.keyString
 
-    if (leaf.val !== undefined || leaf.rT) {
-      const rTold = branch.leaves[id] && branch.leaves[id].rT
+    if (leaf.val !== undefined) {
+      const rTold = branch.leaves[id] && branch.leaves[id].rT && branch.leaves[id].val
       if (rTold) {
         removeReferenceFrom(branch, id, rTold)
       }
       if (leaf.rT) {
-        addReferenceFrom(branch, id, leaf.rT)
+        addReferenceFrom(branch, id, leaf.val)
       }
     }
   }

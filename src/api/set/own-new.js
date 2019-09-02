@@ -11,6 +11,7 @@ import {
 } from './utils'
 
 const setOwnNewVal = (_, leaf, id, val, stamp) => {
+  leaf.rT = false
   leaf.val = val
   leaf.stamp = stamp
 
@@ -22,7 +23,8 @@ const setOwnNewReference = (branch, leaf, id, rT, stamp) => {
     fixBranchReferences(branch.branches, id, rT)
   }
 
-  leaf.rT = rT
+  leaf.rT = true
+  leaf.val = rT
   leaf.stamp = stamp
   addReferenceFrom(branch, id, rT)
   addDataEvent(undefined, id, 'set', leaf.depth)

@@ -15,11 +15,11 @@ const setOverrideVal = (branch, leaf, id, val, stamp) => {
   if (val === leaf.val) {
     return
   } else if (leaf.rT) {
-    removeReferenceFromBranches(branch, id, leaf.rT)
-    leaf.rT = undefined
+    removeReferenceFromBranches(branch, id, leaf.val)
   }
 
   leaf = addOverrideLeaf(branch, id)
+  leaf.rT = false
   leaf.val = val
   leaf.stamp = stamp
 
@@ -28,7 +28,7 @@ const setOverrideVal = (branch, leaf, id, val, stamp) => {
 }
 
 const setOverrideReference = (branch, leaf, id, rT, stamp) => {
-  const rTold = leaf.rT
+  const rTold = leaf.rT && leaf.val
   if (rT === rTold) {
     return
   } else if (rTold) {
@@ -40,7 +40,8 @@ const setOverrideReference = (branch, leaf, id, rT, stamp) => {
   }
 
   leaf = addOverrideLeaf(branch, id)
-  leaf.rT = rT
+  leaf.rT = true
+  leaf.val = rT
   leaf.stamp = stamp
 
   addReferenceFrom(branch, id, rT)

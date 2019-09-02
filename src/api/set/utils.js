@@ -77,14 +77,13 @@ const fixBranchReferences = (branches, rF, rT, rTold) =>
         removeReferenceFrom(branch, rF, rTold)
       }
       addReferenceFrom(branch, rF, rT)
-    } else if (Object.prototype.hasOwnProperty.call(leaf, 'rT')) {
-      if (leaf.rT === rT) {
+    } else if (leaf.rT && Object.prototype.hasOwnProperty.call(leaf, 'val')) {
+      if (leaf.val === rT) {
         addAfterEmitEvent(() => {
+          delete leaf.val
           delete leaf.rT
         })
       }
-      return
-    } else if (Object.prototype.hasOwnProperty.call(leaf, 'val')) {
       return
     } else {
       if (rTold) {
@@ -100,11 +99,11 @@ const fixBranchReferences = (branches, rF, rT, rTold) =>
 
 const checkReferenceByLeaf = (branch, rTBranch, rT, cb) => {
   if (
+    branch.leaves[rT] !== null &&
     (
       rTBranch === branch ||
       Object.prototype.isPrototypeOf.call(rTBranch.leaves, branch.leaves)
-    ) &&
-    branch.leaves[rT] !== null
+    )
   ) {
     return cb()
   } else {

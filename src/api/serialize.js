@@ -15,7 +15,7 @@ const inspect = (branch, leaf) => {
   const start = 'stx ' + (leaf.key ? getString(leaf.key) + ' ' : '')
   let val
   if (leaf) {
-    val = leaf.rT ? inspect(branch, branch.leaves[leaf.rT]) : leaf.val
+    val = leaf.rT ? inspect(branch, branch.leaves[leaf.val]) : leaf.val
 
     for (const key in leaf.keys) {
       if (branch.leaves[key] !== null) {
@@ -47,7 +47,7 @@ const serialize = (branch, leaf) => {
   let child = false
   const result = {}
   if (leaf) {
-    val = leaf.rT ? ['@', ...path(branch, leaf.rT)] : leaf.val
+    val = leaf.rT ? ['@', ...path(branch, leaf.val)] : leaf.val
 
     for (const key in leaf.keys) {
       const subLeaf = branch.leaves[key]

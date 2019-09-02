@@ -30,10 +30,9 @@ const cleanLeaves = (branch, list) => {
   for (const id in list) {
     const leaf = branch.leaves[id]
     if (leaf) {
-      const rT = leaf.rT
-      removeOwn(branch, id, rT, list[id], list[leaf.parent])
-      if (rT) {
-        removeReferenceFromBranches(branch, id, rT)
+      removeOwn(branch, id, leaf.rT, list[id], list[leaf.parent])
+      if (leaf.rT) {
+        removeReferenceFromBranches(branch, id, leaf.val)
       }
       removeListenersSubscriptions(branch, id)
     }
@@ -57,10 +56,10 @@ const setLeaves = (branch, leaves) => {
     if (id in branch.leaves) {
       const leaf = branch.leaves[id]
 
-      if (val !== null) {
+      if (rT) {
+        setOwnExistingReference(branch, leaf, id, val, stamp)
+      } else if (val !== null) {
         setOwnExistingVal(branch, leaf, id, val, stamp)
-      } else if (rT) {
-        setOwnExistingReference(branch, leaf, id, rT, stamp)
       }
 
       if (keys && keys.length) {
@@ -78,10 +77,10 @@ const setLeaves = (branch, leaves) => {
     } else {
       const leaf = addOwnLeaf(branch, id, parent, key, depth, stamp)
 
-      if (val !== null) {
+      if (rT) {
+        setOwnNewReference(branch, leaf, id, val, stamp)
+      } else if (val !== null) {
         setOwnNewVal(branch, leaf, id, val, stamp)
-      } else if (rT) {
-        setOwnNewReference(branch, leaf, id, rT, stamp)
       }
 
       if (keys && keys.length) {

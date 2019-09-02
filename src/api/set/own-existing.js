@@ -14,10 +14,10 @@ const setOwnExistingVal = (branch, leaf, id, val, stamp) => {
   if (val === leaf.val) {
     return
   } else if (leaf.rT) {
-    removeReferenceFromBranches(branch, id, leaf.rT)
-    leaf.rT = undefined
+    removeReferenceFromBranches(branch, id, leaf.val)
   }
 
+  leaf.rT = false
   leaf.val = val
   leaf.stamp = stamp
 
@@ -26,24 +26,19 @@ const setOwnExistingVal = (branch, leaf, id, val, stamp) => {
 }
 
 const setOwnExistingReference = (branch, leaf, id, rT, stamp) => {
-  const rTold = leaf.rT
+  const rTold = leaf.rT && leaf.val
   if (rT === rTold) {
     return
   } else if (rTold) {
-    if (!(rTold in branch.rF)) {
-      console.log(rT, rTold)
-      console.log(branch.rF)
-    }
     removeReferenceFrom(branch, id, rTold)
-  } else if (leaf.val) {
-    leaf.val = undefined
   }
 
   if (branch.branches.length) {
     fixBranchReferences(branch.branches, id, rT, rTold)
   }
 
-  leaf.rT = rT
+  leaf.rT = true
+  leaf.val = rT
   leaf.stamp = stamp
   addReferenceFrom(branch, id, rT)
   addDataEvent(undefined, id, 'set', leaf.depth)

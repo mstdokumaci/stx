@@ -29,10 +29,7 @@ const emitBranches = (branches, id, event, val, stamp, depth) =>
       (
         event === 'data' &&
         Object.prototype.hasOwnProperty.call(branch.leaves, id) &&
-        (
-          branch.leaves[id].val !== undefined ||
-          branch.leaves[id].rT !== undefined
-        )
+        Object.prototype.hasOwnProperty.call(branch.leaves[id], 'val')
       )
     ) {
       return

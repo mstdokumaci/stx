@@ -10,14 +10,10 @@ const removeReferenceFromBranches = (branch, rF, rT) => {
   removeReferenceFrom(branch, rF, rT)
 
   branch.branches.forEach(branch => {
-    const leaf = branch.leaves[rF]
     if (
-      leaf !== null && (
+      branch.leaves[rF] !== null && (
         !Object.prototype.hasOwnProperty.call(branch.leaves, rF) ||
-        (
-          !Object.prototype.hasOwnProperty.call(leaf, 'val') &&
-          !Object.prototype.hasOwnProperty.call(leaf, 'rT')
-        )
+        !Object.prototype.hasOwnProperty.call(branch.leaves[rF], 'val')
       )
     ) {
       removeReferenceFromBranches(branch, rF, rT)
@@ -53,8 +49,7 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rT, stamp) =>
         }
         if (
           rT &&
-          branch.leaves[id].val === undefined &&
-          branch.leaves[id].rT === undefined
+          branch.leaves[id].val === undefined
         ) {
           removeReferenceFrom(branch, id, rT)
         } else if (rT) {
@@ -157,7 +152,7 @@ const remove = (branch, id, stamp, ignoreParent) => {
 
   removeChildren(branch, id, stamp)
 
-  const rT = branch.leaves[id].rT
+  const rT = branch.leaves[id].rT && branch.leaves[id].val
 
   if (Object.prototype.hasOwnProperty.call(branch.leaves, id)) {
     if (global.DEBUG) {

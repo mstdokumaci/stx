@@ -1,60 +1,82 @@
 import { addAfterEmitEvent, addDataEvent } from '../listeners/emit'
 
-const respectOverrides = (branches, id, parent) =>
-  branches.forEach(branch => {
-    if (branch.leaves[parent] === null) {
-      branch.leaves[id] = null
-      if (branch.persist) {
-        branch.persist.store(String(id), null)
-      }
+const respectNullOverrides = (branch, id, parent) => {
+  if (branch.leaves[parent] === null) {
+    branch.leaves[id] = null
+    if (branch.persist) {
+      branch.persist.store(String(id), null)
     }
-    if (branch.branches.length) {
-      respectOverrides(branch.branches, id, parent)
-    }
-  })
+    return true
+  }
+}
 
-const overrideBranches = (branches, id, keys, leaf = true) => {
+const overrideBranches = (branches, id, parent, overrideLeaf = true, overrideKeys = true) => {
   branches.forEach(branch => {
-    if (branch.leaves[id] === null) {
+    const leaf = branch.leaves[id]
+    let overrideLeafNext = overrideLeaf
+    let overrideKeysNext = overrideKeys
+
+    if (leaf === null || respectNullOverrides(branch, id, parent)) {
       return
     }
+
     if (Object.prototype.hasOwnProperty.call(branch.leaves, id)) {
-      if (leaf) {
-        Object.setPrototypeOf(branch.leaves[id], branch.inherits.leaves[id])
+      if (overrideLeaf) {
+        Object.setPrototypeOf(leaf, branch.inherits.leaves[id])
+        overrideLeafNext = false
       }
-      if (keys && Object.prototype.hasOwnProperty.call(branch.leaves[id], 'keys')) {
-        Object.setPrototypeOf(branch.leaves[id].keys, branch.inherits.leaves[id].keys)
-      } else if (branch.branches.length) {
-        overrideBranches(branch, id, keys, false)
+
+      if (overrideKeys && Object.prototype.hasOwnProperty.call(leaf, 'keys')) {
+        Object.setPrototypeOf(leaf.keys, branch.inherits.leaves[id].keys)
+        overrideKeysNext = false
       }
-    } else if (branch.branches.length) {
-      overrideBranches(branch.branches, id, keys)
+    }
+
+    if (branch.branches.length) {
+      overrideBranches(branch.branches, id, parent, overrideLeafNext, overrideKeysNext)
     }
   })
 }
 
 const addOwnLeaf = (branch, id, parent, key, depth, stamp) => {
   branch.leaves[id] = { parent, key, stamp, depth, keys: {} }
+
   if (branch.branches.length) {
-    respectOverrides(branch.branches, id, parent)
+    overrideBranches(branch.branches, id, parent)
   }
-  if (branch.branches.length) {
-    overrideBranches(branch.branches, id, true)
-  }
+
   return branch.leaves[id]
 }
 
-const addOverrideLeaf = (branch, id, keys, leaf = true) => {
-  if (leaf) {
-    branch.leaves[id] = Object.create(branch.leaves[id])
-  }
-  if (keys) {
-    branch.leaves[id].keys = Object.create(branch.inherits.leaves[id].keys)
-  }
+const addOverrideLeaf = (branch, id) => {
+  const leaf = branch.leaves[id] = Object.create(branch.leaves[id])
+
   if (branch.branches.length) {
-    overrideBranches(branch.branches, id, keys)
+    overrideBranches(branch.branches, id, leaf.parent, true, false)
   }
-  return branch.leaves[id]
+
+  return leaf
+}
+
+const addOverrideLeafForKeys = (branch, id) => {
+  let leaf = branch.leaves[id]
+  let overrideLeaf = false
+
+  if (!Object.prototype.hasOwnProperty.call(branch.leaves, id)) {
+    leaf = branch.leaves[id] = Object.create(leaf)
+    leaf.keys = Object.create(branch.inherits.leaves[id].keys)
+    overrideLeaf = true
+  } else if (!Object.prototype.hasOwnProperty.call(leaf, 'keys')) {
+    leaf.keys = Object.create(branch.inherits.leaves[id].keys)
+  } else {
+    return leaf
+  }
+
+  if (branch.branches.length) {
+    overrideBranches(branch.branches, id, leaf.parent, overrideLeaf)
+  }
+
+  return leaf
 }
 
 const addReferenceFrom = (branch, rF, rT) => {
@@ -144,6 +166,7 @@ const cleanBranchKeys = (branches, id, keys, stamp) =>
 export {
   addOwnLeaf,
   addOverrideLeaf,
+  addOverrideLeafForKeys,
   addReferenceFrom,
   removeReferenceFrom,
   checkReferenceByLeaf,

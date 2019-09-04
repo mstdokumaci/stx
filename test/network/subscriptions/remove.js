@@ -9,12 +9,10 @@ test('network - remove subscriptions', t => {
 
   cMaster.on('connected', val => {
     if (val) {
-      setTimeout(() => {
-        sMaster.set({
-          first: 1,
-          second: 2,
-          third: 3
-        })
+      sMaster.set({
+        first: 1,
+        second: 2,
+        third: 3
       })
     }
   })

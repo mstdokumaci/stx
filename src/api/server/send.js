@@ -143,7 +143,7 @@ const serializeWithAllChildren = (data, socket, branch, id, depthLimit, depth) =
 const serializeParents = (data, socket, branch, id) => {
   let parent = branch.leaves[id].parent
   while (parent) {
-    if (serializeLeaf(data, socket, branch, parent, [id], 0, 0)) {
+    if (!serializeLeaf(data, socket, branch, parent, [id], -1, -1)) {
       break
     }
 
@@ -167,12 +167,12 @@ const serializeLeaf = (data, socket, branch, id, keys, depthLimit, depth) => {
       )
     )
   ) {
-    if (leaf.rT) {
+    if (leaf.rT && depth > -1) {
       serializeWithAllChildren(data, socket, branch, leaf.val, depthLimit, depth)
       serializeParents(data, socket, branch, leaf.val)
     }
 
-    if (!isCachedForStamp(socket, isMaster, id, leaf.stamp)) {
+    if (depth === 0 || !isCachedForStamp(socket, isMaster, id, leaf.stamp)) {
       data.leaves[id] = [leaf.key, leaf.parent, leaf.stamp, leaf.val, leaf.rT, keys, leaf.depth]
       if (socket.cleanLeaves[id]) {
         delete socket.cleanLeaves[id]
@@ -183,9 +183,9 @@ const serializeLeaf = (data, socket, branch, id, keys, depthLimit, depth) => {
         data.strings[leaf.key] = getString(leaf.key)
         cacheString(socket, leaf.key)
       }
-    }
 
-    return true
+      return true
+    }
   }
 }
 

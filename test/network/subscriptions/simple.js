@@ -44,15 +44,13 @@ test('network - subscriptions - simple', t => {
           'cMaster1.items.serialize = correct2'
         )
 
-        setTimeout(() => {
-          sMaster.set({
-            items: {
-              second: {
-                title: null,
-                id: 2
-              }
+        sMaster.set({
+          items: {
+            second: {
+              title: null,
+              id: 2
             }
-          })
+          }
         })
       } else {
         t.same(
@@ -95,20 +93,18 @@ test('network - subscriptions - simple', t => {
               'cMaster2.items.serialize = correct1'
             )
 
-            setTimeout(() => {
-              sMaster.set({
-                items: {
-                  first: {
-                    title: 'item 1 with items',
-                    items: {
-                      third: ['@', 'items', 'third']
-                    }
-                  },
-                  third: {
-                    id: 3
+            sMaster.set({
+              items: {
+                first: {
+                  title: 'item 1 with items',
+                  items: {
+                    third: ['@', 'items', 'third']
                   }
+                },
+                third: {
+                  id: 3
                 }
-              })
+              }
             })
           }
         }

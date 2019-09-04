@@ -1,4 +1,5 @@
 import { root } from './id'
+import ExtendableSet from './extendable-set'
 import { createStamp } from './stamp'
 import { set } from './api/set'
 import { emitDataEvents } from './api/listeners/emit'
@@ -37,11 +38,11 @@ const prepareNewBranch = inherits => {
     })
     inherits.branches.push(branch)
     for (const id in inherits.rF) {
-      branch.rF[id] = inherits.rF[id].slice(0)
+      branch.rF[id] = new Set(inherits.rF[id])
     }
   } else {
     const leaves = Object.create(null)
-    leaves[root] = { keys: {}, depth: 0 }
+    leaves[root] = { keys: new ExtendableSet(), depth: 0 }
     Object.defineProperties(branch, {
       leaves: { value: leaves },
       stamp: { value: { offset: 0 } }

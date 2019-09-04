@@ -141,8 +141,8 @@ test('set - get - references', t => {
   )
   t.equals(
     branch1.get(['pointers', 'pointer1']).inspect(),
-    'stx pointer1 { val: stx deep { real2, real }, real3 }',
-    'branch1.pointers.pointer1.inspect() = stx pointer1 { val: stx deep { real2, real }, real3 }'
+    'stx pointer1 { val: stx deep { real, real2 }, real3 }',
+    'branch1.pointers.pointer1.inspect() = stx pointer1 { val: stx deep { real, real2 }, real3 }'
   )
 
   t.end()

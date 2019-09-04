@@ -97,7 +97,7 @@ const sendLeaves = (socket, leaf, options, dataOverride) => {
 
   keys = keys ? keys.filter(
     key => serializeWithAllChildren(data, socket, branch, key, depthLimit, 1)
-  ) : serializeAllChildren(data, socket, branch, id, depthLimit, 0, excludeKeys, limit)
+  ) : serializeAllChildren(data, socket, branch, id, depthLimit, 0, excludeKeys, limit || Infinity)
 
   serializeLeaf(data, socket, branch, id, keys, depthLimit, 0)
 
@@ -111,25 +111,22 @@ const serializeAllChildren = (
 ) => {
   const keys = []
 
-  for (const leafId in branch.leaves[id].keys) {
+  branch.leaves[id].keys.forEach(leafId => {
     if (
+      --limit < 1 ||
       branch.leaves[leafId] === null ||
       (
         excludeKeys &&
-        excludeKeys.includes(Number(leafId))
+        excludeKeys.includes(leafId)
       )
     ) {
-      continue
+      return
     }
 
     if (serializeWithAllChildren(data, socket, branch, leafId, depthLimit, depth + 1)) {
       keys.push(leafId)
     }
-
-    if (!--limit) {
-      break
-    }
-  }
+  })
 
   return keys
 }

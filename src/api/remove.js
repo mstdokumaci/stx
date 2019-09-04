@@ -39,14 +39,14 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rT, stamp) =>
         const addKeys = keys.filter(keyId => keyId in branch.leaves && branch.leaves[keyId] !== null)
         if (addKeys.length) {
           const branchLeaf = addOverrideLeafForKeys(branch, id)
-          addKeys.forEach(key => { branchLeaf.keys[key] = true })
+          addKeys.forEach(key => { branchLeaf.keys.add(key) })
           keysNext = keys.filter(keyId => !(keyId in branch.leaves) || branch.leaves[keyId] === null)
         }
       }
-      if (Object.prototype.hasOwnProperty.call(branch.leaves, id) && branch.leaves[id]) {
+      if (Object.prototype.hasOwnProperty.call(branch.leaves, id)) {
         if (parent) {
           const pLeaf = addOverrideLeafForKeys(branch, parent)
-          pLeaf.keys[id] = true
+          pLeaf.keys.add(id)
           parentNext = undefined
         }
         if (
@@ -79,10 +79,9 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rT, stamp) =>
 const removeFromParent = (branch, parent, id, stamp) => {
   if (
     Object.prototype.hasOwnProperty.call(branch.leaves, parent) &&
-    Object.prototype.hasOwnProperty.call(branch.leaves[parent], 'keys') &&
-    Object.prototype.hasOwnProperty.call(branch.leaves[parent].keys, id)
+    Object.prototype.hasOwnProperty.call(branch.leaves[parent], 'keys')
   ) {
-    delete branch.leaves[parent].keys[id]
+    branch.leaves[parent].keys.delete(id)
     branch.leaves[parent].stamp = stamp
     addDataEvent(undefined, parent, 'remove-key', branch.leaves[parent].depth)
     return parent
@@ -91,9 +90,9 @@ const removeFromParent = (branch, parent, id, stamp) => {
 
 const removeOwn = (branch, id, rT, stamp, ignoreParent) => {
   const leaf = branch.leaves[id]
-  const keys = Object.keys(leaf.keys)
+  const keys = [...leaf.keys]
   if (Object.prototype.hasOwnProperty.call(leaf, 'keys')) {
-    keys.forEach(key => delete leaf.keys[key])
+    leaf.keys.clear()
   }
   delete leaf.val
   delete leaf.rT
@@ -126,7 +125,7 @@ const removeInherited = (branch, id, rT, stamp, ignoreParent) => {
 
   if (branch.branches.length) {
     removeFromBranches(
-      branch.branches, leaf, id, ignoreParent ? undefined : leaf.parent, Object.keys(leaf.keys), rT, stamp
+      branch.branches, leaf, id, ignoreParent ? undefined : leaf.parent, [...leaf.keys], rT, stamp
     )
   }
 
@@ -138,11 +137,11 @@ const removeInherited = (branch, id, rT, stamp, ignoreParent) => {
 }
 
 const removeChildren = (branch, id, stamp) => {
-  for (const key in branch.leaves[id].keys) {
+  branch.leaves[id].keys.forEach(key => {
     if (branch.leaves[key] !== null) {
       remove(branch, key, stamp, true)
     }
-  }
+  })
 }
 
 const remove = (branch, id, stamp, ignoreParent) => {
@@ -153,14 +152,8 @@ const remove = (branch, id, stamp, ignoreParent) => {
   const rT = branch.leaves[id].rT && branch.leaves[id].val
 
   if (Object.prototype.hasOwnProperty.call(branch.leaves, id)) {
-    if (global.DEBUG) {
-      console.log('REMOVE OWN', id)
-    }
     removeOwn(branch, id, rT, stamp, ignoreParent)
   } else {
-    if (global.DEBUG) {
-      console.log('REMOVE INHERITED', id)
-    }
     removeInherited(branch, id, rT, stamp, ignoreParent)
   }
 

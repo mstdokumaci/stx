@@ -1,6 +1,6 @@
 require('./listen-connect')
 require('./emit')
+require('./subscriptions')
 require('./switch-branch')
 require('./hybrid')
-require('./subscriptions')
 require('./persist')

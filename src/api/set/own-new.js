@@ -31,7 +31,7 @@ const setOwnNewReference = (branch, leaf, id, rT, stamp) => {
 }
 
 const setOwnNewKeys = (branch, leaf, id, val, stamp) => {
-  const keys = []
+  const keys = new Set()
   for (const key in val) {
     const valKey = val[key]
     if (key === 'val') {
@@ -40,15 +40,17 @@ const setOwnNewKeys = (branch, leaf, id, val, stamp) => {
       const subLeafId = keyToId(key, id)
       const keyId = keyToId(key)
       addToStrings(keyId, key)
-      keys.push(subLeafId)
-      leaf.keys[subLeafId] = true
+      keys.add(subLeafId)
+      leaf.keys.add(subLeafId)
       const subLeaf = addOwnLeaf(branch, subLeafId, id, keyId, leaf.depth + 1, stamp)
       setOwnNew(branch, subLeaf, subLeafId, valKey, stamp)
     }
   }
-  if (keys.length) {
+  if (keys.size) {
     leaf.stamp = stamp
-    cleanBranchKeys(branch.branches, id, keys, stamp)
+    if (branch.branches.length) {
+      cleanBranchKeys(branch.branches, id, keys, stamp)
+    }
     addDataEvent(undefined, id, 'add-key')
   }
 }

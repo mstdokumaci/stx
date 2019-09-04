@@ -11,7 +11,7 @@ import { setOwnExisting } from './own-existing'
 import { setOverride } from './override'
 
 const setKeys = (branch, leaf, id, val, stamp, set) => {
-  const keys = []
+  const keys = new Set()
   for (const key in val) {
     if (key === 'val') {
       set(branch, leaf, id, val.val, stamp)
@@ -25,7 +25,7 @@ const setKeys = (branch, leaf, id, val, stamp, set) => {
       } else if (val[key] !== undefined && val[key] !== null) {
         const keyId = keyToId(key)
         addToStrings(keyId, key)
-        keys.push(String(subLeafId))
+        keys.add(subLeafId)
         const subLeaf = addOwnLeaf(
           branch, subLeafId, id, keyId, leaf.depth + 1, stamp
         )
@@ -33,11 +33,11 @@ const setKeys = (branch, leaf, id, val, stamp, set) => {
       }
     }
   }
-  if (keys.length) {
+  if (keys.size) {
     if (set === setOverride) {
       leaf = addOverrideLeafForKeys(branch, id)
     }
-    keys.forEach(key => { leaf.keys[key] = true })
+    keys.forEach(key => { leaf.keys.add(key) })
     leaf.stamp = stamp
     if (branch.branches.length) {
       cleanBranchKeys(branch.branches, id, keys, stamp)

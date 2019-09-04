@@ -17,11 +17,11 @@ const inspect = (branch, leaf) => {
   if (leaf) {
     val = leaf.rT ? inspect(branch, branch.leaves[leaf.val]) : leaf.val
 
-    for (const key in leaf.keys) {
+    leaf.keys.forEach(key => {
       if (branch.leaves[key] !== null) {
         subLeaves.push(key)
       }
-    }
+    })
   }
   if (subLeaves.length) {
     let keys = []
@@ -49,13 +49,13 @@ const serialize = (branch, leaf) => {
   if (leaf) {
     val = leaf.rT ? ['@', ...path(branch, leaf.val)] : leaf.val
 
-    for (const key in leaf.keys) {
+    leaf.keys.forEach(key => {
       const subLeaf = branch.leaves[key]
       if (subLeaf !== null) {
         child = true
         result[getString(subLeaf.key)] = serialize(branch, subLeaf)
       }
-    }
+    })
   }
   if (child) {
     if (val !== undefined) {

@@ -27,10 +27,11 @@ const startHeartbeat = branch => {
 }
 
 const cleanLeaves = (branch, list) => {
-  for (const id in list) {
+  for (let id in list) {
+    id = Number(id)
     const leaf = branch.leaves[id]
     if (leaf) {
-      removeOwn(branch, id, leaf.rT, list[id], list[leaf.parent])
+      removeOwn(branch, id, leaf.rT && leaf.val, list[id], list[leaf.parent])
       if (leaf.rT) {
         removeReferenceFromBranches(branch, id, leaf.val)
       }
@@ -43,7 +44,7 @@ const removeLeaves = (branch, list) => {
   for (const id in list) {
     const stamp = list[id]
     if (branch.leaves[id]) {
-      remove(branch, id, stamp)
+      remove(branch, Number(id), stamp)
     }
   }
 }
@@ -65,9 +66,9 @@ const setLeaves = (branch, leaves) => {
       if (keys && keys.length) {
         let added = false
         keys.forEach(key => {
-          if (!(key in leaf.keys)) {
+          if (!leaf.keys.has(key)) {
+            leaf.keys.add(key)
             added = true
-            leaf.keys[key] = true
           }
         })
         if (added) {
@@ -84,7 +85,7 @@ const setLeaves = (branch, leaves) => {
       }
 
       if (keys && keys.length) {
-        keys.forEach(key => { leaf.keys[key] = true })
+        keys.forEach(key => leaf.keys.add(key))
         addDataEvent(undefined, id, 'add-key')
       }
     }

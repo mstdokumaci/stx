@@ -242,7 +242,7 @@ test('data listeners - reference inheritance', t => {
     branch12Fire,
     [
       'branch12-add-key-real-11-real2-11',
-      'branch12-add-key-real-11-real2-11-real3-0'
+      'branch12-add-key-real-11-real3-0-real2-11'
     ],
     'branch12Fire = correct'
   )

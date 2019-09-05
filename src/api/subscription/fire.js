@@ -1,7 +1,11 @@
 import { Leaf } from '../../leaf'
 
-const addParentSubscription = (branch, parent, child, depth, parentList) => {
+const addParentSubscription = (branch, parent, child, depth, parentList, stamp) => {
   if (branch.subscriptions[parent]) {
+    if (branch.subscriptions[parent].stamp === stamp) {
+      return
+    }
+
     if (branch.subscriptions[parent].keys) {
       branch.subscriptions[parent].keys.push([child, depth])
     } else {
@@ -35,7 +39,7 @@ const subscriptions = (branch, id, stamp, depth) => {
     if (!branch.parentSubscriptions[depth]) {
       branch.parentSubscriptions[depth] = []
     }
-    addParentSubscription(branch, parent, id, 1, branch.parentSubscriptions[depth])
+    addParentSubscription(branch, parent, id, 1, branch.parentSubscriptions[depth], stamp)
   }
 }
 
@@ -91,7 +95,7 @@ const parentSubscriptions = (branch, id, stamp, keys, parentList) => {
       parentList[last] = []
     }
     const depth = Math.min(...keys.map(key => key[1]))
-    addParentSubscription(branch, parent, id, depth + 1, parentList[last])
+    addParentSubscription(branch, parent, id, depth + 1, parentList[last], stamp)
   }
 }
 

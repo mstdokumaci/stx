@@ -11,17 +11,12 @@ const path = (branch, id) => {
 }
 
 const inspect = (branch, leaf) => {
-  const subLeaves = []
+  let subLeaves = []
   const start = 'stx ' + (leaf.key ? getString(leaf.key) + ' ' : '')
   let val
   if (leaf) {
     val = leaf.rT ? inspect(branch, branch.leaves[leaf.val]) : leaf.val
-
-    leaf.keys.forEach(key => {
-      if (branch.leaves[key] !== null) {
-        subLeaves.push(key)
-      }
-    })
+    subLeaves = [...leaf.keys]
   }
   if (subLeaves.length) {
     let keys = []

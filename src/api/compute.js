@@ -3,12 +3,10 @@ const origin = (branch, id) => {
 }
 
 const compute = (branch, leaf) => {
-  if (leaf) {
-    if (leaf.rT) {
-      return compute(branch, branch.leaves[leaf.val])
-    } else if (leaf.val !== undefined) {
-      return leaf.val
-    }
+  if (leaf.rT) {
+    return compute(branch, branch.leaves[leaf.val])
+  } else if (leaf.val !== undefined) {
+    return leaf.val
   }
 }
 

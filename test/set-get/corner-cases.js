@@ -51,6 +51,12 @@ test('root operations', t => {
   master.set(null)
 
   t.same(
+    master.inspect(),
+    'stx { }',
+    'remove on root works'
+  )
+
+  t.same(
     master.serialize(),
     {},
     'remove on root works'

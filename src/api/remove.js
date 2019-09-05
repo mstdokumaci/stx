@@ -35,7 +35,7 @@ const removeFromBranches = (branches, leaf, id, parent, keys, rT, stamp) =>
       delete branch.leaves[id]
       return
     } else {
-      if (keys) {
+      if (keys.length) {
         const addKeys = keys.filter(keyId => keyId in branch.leaves && branch.leaves[keyId] !== null)
         if (addKeys.length) {
           const branchLeaf = addOverrideLeafForKeys(branch, id)

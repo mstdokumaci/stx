@@ -111,22 +111,25 @@ const serializeAllChildren = (
 ) => {
   const keys = []
 
-  branch.leaves[id].keys.forEach(leafId => {
+  for (const leafId of branch.leaves[id].keys) {
     if (
-      --limit < 1 ||
       branch.leaves[leafId] === null ||
       (
         excludeKeys &&
         excludeKeys.includes(leafId)
       )
     ) {
-      return
+      continue
     }
 
     if (serializeWithAllChildren(data, socket, branch, leafId, depthLimit, depth + 1)) {
       keys.push(leafId)
     }
-  })
+
+    if (!--limit) {
+      break
+    }
+  }
 
   return keys
 }

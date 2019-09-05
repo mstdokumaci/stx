@@ -29,13 +29,12 @@ export default class ExtendableSet extends Set {
     }
   }
 
-  // keep this out until buble can handle
-  // * [Symbol.iterator] () {
-  //   if (this.inherits) {
-  //     yield * this.inherits
-  //   }
-  //   yield * super[Symbol.iterator]()
-  // }
+  * [Symbol.iterator] () {
+    if (this.inherits) {
+      yield * this.inherits
+    }
+    yield * super[Symbol.iterator]()
+  }
 
   forEach (cb) {
     if (this.inherits) {

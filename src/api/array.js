@@ -34,16 +34,14 @@ const filter = (branch, id, cb) => {
 }
 
 const find = (branch, id, cb) => {
-  let found
-  branch.leaves[id].keys.forEach(key => {
+  for (const key of branch.leaves[id].keys) {
     if (branch.leaves[key] !== null) {
       const subLeafInstance = new Leaf(branch, key)
       if (cb(subLeafInstance, getString(branch.leaves[key].key))) {
-        found = subLeafInstance
+        return subLeafInstance
       }
     }
-  })
-  return found
+  }
 }
 
 const reduce = (branch, id, cb, accumulator) => {

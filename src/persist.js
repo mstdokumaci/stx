@@ -13,7 +13,7 @@ const bindAllDataListener = (branch, persist) => {
   }
 
   branch.listeners.allData.persist = (type, _, item) => {
-    if (type !== 'remove' && item.id in branch.leaves) {
+    if (type !== 'remove' && Object.prototype.hasOwnProperty.call(branch.leaves, item.id)) {
       const leaf = branch.leaves[item.id]
       persist.store(
         String(item.id),

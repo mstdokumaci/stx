@@ -44,15 +44,17 @@ export default class ExtendableSet extends Set {
   }
 
   updateInheritance (inherits) {
-    super.forEach(item => {
-      if (inherits.has(item)) {
-        super.delete(item)
-      }
-    })
     if (this.inherits) {
       this.inherits.extenders.delete(this)
     }
+    if (inherits) {
+      inherits.forEach(value => {
+        if (!super.delete(value) && this.extenders.size) {
+          this.deleteFromExtenders(value)
+        }
+      })
+      inherits.extenders.add(this)
+    }
     this.inherits = inherits
-    inherits.extenders.add(this)
   }
 }

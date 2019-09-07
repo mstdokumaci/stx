@@ -1,10 +1,5 @@
 import { setOffset } from '../../stamp'
-import {
-  remove,
-  removeOwn,
-  removeReferenceFromBranches,
-  removeListenersSubscriptions
-} from '../remove'
+import { remove } from '../remove'
 import { addOwnLeaf } from '../set/utils'
 import { setOwnExistingVal, setOwnExistingReference } from '../set/own-existing'
 import { setOwnNewVal, setOwnNewReference } from '../set/own-new'
@@ -27,15 +22,13 @@ const startHeartbeat = branch => {
 }
 
 const cleanLeaves = (branch, list) => {
-  for (let id in list) {
-    id = Number(id)
-    const leaf = branch.leaves[id]
-    if (leaf) {
-      removeOwn(branch, id, leaf.rT && leaf.val, list[id], list[leaf.parent])
-      if (leaf.rT) {
-        removeReferenceFromBranches(branch, id, leaf.val)
+  for (const id in list) {
+    if (id in branch.leaves) {
+      const parent = branch.leaves[id].parent
+      if (parent in branch.leaves) {
+        branch.leaves[parent].keys.delete(id)
       }
-      removeListenersSubscriptions(branch, id)
+      delete branch.leaves[id]
     }
   }
 }

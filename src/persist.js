@@ -40,7 +40,7 @@ const loadLeaf = (branch, id, leaf) => {
     delete leaf.keyString
 
     if (branch.leaves[id]) {
-      if (leaf.keys.length) {
+      if (leaf.keys && leaf.keys.size) {
         addOverrideLeafForKeys(branch, id)
       } else {
         addOverrideLeaf(branch, id)
@@ -49,7 +49,9 @@ const loadLeaf = (branch, id, leaf) => {
       addOwnLeaf(branch, id, leaf.parent, leaf.key, leaf.depth, leaf.stamp)
     }
 
-    leaf.keys.forEach(key => branch.leaves[id].keys.add(key))
+    if (leaf.keys) {
+      leaf.keys.forEach(key => branch.leaves[id].keys.add(key))
+    }
 
     if (leaf.val !== undefined) {
       const rTold = branch.leaves[id] && branch.leaves[id].rT && branch.leaves[id].val

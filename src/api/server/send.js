@@ -93,7 +93,7 @@ const sendLeaves = (socket, leaf, options, dataOverride) => {
   const depthLimit = depth || Infinity
   const data = dataOverride || { leaves: {}, strings: {} }
 
-  serializeParents(data, socket, branch, id)
+  serializeParents(data, socket, branch, Number(id))
 
   keys = keys ? keys.filter(
     key => serializeWithAllChildren(data, socket, branch, key, depthLimit, 1)

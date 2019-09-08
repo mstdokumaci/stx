@@ -68,8 +68,8 @@ const setLeaves = (branch, socket, leaves) => {
         )
       ) {
         let changed
+        const leaf = branch.leaves[id]
         if (Object.prototype.hasOwnProperty.call(branch.leaves, id)) {
-          leaf = branch.leaves[id]
           cache(socket, false, id, stamp)
 
           if (rT) {

@@ -95,12 +95,11 @@ const fixBranchReferences = (branches, rF, rT, rTold) =>
     const leaf = branch.leaves[rF]
     if (leaf === null) {
       return
-    } else if (!Object.prototype.hasOwnProperty.call(branch.leaves, rF)) {
-      if (rTold) {
-        removeReferenceFrom(branch, rF, rTold)
-      }
-      addReferenceFrom(branch, rF, rT)
-    } else if (leaf.rT && Object.prototype.hasOwnProperty.call(leaf, 'val')) {
+    } else if (
+      Object.prototype.hasOwnProperty.call(branch.leaves, rF) &&
+      Object.prototype.hasOwnProperty.call(leaf, 'val') &&
+      leaf.rT
+    ) {
       if (leaf.val === rT) {
         addAfterEmitEvent(() => {
           delete leaf.val
@@ -134,12 +133,11 @@ const checkReferenceByLeaf = (branch, rTBranch, rT, cb) => {
   }
 }
 
-const cleanBranchKeys = (branches, id, keys, stamp) =>
+const fireBranchKeys = (branches, id, keys, stamp) =>
   branches.forEach(branch => {
-    const keysNext = new Set(keys)
-    if (branch.leaves[id] === null) {
-      return
-    } else {
+    if (branch.leaves[id] !== null) {
+      const keysNext = new Set(keys)
+
       keysNext.forEach(key => {
         if (
           Object.prototype.hasOwnProperty.call(branch.leaves, key) &&
@@ -151,11 +149,10 @@ const cleanBranchKeys = (branches, id, keys, stamp) =>
 
       if (keysNext.size) {
         addDataEvent(branch, id, 'add-key')
+        if (branch.branches.length) {
+          fireBranchKeys(branch.branches, id, keysNext, stamp)
+        }
       }
-    }
-
-    if (branch.branches.length && keysNext.size) {
-      cleanBranchKeys(branch.branches, id, keysNext, stamp)
     }
   })
 
@@ -167,5 +164,5 @@ export {
   removeReferenceFrom,
   checkReferenceByLeaf,
   fixBranchReferences,
-  cleanBranchKeys
+  fireBranchKeys
 }

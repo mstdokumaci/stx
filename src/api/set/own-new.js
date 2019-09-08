@@ -7,7 +7,7 @@ import {
   addReferenceFrom,
   checkReferenceByLeaf,
   fixBranchReferences,
-  cleanBranchKeys
+  fireBranchKeys
 } from './utils'
 
 const setOwnNewVal = (_, leaf, id, val, stamp) => {
@@ -49,7 +49,7 @@ const setOwnNewKeys = (branch, leaf, id, val, stamp) => {
   if (keys.size) {
     leaf.stamp = stamp
     if (branch.branches.length) {
-      cleanBranchKeys(branch.branches, id, keys, stamp)
+      fireBranchKeys(branch.branches, id, keys, stamp)
     }
     addDataEvent(undefined, id, 'add-key')
   }

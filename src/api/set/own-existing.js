@@ -40,6 +40,7 @@ const setOwnExistingReference = (branch, leaf, id, rT, stamp) => {
   leaf.rT = true
   leaf.val = rT
   leaf.stamp = stamp
+
   addReferenceFrom(branch, id, rT)
   addDataEvent(undefined, id, 'set', leaf.depth)
   return true
@@ -67,4 +68,8 @@ const setOwnExisting = (branch, leaf, id, val, stamp) => {
   }
 }
 
-export { setOwnExistingVal, setOwnExistingReference, setOwnExisting }
+export {
+  setOwnExistingVal,
+  setOwnExistingReference,
+  setOwnExisting
+}

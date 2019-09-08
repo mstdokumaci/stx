@@ -4,7 +4,7 @@ import { addDataEvent } from '../listeners/emit'
 import {
   addOwnLeaf,
   addOverrideLeafForKeys,
-  cleanBranchKeys
+  fireBranchKeys
 } from './utils'
 import { setOwnNew } from './own-new'
 import { setOwnExisting } from './own-existing'
@@ -40,7 +40,7 @@ const setKeys = (branch, leaf, id, val, stamp, set) => {
     keys.forEach(key => { leaf.keys.add(key) })
     leaf.stamp = stamp
     if (branch.branches.length) {
-      cleanBranchKeys(branch.branches, id, keys, stamp)
+      fireBranchKeys(branch.branches, id, keys, stamp)
     }
     addDataEvent(undefined, id, 'add-key')
   }

@@ -21,7 +21,7 @@ export default class ExtendableSet extends Set {
   }
 
   add (value) {
-    if (!this.has(value)) {
+    if (!this.inherits || !this.inherits.has(value)) {
       super.add(value)
       if (this.extenders.size) {
         this.deleteFromExtenders(value)

@@ -185,7 +185,7 @@ test('remove on branch', t => {
   t.end()
 })
 
-test('remove- transfer keys', t => {
+test('remove - transfer keys', t => {
   const master = create({
     content: {
       first: 1,

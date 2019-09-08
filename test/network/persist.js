@@ -66,7 +66,7 @@ test('network - persist get', async t => {
 
   const server = sMaster.listen(7070)
 
-  server.switchBranch = async (fromBranch, branchKey, switcher) => {
+  server.switchBranch = async (_, branchKey, switcher) => {
     const toBranch = await switcher(branchKey, new Persist(branchKey))
     t.equals(
       toBranch.get('third'),

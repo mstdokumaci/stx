@@ -1,65 +1,112 @@
-import { getFromLeaves } from '../get'
+import ExtendableSet from '../../extendable-set'
 import { addAfterEmitEvent, addDataEvent } from '../listeners/emit'
 
-const respectOverrides = (branches, id, parent) =>
+const respectNullOverrides = (branch, id, parent) => {
+  if (branch.leaves[parent] === null) {
+    branch.leaves[id] = null
+    if (branch.persist) {
+      branch.persist.store(String(id), null)
+    }
+    return true
+  }
+}
+
+const overrideBranches = (branches, id, parent, overrideLeaf = true, overrideKeys = true) => {
   branches.forEach(branch => {
-    if (branch.leaves[parent] === null) {
-      branch.leaves[id] = null
-      if (branch.persist) {
-        branch.persist.store(String(id), null)
+    const leaf = branch.leaves[id]
+    let overrideLeafNext = overrideLeaf
+    let overrideKeysNext = overrideKeys
+
+    if (leaf === null || respectNullOverrides(branch, id, parent)) {
+      return
+    }
+
+    if (Object.prototype.hasOwnProperty.call(branch.leaves, id)) {
+      if (overrideLeaf) {
+        Object.setPrototypeOf(leaf, branch.inherits.leaves[id])
+        overrideLeafNext = false
+      }
+
+      if (overrideKeys && Object.prototype.hasOwnProperty.call(leaf, 'keys')) {
+        leaf.keys.updateInheritance(branch.inherits.leaves[id].keys)
+        overrideKeysNext = false
       }
     }
+
     if (branch.branches.length) {
-      respectOverrides(branch.branches, id, parent)
+      overrideBranches(branch.branches, id, parent, overrideLeafNext, overrideKeysNext)
     }
   })
+}
 
 const addOwnLeaf = (branch, id, parent, key, depth, stamp) => {
-  branch.leaves[id] = { parent, key, stamp, depth }
+  branch.leaves[id] = { parent, key, stamp, depth, keys: new ExtendableSet() }
+
   if (branch.branches.length) {
-    respectOverrides(branch.branches, id, parent)
+    overrideBranches(branch.branches, id, parent)
   }
+
   return branch.leaves[id]
 }
 
-const addBranchLeaf = (branch, id, stamp) => {
-  if (branch.leaves[id]) {
-    return branch.leaves[id]
-  } else {
-    const fromLeaf = getFromLeaves(branch, id)
-    return addOwnLeaf(
-      branch, id, fromLeaf.parent, fromLeaf.key, fromLeaf.depth, stamp
-    )
+const addOverrideLeaf = (branch, id) => {
+  const leaf = branch.leaves[id] = Object.create(branch.leaves[id])
+
+  if (branch.branches.length) {
+    overrideBranches(branch.branches, id, leaf.parent, true, false)
   }
+
+  return leaf
+}
+
+const addOverrideLeafForKeys = (branch, id) => {
+  let leaf = branch.leaves[id]
+  let overrideLeaf = false
+
+  if (!Object.prototype.hasOwnProperty.call(branch.leaves, id)) {
+    leaf = branch.leaves[id] = Object.create(leaf)
+    leaf.keys = new ExtendableSet(branch.inherits.leaves[id].keys)
+    overrideLeaf = true
+  } else if (!Object.prototype.hasOwnProperty.call(leaf, 'keys')) {
+    leaf.keys = new ExtendableSet(branch.inherits.leaves[id].keys)
+  } else {
+    return leaf
+  }
+
+  if (branch.branches.length) {
+    overrideBranches(branch.branches, id, leaf.parent, overrideLeaf)
+  }
+
+  return leaf
 }
 
 const addReferenceFrom = (branch, rF, rT) => {
   if (!branch.rF[rT]) {
-    branch.rF[rT] = []
+    branch.rF[rT] = new Set()
   }
-  branch.rF[rT].push(rF)
+  branch.rF[rT].add(rF)
 }
 
 const removeReferenceFrom = (branch, rF, rT) =>
-  branch.rF[rT].splice(branch.rF[rT].indexOf(rF), 1)
+  branch.rF[rT].delete(rF)
 
 const fixBranchReferences = (branches, rF, rT, rTold) =>
   branches.forEach(branch => {
-    if (branch.leaves[rF] === null) {
+    const leaf = branch.leaves[rF]
+    if (leaf === null) {
       return
-    } else if (branch.leaves[rF]) {
-      if (branch.leaves[rF].rT === rT) {
+    } else if (
+      Object.prototype.hasOwnProperty.call(branch.leaves, rF) &&
+      Object.prototype.hasOwnProperty.call(leaf, 'val') &&
+      leaf.rT
+    ) {
+      if (leaf.val === rT) {
         addAfterEmitEvent(() => {
-          branch.leaves[rF].rT = undefined
+          delete leaf.val
+          delete leaf.rT
         })
-      } else if (branch.leaves[rF].rT !== undefined || branch.leaves[rF].val !== undefined) {
-        return
-      } else {
-        if (rTold) {
-          removeReferenceFrom(branch, rF, rTold)
-        }
-        addReferenceFrom(branch, rF, rT)
       }
+      return
     } else {
       if (rTold) {
         removeReferenceFrom(branch, rF, rTold)
@@ -72,57 +119,50 @@ const fixBranchReferences = (branches, rF, rT, rTold) =>
     }
   })
 
-const checkReferenceByLeaf = (oBranch, rTBranch, rT, cb) => {
-  let branch = oBranch
-  while (branch) {
-    if (branch.leaves[rT] === null) {
-      throw new Error('Reference must be in same branch')
-    } else if (branch === rTBranch) {
-      return cb()
-    }
-    branch = branch.inherits
+const checkReferenceByLeaf = (branch, rTBranch, rT, cb) => {
+  if (
+    branch.leaves[rT] !== null &&
+    (
+      rTBranch === branch ||
+      Object.prototype.isPrototypeOf.call(rTBranch.leaves, branch.leaves)
+    )
+  ) {
+    return cb()
+  } else {
+    throw new Error('Reference must be in same branch')
   }
-  throw new Error('Reference must be in same branch')
 }
 
-const cleanBranchKeys = (branches, id, keys, stamp) =>
+const fireBranchKeys = (branches, id, keys, stamp) =>
   branches.forEach(branch => {
-    const keysNext = keys.slice()
+    if (branch.leaves[id] !== null) {
+      const keysNext = new Set(keys)
 
-    if (branch.leaves[id] === null) {
-      return
-    } else if (branch.leaves[id]) {
-      if (branch.leaves[id].keys) {
-        const firstLength = branch.leaves[id].keys.length
-        branch.leaves[id].keys = branch.leaves[id].keys.filter(key => {
-          const index = keys.indexOf(key)
-          if (~index) {
-            keysNext.splice(index, 1)
-          } else {
-            return true
-          }
-        })
-        if (branch.leaves[id].keys.length === firstLength) {
-          addDataEvent(branch, id, 'add-key')
+      keysNext.forEach(key => {
+        if (
+          Object.prototype.hasOwnProperty.call(branch.leaves, key) &&
+          branch.leaves[key] !== null
+        ) {
+          keysNext.delete(key)
         }
-      } else {
-        addDataEvent(branch, id, 'add-key')
-      }
-    } else {
-      addDataEvent(branch, id, 'add-key')
-    }
+      })
 
-    if (branch.branches.length && keysNext.length) {
-      cleanBranchKeys(branch.branches, id, keysNext, stamp)
+      if (keysNext.size) {
+        addDataEvent(branch, id, 'add-key')
+        if (branch.branches.length) {
+          fireBranchKeys(branch.branches, id, keysNext, stamp)
+        }
+      }
     }
   })
 
 export {
   addOwnLeaf,
-  addBranchLeaf,
+  addOverrideLeaf,
+  addOverrideLeafForKeys,
   addReferenceFrom,
   removeReferenceFrom,
   checkReferenceByLeaf,
   fixBranchReferences,
-  cleanBranchKeys
+  fireBranchKeys
 }

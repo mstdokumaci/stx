@@ -1,5 +1,6 @@
 import { root } from '../../id'
 import { addDataEvent } from '../listeners/emit'
+import { getByPath } from '../get'
 import { setKeys } from './'
 import {
   addReferenceFrom,
@@ -7,19 +8,16 @@ import {
   checkReferenceByLeaf,
   fixBranchReferences
 } from './utils'
-import { getRtFromLeaves, getByPath } from '../get'
-import { getValOrRef } from '../compute'
 import { remove, removeReferenceFromBranches } from '../remove'
 
 const setOwnExistingVal = (branch, leaf, id, val, stamp) => {
-  const valOrRef = getValOrRef(branch, id)
-  if (val === valOrRef) {
+  if (val === leaf.val) {
     return
-  } else if (valOrRef && valOrRef.id) {
-    removeReferenceFromBranches(branch, id, valOrRef.id)
-    leaf.rT = undefined
+  } else if (leaf.rT) {
+    removeReferenceFromBranches(branch, id, leaf.val)
   }
 
+  leaf.rT = false
   leaf.val = val
   leaf.stamp = stamp
 
@@ -28,30 +26,30 @@ const setOwnExistingVal = (branch, leaf, id, val, stamp) => {
 }
 
 const setOwnExistingReference = (branch, leaf, id, rT, stamp) => {
-  const rTold = getRtFromLeaves(branch, id)
-  if (rTold === rT) {
+  const rTold = leaf.rT && leaf.val
+  if (rT === rTold) {
     return
   } else if (rTold) {
     removeReferenceFrom(branch, id, rTold)
-  } else {
-    leaf.val = undefined
   }
-
-  leaf.rT = rT
-  leaf.stamp = stamp
-  addReferenceFrom(branch, id, rT)
-  addDataEvent(undefined, id, 'set', leaf.depth)
 
   if (branch.branches.length) {
     fixBranchReferences(branch.branches, id, rT, rTold)
   }
+
+  leaf.rT = true
+  leaf.val = rT
+  leaf.stamp = stamp
+
+  addReferenceFrom(branch, id, rT)
+  addDataEvent(undefined, id, 'set', leaf.depth)
   return true
 }
 
 const setOwnExisting = (branch, leaf, id, val, stamp) => {
   if (typeof val === 'object') {
     if (!val) {
-      remove(branch, leaf, id, stamp)
+      remove(branch, id, stamp)
     } else if (Array.isArray(val)) {
       if (val[0] === '@') {
         const rT = getByPath(branch, root, val.slice(1), {}, stamp)
@@ -70,4 +68,8 @@ const setOwnExisting = (branch, leaf, id, val, stamp) => {
   }
 }
 
-export { setOwnExistingVal, setOwnExistingReference, setOwnExisting }
+export {
+  setOwnExistingVal,
+  setOwnExistingReference,
+  setOwnExisting
+}

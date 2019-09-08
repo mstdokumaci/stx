@@ -79,7 +79,7 @@ test('browser - data size', { timeout: 4000 }, async t => {
       })
 
       window.client = window.master.connect('ws://localhost:7070')
-    }),
+    }).catch(e => console.log(e.message, e.stack)),
     await page.evaluateHandle('window')
   )
 
@@ -98,7 +98,7 @@ test('browser - data size', { timeout: 4000 }, async t => {
           resolve()
         }
       })
-    }),
+    }).catch(e => console.log(e.message, e.stack)),
     await page.evaluateHandle('window')
   )
 

@@ -1,4 +1,5 @@
 import { root } from './id'
+import ExtendableSet from './extendable-set'
 import { createStamp } from './stamp'
 import { set } from './api/set'
 import { emitDataEvents } from './api/listeners/emit'
@@ -20,24 +21,32 @@ const setToNewBranch = (branch, val, stamp) => {
 }
 
 const prepareNewBranch = inherits => {
-  const branch = {
-    branches: [],
-    leaves: { [root]: { depth: 0 } },
-    listeners: {},
-    subscriptions: {},
-    parentSubscriptions: [],
-    rF: {},
-    stamp: { offset: 0 },
-    client: {}
-  }
+  const branch = Object.create(null, {
+    branches: { value: [] },
+    listeners: { value: {} },
+    subscriptions: { value: {} },
+    parentSubscriptions: { value: [] },
+    rF: { value: {} },
+    client: { value: {} }
+  })
 
   if (inherits) {
-    branch.inherits = inherits
+    Object.defineProperties(branch, {
+      leaves: { value: Object.create(inherits.leaves) },
+      stamp: { value: inherits.stamp },
+      inherits: { value: inherits }
+    })
     inherits.branches.push(branch)
     for (const id in inherits.rF) {
-      branch.rF[id] = inherits.rF[id].slice(0)
+      branch.rF[id] = new Set(inherits.rF[id])
     }
-    branch.stamp = inherits.stamp
+  } else {
+    const leaves = Object.create(null)
+    leaves[root] = { keys: new ExtendableSet(), depth: 0 }
+    Object.defineProperties(branch, {
+      leaves: { value: leaves },
+      stamp: { value: { offset: 0 } }
+    })
   }
 
   if (inherits && typeof inherits.newBranchMiddleware === 'function') {

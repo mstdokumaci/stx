@@ -7,10 +7,11 @@ import {
   addReferenceFrom,
   checkReferenceByLeaf,
   fixBranchReferences,
-  cleanBranchKeys
+  fireBranchKeys
 } from './utils'
 
-const setOwnNewVal = (branch, leaf, id, val, stamp) => {
+const setOwnNewVal = (_, leaf, id, val, stamp) => {
+  leaf.rT = false
   leaf.val = val
   leaf.stamp = stamp
 
@@ -18,38 +19,38 @@ const setOwnNewVal = (branch, leaf, id, val, stamp) => {
 }
 
 const setOwnNewReference = (branch, leaf, id, rT, stamp) => {
-  leaf.rT = rT
-  leaf.stamp = stamp
-  addReferenceFrom(branch, id, rT)
-  addDataEvent(undefined, id, 'set', leaf.depth)
-
   if (branch.branches.length) {
     fixBranchReferences(branch.branches, id, rT)
   }
+
+  leaf.rT = true
+  leaf.val = rT
+  leaf.stamp = stamp
+  addReferenceFrom(branch, id, rT)
+  addDataEvent(undefined, id, 'set', leaf.depth)
 }
 
 const setOwnNewKeys = (branch, leaf, id, val, stamp) => {
-  const keys = []
+  const keys = new Set()
   for (const key in val) {
+    const valKey = val[key]
     if (key === 'val') {
       setOwnNew(branch, leaf, id, val.val, stamp)
-    } else if (val[key] !== undefined && val[key] !== null) {
+    } else if (valKey !== undefined && valKey !== null) {
       const subLeafId = keyToId(key, id)
       const keyId = keyToId(key)
       addToStrings(keyId, key)
-      keys.push(subLeafId)
+      keys.add(subLeafId)
+      leaf.keys.add(subLeafId)
       const subLeaf = addOwnLeaf(branch, subLeafId, id, keyId, leaf.depth + 1, stamp)
-      setOwnNew(branch, subLeaf, subLeafId, val[key], stamp)
+      setOwnNew(branch, subLeaf, subLeafId, valKey, stamp)
     }
   }
-  if (keys.length) {
-    if (leaf.keys) {
-      leaf.keys.push(...keys)
-    } else {
-      leaf.keys = [...keys]
-    }
+  if (keys.size) {
     leaf.stamp = stamp
-    cleanBranchKeys(branch.branches, id, keys, stamp)
+    if (branch.branches.length) {
+      fireBranchKeys(branch.branches, id, keys, stamp)
+    }
     addDataEvent(undefined, id, 'add-key')
   }
 }

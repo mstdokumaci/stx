@@ -1,6 +1,5 @@
 import localResolve from 'rollup-plugin-local-resolve'
 import nodeResolve from 'rollup-plugin-node-resolve'
-import buble from 'rollup-plugin-buble'
 
 export default [
   {
@@ -22,8 +21,7 @@ export default [
       sourcemap: 'inline'
     },
     plugins: [
-      nodeResolve({ browser: true }),
-      buble({ include: 'src/**' })
+      nodeResolve({ browser: true })
     ]
   },
   {
@@ -35,8 +33,7 @@ export default [
       sourcemap: 'inline'
     },
     plugins: [
-      nodeResolve({ browser: true }),
-      buble({ include: 'src/**' })
+      nodeResolve({ browser: true })
     ]
   }
 ]

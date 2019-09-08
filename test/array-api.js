@@ -97,20 +97,20 @@ test('array api - forEach', t => {
   t.same(
     branch1Array,
     [
-      ['third', 'title', 'Third Article'],
       ['first', 'title', 'First Article'],
-      ['second', 'title', 'Second Article']
+      ['second', 'title', 'Second Article'],
+      ['third', 'title', 'Third Article']
     ],
     'branch1 has correct keys'
   )
   t.same(
     branch2Array,
     [
-      ['third', 'favourite', true],
-      ['third', 'title', 'Third Article'],
-      ['first', 'favourite', true],
       ['first', 'title', 'First Article'],
-      ['second', 'title', 'Second Article']
+      ['first', 'favourite', true],
+      ['second', 'title', 'Second Article'],
+      ['third', 'title', 'Third Article'],
+      ['third', 'favourite', true]
     ],
     'branch2 has correct keys'
   )
@@ -218,15 +218,15 @@ test('array api - map', t => {
     branch1
       .get('articles')
       .map(item => item.get('name').compute()),
-    ['third', 'first', 'second'],
-    'branch1.articles.map() = [ third, first, second ]'
+    ['first', 'second', 'third'],
+    'branch1.articles.map() = [ first, second, third ]'
   )
   t.same(
     branch2
       .get('articles')
       .map(item => item.get('name').compute()),
-    ['third', 'first'],
-    'branch2.articles.map() = [ third, first ]'
+    ['first', 'third'],
+    'branch2.articles.map() = [ first, third ]'
   )
 
   t.end()

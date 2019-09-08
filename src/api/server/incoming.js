@@ -44,12 +44,12 @@ const switchBranch = async (socketId, socket, master, branchKey, persist) => {
   return new Leaf(branch, root)
 }
 
-const setLeaves = (branch, socket, master, leaves) => {
+const setLeaves = (branch, socket, leaves) => {
   if (branch.clientCanUpdate) {
     leaves.forEach(leaf => {
       const [id, stamp, val, rT] = leaf
 
-      if (!branch.leaves[id] && !master.leaves[id]) {
+      if (!(id in branch.leaves)) {
         return
       }
 
@@ -68,23 +68,22 @@ const setLeaves = (branch, socket, master, leaves) => {
         )
       ) {
         let changed
-        if (branch.leaves[id]) {
-          leaf = branch.leaves[id]
+        const leaf = branch.leaves[id]
+        if (Object.prototype.hasOwnProperty.call(branch.leaves, id)) {
           cache(socket, false, id, stamp)
 
-          if (val !== null) {
+          if (rT) {
+            changed = setOwnExistingReference(branch, leaf, id, val, stamp, 0)
+          } else if (val !== null) {
             changed = setOwnExistingVal(branch, leaf, id, val, stamp, 0)
-          } else if (rT) {
-            changed = setOwnExistingReference(branch, leaf, id, rT, stamp, 0)
           }
-        } else if (master.leaves[id]) {
-          leaf = master.leaves[id]
+        } else {
           cache(socket, true, id, stamp)
 
-          if (val !== null) {
+          if (rT) {
+            changed = setOverrideReference(branch, leaf, id, val, stamp, 0)
+          } else if (val !== null) {
             changed = setOverrideVal(branch, leaf, id, val, stamp, 0)
-          } else if (rT) {
-            changed = setOverrideReference(branch, leaf, id, rT, stamp, 0)
           }
         }
 
@@ -117,11 +116,11 @@ const processIncoming = async (server, socketId, socket, master, data) => {
   }
 
   if (subscriptions && subscriptions.length) {
-    syncSubscriptions(socket.branch, socketId, socket, master, subscriptions)
+    syncSubscriptions(socket.branch, socketId, socket, subscriptions)
   }
 
   if (leaves) {
-    setLeaves(socket.branch, socket, master, leaves)
+    setLeaves(socket.branch, socket, leaves)
   }
 
   if (emits && emits.length) {

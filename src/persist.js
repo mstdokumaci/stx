@@ -1,6 +1,11 @@
 import { addToStrings, getString } from './cache'
-import { getRtFromLeaves } from './api/get'
-import { addReferenceFrom, removeReferenceFrom } from './api/set/utils'
+import {
+  addOwnLeaf,
+  addOverrideLeaf,
+  addOverrideLeafForKeys,
+  addReferenceFrom,
+  removeReferenceFrom
+} from './api/set/utils'
 
 const bindAllDataListener = (branch, persist) => {
   if (!branch.listeners.allData) {
@@ -8,35 +13,58 @@ const bindAllDataListener = (branch, persist) => {
   }
 
   branch.listeners.allData.persist = (type, _, item) => {
-    if (type !== 'remove' && branch.leaves[item.id]) {
+    if (type !== 'remove' && Object.prototype.hasOwnProperty.call(branch.leaves, item.id)) {
+      const leaf = branch.leaves[item.id]
       persist.store(
         String(item.id),
-        Object.assign(
-          { keyString: getString(branch.leaves[item.id].key) },
-          branch.leaves[item.id]
-        )
+        {
+          parent: leaf.parent,
+          key: leaf.key,
+          keyString: getString(leaf.key),
+          keys: [...leaf.keys],
+          stamp: leaf.stamp,
+          depth: leaf.depth,
+          val: leaf.val,
+          rT: leaf.rT
+        }
       )
     }
   }
 }
 
 const loadLeaf = (branch, id, leaf) => {
-  if (leaf !== null) {
+  if (leaf === null) {
+    branch.leaves[id] = null
+  } else {
     addToStrings(leaf.key, leaf.keyString)
     delete leaf.keyString
 
-    if (leaf.val !== undefined || leaf.rT) {
-      const rTold = getRtFromLeaves(branch, id)
+    if (branch.leaves[id]) {
+      if (leaf.keys && leaf.keys.size) {
+        addOverrideLeafForKeys(branch, id)
+      } else {
+        addOverrideLeaf(branch, id)
+      }
+    } else {
+      addOwnLeaf(branch, id, leaf.parent, leaf.key, leaf.depth, leaf.stamp)
+    }
+
+    if (leaf.keys) {
+      leaf.keys.forEach(key => branch.leaves[id].keys.add(key))
+    }
+
+    if (leaf.val !== undefined) {
+      const rTold = branch.leaves[id] && branch.leaves[id].rT && branch.leaves[id].val
       if (rTold) {
         removeReferenceFrom(branch, id, rTold)
       }
       if (leaf.rT) {
-        addReferenceFrom(branch, id, leaf.rT)
+        addReferenceFrom(branch, id, leaf.val)
       }
+      branch.leaves[id].rT = leaf.rT
+      branch.leaves[id].val = leaf.val
     }
   }
-
-  branch.leaves[id] = leaf
 }
 
 export {

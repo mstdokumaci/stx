@@ -1,11 +1,5 @@
 import { setOffset } from '../../stamp'
-import {
-  remove,
-  removeOwn,
-  removeReferenceFromBranches,
-  removeListenersSubscriptions
-} from '../remove'
-import { getRtFromLeaves } from '../get'
+import { remove, removeReferenceFromBranches } from '../remove'
 import { addOwnLeaf } from '../set/utils'
 import { setOwnExistingVal, setOwnExistingReference } from '../set/own-existing'
 import { setOwnNewVal, setOwnNewReference } from '../set/own-new'
@@ -30,26 +24,27 @@ const startHeartbeat = branch => {
 const cleanLeaves = (branch, list) => {
   for (let id in list) {
     id = Number(id)
-    const stamp = list[id]
-    if (branch.leaves[id]) {
+    if (id in branch.leaves) {
       const leaf = branch.leaves[id]
-      const rT = getRtFromLeaves(branch, id)
-      removeOwn(branch, leaf, id, rT, stamp, 1, list[leaf.parent])
+      const rT = leaf.rT && leaf.val
+      const parent = leaf.parent
+      delete branch.leaves[id]
+      if (!(parent in list) && parent in branch.leaves) {
+        branch.leaves[parent].keys.delete(id)
+        branch.leaves[parent].stamp = list[id]
+      }
       if (rT) {
         removeReferenceFromBranches(branch, id, rT)
       }
-      removeListenersSubscriptions(branch, id)
     }
   }
 }
 
 const removeLeaves = (branch, list) => {
-  for (let id in list) {
-    id = Number(id)
+  for (const id in list) {
     const stamp = list[id]
     if (branch.leaves[id]) {
-      const leaf = branch.leaves[id]
-      remove(branch, leaf, id, stamp)
+      remove(branch, Number(id), stamp)
     }
   }
 }
@@ -59,38 +54,38 @@ const setLeaves = (branch, leaves) => {
     id = Number(id)
     const [key, parent, stamp, val, rT, keys, depth] = leaves[id]
 
-    if (branch.leaves[id]) {
+    if (id in branch.leaves) {
       const leaf = branch.leaves[id]
 
-      if (val !== null) {
+      if (rT) {
+        setOwnExistingReference(branch, leaf, id, val, stamp)
+      } else if (val !== null) {
         setOwnExistingVal(branch, leaf, id, val, stamp)
-      } else if (rT) {
-        setOwnExistingReference(branch, leaf, id, rT, stamp)
       }
 
       if (keys && keys.length) {
-        if (leaf.keys && leaf.keys.length) {
-          const added = keys.filter(key => !leaf.keys.includes(key))
-          if (added.length) {
-            leaf.keys.push(...added)
-            addDataEvent(undefined, id, 'add-key')
+        let added = false
+        keys.forEach(key => {
+          if (!leaf.keys.has(key)) {
+            leaf.keys.add(key)
+            added = true
           }
-        } else {
-          leaf.keys = keys
+        })
+        if (added) {
           addDataEvent(undefined, id, 'add-key')
         }
       }
     } else {
       const leaf = addOwnLeaf(branch, id, parent, key, depth, stamp)
 
-      if (val !== null) {
+      if (rT) {
+        setOwnNewReference(branch, leaf, id, val, stamp)
+      } else if (val !== null) {
         setOwnNewVal(branch, leaf, id, val, stamp)
-      } else if (rT) {
-        setOwnNewReference(branch, leaf, id, rT, stamp)
       }
 
       if (keys && keys.length) {
-        leaf.keys = keys
+        keys.forEach(key => leaf.keys.add(key))
         addDataEvent(undefined, id, 'add-key')
       }
     }

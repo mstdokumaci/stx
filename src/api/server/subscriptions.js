@@ -4,7 +4,7 @@ const syncSubscriptions = (branch, socketId, socket, subscriptions) => {
   const data = { leaves: {}, strings: {} }
 
   subscriptions.forEach(subscription => {
-    const [add, id, listenerId, keys, excludeKeys, depth, limit] = subscription
+    const [add, id, listenerId, keys, excludeKeys, depth, sort, limit] = subscription
     if (add && (id in branch.leaves)) {
       if (!branch.subscriptions[id]) {
         branch.subscriptions[id] = { listeners: {} }
@@ -16,6 +16,7 @@ const syncSubscriptions = (branch, socketId, socket, subscriptions) => {
         keys,
         excludeKeys,
         depth,
+        sort,
         limit,
         cb: sendLeaves.bind(null, socket)
       }
@@ -23,7 +24,7 @@ const syncSubscriptions = (branch, socketId, socket, subscriptions) => {
       sendLeaves(
         socket,
         { branch, id },
-        { keys, excludeKeys, depth, limit },
+        { keys, excludeKeys, depth, sort, limit },
         data
       )
     } else if (branch.subscriptions[id] && branch.subscriptions[id].listeners) {

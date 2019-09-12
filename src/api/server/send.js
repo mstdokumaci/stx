@@ -1,5 +1,7 @@
 import { getString } from '../../cache'
 import { createStamp } from '../../stamp'
+import { getByPath } from '../get'
+import { compute } from '../compute'
 import maxSize from './max-size'
 import {
   cache,
@@ -88,7 +90,7 @@ const sendLeaves = (socket, leaf, options, dataOverride) => {
     return
   }
 
-  let { keys, excludeKeys, depth, limit } = options
+  let { keys, excludeKeys, depth, sort, limit } = options
 
   const depthLimit = depth || Infinity
   const data = dataOverride || { leaves: {}, strings: {} }
@@ -97,7 +99,7 @@ const sendLeaves = (socket, leaf, options, dataOverride) => {
 
   keys = keys ? keys.filter(
     key => serializeWithAllChildren(data, socket, branch, key, depthLimit, 1)
-  ) : serializeAllChildren(data, socket, branch, id, depthLimit, 0, excludeKeys, limit || Infinity)
+  ) : serializeAllChildren(data, socket, branch, id, depthLimit, 0, excludeKeys, sort, limit || Infinity)
 
   serializeLeaf(data, socket, branch, id, keys, depthLimit, 0)
 
@@ -107,11 +109,25 @@ const sendLeaves = (socket, leaf, options, dataOverride) => {
 }
 
 const serializeAllChildren = (
-  data, socket, branch, id, depthLimit, depth, excludeKeys, limit = Infinity
+  data, socket, branch, id, depthLimit, depth, excludeKeys, sort, limit = Infinity
 ) => {
   const keys = []
+  let originalKeys = branch.leaves[id].keys
 
-  for (const leafId of branch.leaves[id].keys) {
+  if (sort && sort.path) {
+    originalKeys = [...originalKeys].sort((key1, key2) => {
+      const leaf1 = branch.leaves[getByPath(branch, key1, sort.path)]
+      const leaf2 = branch.leaves[getByPath(branch, key2, sort.path)]
+      if (sort.type === 'N') {
+        return (leaf1 && compute(branch, leaf1)) - (leaf2 && compute(branch, leaf2))
+      } else if (sort.type === 'S') {
+        return String(leaf1 && compute(branch, leaf1))
+          .localeCompare(String(leaf2 && compute(branch, leaf2)))
+      }
+    })
+  }
+
+  for (const leafId of originalKeys) {
     if (
       branch.leaves[leafId] === null ||
       (

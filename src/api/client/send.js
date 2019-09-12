@@ -1,7 +1,7 @@
 const addSubscriptionToQueue = (branch, id, listenerId) => {
   const sub = branch.subscriptions[id].listeners[listenerId]
   branch.client.queue.s.push(
-    [true, id, listenerId, sub.keys, sub.excludeKeys, sub.depth, sub.limit]
+    [true, id, listenerId, sub.keys, sub.excludeKeys, sub.depth, sub.sort, sub.limit]
   )
 }
 

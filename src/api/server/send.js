@@ -119,10 +119,12 @@ const serializeAllChildren = (
       const leaf1 = branch.leaves[getByPath(branch, key1, sort.path)]
       const leaf2 = branch.leaves[getByPath(branch, key2, sort.path)]
       if (sort.type === 'N') {
-        return (leaf1 && compute(branch, leaf1)) - (leaf2 && compute(branch, leaf2))
+        const result = (leaf1 && compute(branch, leaf1)) - (leaf2 && compute(branch, leaf2))
+        return sort.desc ? result * -1 : result
       } else if (sort.type === 'S') {
-        return String(leaf1 && compute(branch, leaf1))
+        const result = String(leaf1 && compute(branch, leaf1))
           .localeCompare(String(leaf2 && compute(branch, leaf2)))
+        return sort.desc ? result * -1 : result
       }
     })
   }

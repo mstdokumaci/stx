@@ -1,8 +1,12 @@
 import { getString } from '../../cache'
 import { createStamp } from '../../stamp'
-import { getByPath } from '../get'
-import { compute } from '../compute'
 import maxSize from './max-size'
+import {
+  numberSortAsc,
+  numberSortDesc,
+  stringSortAsc,
+  stringSortDesc
+} from './sort'
 import {
   cache,
   isCachedForStamp,
@@ -115,18 +119,10 @@ const serializeAllChildren = (
   let originalKeys = branch.leaves[id].keys
 
   if (sort && sort.path) {
-    originalKeys = [...originalKeys].sort((key1, key2) => {
-      const leaf1 = branch.leaves[getByPath(branch, key1, sort.path)]
-      const leaf2 = branch.leaves[getByPath(branch, key2, sort.path)]
-      if (sort.type === 'N') {
-        const result = (leaf1 && compute(branch, leaf1)) - (leaf2 && compute(branch, leaf2))
-        return sort.desc ? result * -1 : result
-      } else if (sort.type === 'S') {
-        const result = String(leaf1 && compute(branch, leaf1))
-          .localeCompare(String(leaf2 && compute(branch, leaf2)))
-        return sort.desc ? result * -1 : result
-      }
-    })
+    const sortFunction = sort.type === 'N'
+      ? sort.desc ? numberSortDesc : numberSortAsc
+      : sort.desc ? stringSortDesc : stringSortAsc
+    originalKeys = [...originalKeys].sort(sortFunction(branch, sort.path))
   }
 
   for (const leafId of originalKeys) {

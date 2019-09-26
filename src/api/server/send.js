@@ -136,7 +136,7 @@ const serializeAllChildren = (
       continue
     }
 
-    if (serializeWithAllChildren(data, socket, branch, leafId, depthLimit, depth + 1)) {
+    if (serializeWithAllChildren(data, socket, branch, leafId, depthLimit, depth + 1) || depth === 0) {
       keys.push(leafId)
     }
 

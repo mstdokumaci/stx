@@ -92,6 +92,7 @@ const connect = (branch, url, reconnect = 50) => {
           incoming(branch, data)
         }
       })
+      .catch(error => console.error(error))
   }
 
   bindSocketListeners(socket, close, error, open, message)

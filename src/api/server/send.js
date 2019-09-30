@@ -190,6 +190,9 @@ const serializeLeaf = (data, socket, branch, id, keys, depthLimit, depth) => {
     }
 
     if (depth === 0 || !isCachedForStamp(socket, isMaster, id, leaf.stamp)) {
+      if (id in data.leaves) {
+        keys.push(...data.leaves[id][5])
+      }
       data.leaves[id] = [leaf.key, leaf.parent, leaf.stamp, leaf.val, leaf.rT, keys, leaf.depth]
       if (socket.cleanLeaves[id]) {
         delete socket.cleanLeaves[id]

@@ -40,7 +40,7 @@ const loadLeaf = (branch, id, leaf) => {
     delete leaf.keyString
 
     if (branch.leaves[id]) {
-      if (leaf.keys && leaf.keys.size) {
+      if (leaf.keys && leaf.keys.length) {
         addOverrideLeafForKeys(branch, id)
       } else {
         addOverrideLeaf(branch, id)

@@ -16,7 +16,7 @@ import {
 } from './cache'
 
 const sendToSocket = (socket, payload, next) => {
-  socket.send(payload)
+  socket.send(payload, true)
   setImmediate(next)
 }
 
@@ -63,17 +63,14 @@ const send = (socket, raw) => {
   } else if (socket.blobInProgress) {
     socket.blobInProgress.push(raw)
   } else {
-    socket.send(raw)
+    socket.send(new TextEncoder('utf-8').encode(raw))
   }
 }
 
 const sendData = (socket, branch, data) => {
   if (
-    socket.external &&
-    (
-      Object.keys(data.leaves).length ||
-      Object.keys(data.strings).length
-    )
+    Object.keys(data.leaves).length ||
+    Object.keys(data.strings).length
   ) {
     const json = { t: createStamp(branch.stamp), l: data.leaves, s: data.strings }
     if (Object.keys(socket.cleanLeaves).length) {
@@ -108,6 +105,7 @@ const sendLeaves = (socket, leaf, options, dataOverride) => {
   serializeLeaf(data, socket, branch, id, keys, depthLimit, 0)
 
   if (!dataOverride) {
+    console.log()
     sendData(socket, branch, data)
   }
 }
@@ -199,7 +197,7 @@ const serializeLeaf = (data, socket, branch, id, keys, depthLimit, depth) => {
       }
       cache(socket, isMaster, id, leaf.stamp)
 
-      if (!isStringCached(socket, leaf.key)) {
+      if (leaf.key !== undefined && !isStringCached(socket, leaf.key)) {
         data.strings[leaf.key] = getString(leaf.key)
         cacheString(socket, leaf.key)
       }

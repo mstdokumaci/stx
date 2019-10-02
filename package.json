@@ -38,8 +38,8 @@
     "Mustafa Dokumacı <mustafa@foraa.com>"
   ],
   "dependencies": {
-    "@clusterws/cws": "latest",
-    "vigour-ua": "^4.0.0"
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v15.11.0",
+    "websocket": "^1.0.30"
   },
   "devDependencies": {
     "coveralls": "^3.0.6",

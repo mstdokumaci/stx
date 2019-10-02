@@ -134,6 +134,17 @@ test('network - subscriptions - on branch', t => {
   const cMaster1 = create({ id: 'client1' })
   const cMaster2 = create({ id: 'client2' })
 
+  let closedCount = 0
+  const closed = () => {
+    if (++closedCount >= 2) {
+      server.close()
+      t.end()
+    }
+  }
+
+  cMaster1.on('connected', val => val || closed())
+  cMaster2.on('connected', val => val || closed())
+
   cMaster1.subscribe(
     { excludeKeys: ['id', 'i2'] },
     cm => {
@@ -168,9 +179,6 @@ test('network - subscriptions - on branch', t => {
           )
 
           client1.socket.close()
-          client2.socket.close()
-          server.close()
-          t.end()
         }
       }
     }
@@ -185,6 +193,8 @@ test('network - subscriptions - on branch', t => {
           'item 3',
           'cm2.i3.title.compute() = item 3'
         )
+
+        client2.socket.close()
       } else if (cm.get('i2')) {
         t.equals(
           cm.get(['i2', 'title']).compute(),

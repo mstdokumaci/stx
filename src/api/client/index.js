@@ -7,15 +7,11 @@ import {
   addAllDataListener,
   removeAllDataListener
 } from './send'
-import receiveLarge from './receive-large'
 import { bindSocketListeners, WebSocket } from './websocket'
 import { incoming } from './incoming'
 
 const socketClose = WebSocket.prototype.close
 define(WebSocket.prototype, 'close', function (code, data) {
-  if (this.heartbeat) {
-    clearTimeout(this.heartbeat)
-  }
   removeAllDataListener(this.branch)
   this.blockReconnect = true
   socketClose.call(this, code, data)
@@ -33,10 +29,6 @@ const connect = (branch, url, reconnect = 50) => {
   const socket = new WebSocket(url)
 
   const close = () => {
-    if (socket.heartbeat) {
-      clearTimeout(socket.heartbeat)
-    }
-
     if (branch.client.socket) {
       branch.client.socket = null
       emit(branch, root, 'connected', false, createStamp(branch.stamp))
@@ -50,10 +42,9 @@ const connect = (branch, url, reconnect = 50) => {
     }
   }
 
-  const error = () => {
-    if (socket.readyState !== 1) {
-      socket.emit('close')
-    } else {
+  const error = (err) => {
+    console.log(err)
+    if (socket.readyState === 1) {
       socket.close()
     }
   }
@@ -70,29 +61,16 @@ const connect = (branch, url, reconnect = 50) => {
   }
 
   const message = data => {
-    (
-      (
-        typeof data !== 'string' &&
-        (
-          data instanceof ArrayBuffer ||
-          (('Blob' in window) && data instanceof Blob) || // eslint-disable-line
-          (('WebkitBlob' in window) && data instanceof WebkitBlob) // eslint-disable-line
-        )
-      ) ? receiveLarge(data) : Promise.resolve(data)
-    )
-      .then(data => {
-        if (data) {
-          try {
-            data = JSON.parse(data)
-            if (!data) return
-          } catch (e) {
-            return e
-          }
+    if (data) {
+      try {
+        data = JSON.parse(data)
+        if (!data) return
+      } catch (e) {
+        return e
+      }
 
-          incoming(branch, data)
-        }
-      })
-      .catch(error => console.error(error))
+      incoming(branch, data)
+    }
   }
 
   bindSocketListeners(socket, close, error, open, message)

@@ -1,7 +1,7 @@
 const test = require('tape')
 const { create } = require('../../../dist')
 
-test('network - subscription - data size', { timeout: 3000 }, t => {
+test('network - subscription - data size', { timeout: 15000 }, t => {
   const sMaster = create({
     id: 'master'
   })
@@ -50,7 +50,14 @@ test('network - subscription - data size', { timeout: 3000 }, t => {
     id: 'client'
   })
 
-  t.plan(2)
+  let doneCount = 0
+  const done = () => {
+    if (++doneCount >= 2) {
+      client.socket.close()
+      server.close()
+      t.end()
+    }
+  }
 
   cMaster.get('bigData', {}).subscribe(bigData => {
     if (bigData.get('here')) {
@@ -59,8 +66,7 @@ test('network - subscription - data size', { timeout: 3000 }, t => {
         'it is',
         'subscription fired for bigData'
       )
-      client.socket.close()
-      server.close()
+      done()
     }
   })
 
@@ -71,6 +77,7 @@ test('network - subscription - data size', { timeout: 3000 }, t => {
         'it is',
         'subscription fired for otherData'
       )
+      done()
     }
   })
 

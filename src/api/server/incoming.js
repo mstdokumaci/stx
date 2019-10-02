@@ -18,7 +18,7 @@ import {
 } from './subscriptions'
 import { cache, reuseCache } from './cache'
 
-const switchBranch = async (socketId, socket, master, branchKey, persist) => {
+const switchBranch = async (socket, master, branchKey, persist) => {
   let branch = master.branches.find(branch => branch.key === branchKey)
 
   if (!branch) {
@@ -31,10 +31,10 @@ const switchBranch = async (socketId, socket, master, branchKey, persist) => {
     branch.key = branchKey
   }
 
-  removeSubscriptionsAndAllDataListener(socket.branch, socketId)
+  removeSubscriptionsAndAllDataListener(socket.branch, socket.id)
   const reuse = reuseCache(socket)
   socket.branch = branch
-  addAllDataListener(branch, socketId, socket, master)
+  addAllDataListener(branch, socket, master)
 
   if (reuse) {
     socket.cache = reuse.cache
@@ -100,7 +100,7 @@ const fireEmits = (branch, emits) => {
   emits.forEach(([id, event, val, stamp]) => emit(branch, id, event, val, stamp))
 }
 
-const processIncoming = async (server, socketId, socket, master, data) => {
+const processIncoming = async (server, socket, master, data) => {
   const { b: branchKey, s: subscriptions, l: leaves, e: emits } = data
 
   if (
@@ -111,12 +111,12 @@ const processIncoming = async (server, socketId, socket, master, data) => {
     await server.switchBranch(
       new Leaf(socket.branch, root),
       branchKey,
-      switchBranch.bind(null, socketId, socket, master)
+      switchBranch.bind(null, socket, master)
     )
   }
 
   if (subscriptions && subscriptions.length) {
-    syncSubscriptions(socket.branch, socketId, socket, subscriptions)
+    syncSubscriptions(socket.branch, socket, subscriptions)
   }
 
   if (leaves) {
@@ -128,18 +128,18 @@ const processIncoming = async (server, socketId, socket, master, data) => {
   }
 
   if (socket.incoming.length) {
-    await processIncoming(server, socketId, socket, master, socket.incoming.shift())
+    await processIncoming(server, socket, master, socket.incoming.shift())
   }
 
   socket.incoming = null
 }
 
-const incoming = (server, socketId, socket, master, data) => {
+const incoming = (server, socket, master, data) => {
   if (socket.incoming) {
     socket.incoming.push(data)
   } else {
     socket.incoming = []
-    processIncoming(server, socketId, socket, master, data)
+    processIncoming(server, socket, master, data)
   }
 }
 

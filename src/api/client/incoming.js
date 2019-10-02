@@ -6,21 +6,6 @@ import { setOwnNewVal, setOwnNewReference } from '../set/own-new'
 import { addDataEvent, emitDataEvents } from '../listeners/emit'
 import { addToStrings } from '../../cache'
 
-const heartbeatTimeout = 3e3
-
-const startHeartbeat = branch => {
-  const socket = branch.client.socket
-
-  if (socket) {
-    if (socket.heartbeat) {
-      clearTimeout(socket.heartbeat)
-    }
-
-    socket.send(JSON.stringify({ h: true }))
-    socket.heartbeat = setTimeout(() => startHeartbeat(branch), heartbeatTimeout)
-  }
-}
-
 const cleanLeaves = (branch, list) => {
   for (let id in list) {
     id = Number(id)
@@ -99,7 +84,7 @@ const setStrings = strings => {
 }
 
 const incoming = (branch, data) => {
-  const { t: stamp, h: heartbeat, l: leaves, c: clean, s: strings, r: remove } = data
+  const { t: stamp, l: leaves, c: clean, s: strings, r: remove } = data
 
   if (stamp !== undefined) {
     setOffset(branch.stamp, stamp)
@@ -125,10 +110,6 @@ const incoming = (branch, data) => {
 
   emitDataEvents(branch, stamp)
   branch.client.stopSending = false
-
-  if (heartbeat) {
-    startHeartbeat(branch)
-  }
 }
 
 export { incoming }

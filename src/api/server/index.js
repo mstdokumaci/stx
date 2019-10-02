@@ -1,5 +1,4 @@
-import ua from 'vigour-ua'
-import { WebSocketServer } from '@clusterws/cws'
+import { App, us_listen_socket_close as closeListen } from 'uWebSockets.js'
 
 import uid from '../../uid'
 import { createStamp } from '../../stamp'
@@ -9,93 +8,73 @@ import {
   removeSubscriptionsAndAllDataListener
 } from './subscriptions'
 import { incoming } from './incoming'
+import maxSize from './max-size'
 
-const heartBeatTimeout = 8e3
-
-const removeSocket = (server, socketId, socket) => {
-  if (socket.heartBeatTimeout) {
-    clearTimeout(socket.heartBeatTimeout)
-  }
-  removeSubscriptionsAndAllDataListener(socket.branch, socketId)
-  delete server.sockets[socketId]
+const removeSocket = (server, socket) => {
+  removeSubscriptionsAndAllDataListener(socket.branch, socket.id)
+  delete server.sockets[socket.id]
 }
 
-const serverClose = WebSocketServer.prototype.close
-define(WebSocketServer.prototype, 'close', function (cb) {
-  for (const socketId in this.sockets) {
-    this.sockets[socketId].close()
+const Server = function () {
+  this.sockets = {}
+}
+
+define(Server.prototype, 'close', function (cb) {
+  if (this.listen) {
+    for (const id in this.sockets) {
+      this.sockets[id].end()
+    }
+
+    closeListen(this.listen)
+    this.listen = null
+
+    if (cb) {
+      cb()
+    }
   }
-  this.httpServer.close()
-  serverClose.call(this, cb)
 })
 
-const listen = (branch, port, forceHeartbeat) => {
-  const server = new WebSocketServer({ port })
-  server.sockets = {}
+const listen = (branch, port) => {
+  const server = new Server()
 
-  server.on('listening', () => {
-    console.log(`💫 listening websockets on ${port} 💫`)
+  App({
 
-    server.on('connection', socket => {
-      const socketId = uid()
-
+  }).ws('/*', {
+    maxPayloadLength: maxSize,
+    idleTimeout: 10,
+    open: (socket) => {
+      socket.id = uid()
       socket.branch = branch
       socket.cleanLeaves = {}
       socket.removeLeaves = {}
       socket.incoming = null
-      socket.ua = ua(socket.upgradeReq && socket.upgradeReq.headers['user-agent'])
-      server.sockets[socketId] = socket
-      addAllDataListener(branch, socketId, socket, branch)
+      server.sockets[socket.id] = socket
+      addAllDataListener(branch, socket)
 
-      if (socket.ua.platform === 'ios' || forceHeartbeat) {
-        socket.send(JSON.stringify({
-          t: createStamp(socket.branch.stamp),
-          h: true
-        }))
-
-        socket.on('message', data => {
-          try {
-            data = JSON.parse(data)
-            if (!data) return
-          } catch (e) {
-            return e
-          }
-
-          if (data.h) {
-            clearTimeout(socket.heartBeatTimeout)
-            socket.heartBeatTimeout = setTimeout(() => {
-              if (socket.external) {
-                socket.close()
-              } else {
-                removeSocket(server, socketId, socket)
-              }
-              socket.heartBeatTimeout = null
-            }, heartBeatTimeout)
-          } else {
-            incoming(server, socketId, socket, branch, data)
-          }
-        })
-      } else {
-        socket.send(JSON.stringify({
-          t: createStamp(socket.branch.stamp)
-        }))
-
-        socket.on('message', data => {
-          try {
-            data = JSON.parse(data)
-            if (!data) return
-          } catch (e) {
-            return e
-          }
-
-          incoming(server, socketId, socket, branch, data)
-        })
+      socket.send(new TextEncoder('utf-8').encode(JSON.stringify({
+        t: createStamp(socket.branch.stamp)
+      })))
+    },
+    message: (socket, data) => {
+      try {
+        data = JSON.parse(new TextDecoder('utf-8').decode(data))
+        if (!data) return
+      } catch (e) {
+        return e
       }
 
-      socket.on('close', () => removeSocket(server, socketId, socket))
-
-      socket.on('error', () => socket.close())
-    })
+      incoming(server, socket, branch, data)
+    },
+    close: (socket, code) => server && removeSocket(server, socket)
+  }).any('/*', res => {
+    res.end('Nothing to see here!')
+  }).listen(port, listenSocket => {
+    if (listenSocket) {
+      console.log(`💫 listening websockets on ${port} 💫`)
+      server.listen = listenSocket
+    } else {
+      throw Error(`Could not listen on ${port}`)
+    }
   })
 
   return server

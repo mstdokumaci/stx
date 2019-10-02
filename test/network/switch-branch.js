@@ -21,7 +21,13 @@ test('network - switch branch', t => {
   const cMaster2 = create()
   const cMaster3 = create()
 
-  t.plan(3)
+  let closedCount = 0
+  const closed = () => {
+    if (++closedCount >= 3) {
+      server.close()
+      t.end()
+    }
+  }
 
   cMaster1.on('connected', val => {
     if (val) {
@@ -39,7 +45,7 @@ test('network - switch branch', t => {
 
       cMaster1.switchBranch('A')
     } else {
-      server.close()
+      closed()
     }
   })
 
@@ -58,6 +64,8 @@ test('network - switch branch', t => {
       })
 
       cMaster2.switchBranch('A')
+    } else {
+      closed()
     }
   })
 
@@ -76,6 +84,8 @@ test('network - switch branch', t => {
       })
 
       cMaster3.switchBranch('B')
+    } else {
+      closed()
     }
   })
 

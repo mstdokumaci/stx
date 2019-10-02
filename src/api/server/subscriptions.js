@@ -1,6 +1,6 @@
 import { sendData, sendLeaves, removeLeaves } from './send'
 
-const syncSubscriptions = (branch, socketId, socket, subscriptions) => {
+const syncSubscriptions = (branch, socket, subscriptions) => {
   const data = { leaves: {}, strings: {} }
 
   subscriptions.forEach(subscription => {
@@ -12,7 +12,7 @@ const syncSubscriptions = (branch, socketId, socket, subscriptions) => {
         branch.subscriptions[id].listeners = {}
       }
 
-      branch.subscriptions[id].listeners[`${socketId}-${listenerId}`] = {
+      branch.subscriptions[id].listeners[`${socket.id}-${listenerId}`] = {
         keys,
         excludeKeys,
         depth,
@@ -28,18 +28,18 @@ const syncSubscriptions = (branch, socketId, socket, subscriptions) => {
         data
       )
     } else if (branch.subscriptions[id] && branch.subscriptions[id].listeners) {
-      delete branch.subscriptions[id].listeners[`${socketId}-${listenerId}`]
+      delete branch.subscriptions[id].listeners[`${socket.id}-${listenerId}`]
     }
   })
 
   sendData(socket, branch, data)
 }
 
-const addAllDataListener = (branch, socketId, socket, master) => {
+const addAllDataListener = (branch, socket) => {
   if (!branch.listeners.allData) {
     branch.listeners.allData = {}
   }
-  branch.listeners.allData[socketId] = removeLeaves.bind(null, socket)
+  branch.listeners.allData[socket.id] = removeLeaves.bind(null, socket)
 }
 
 const removeSubscriptionsAndAllDataListener = (branch, socketId) => {

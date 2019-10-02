@@ -155,8 +155,8 @@ const defineApi = (leaf) => {
   })
 
   // LISTEN
-  define(leaf, 'listen', function (port, forceHeartbeat) {
-    return listen(this.branch, port, forceHeartbeat)
+  define(leaf, 'listen', function (port) {
+    return listen(this.branch, port)
   })
 
   // CONNECT

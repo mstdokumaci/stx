@@ -7,6 +7,15 @@ test('network - remove subscriptions', t => {
 
   const cMaster = create()
 
+  let doneCount = 0
+  const done = () => {
+    if (++doneCount >= 2) {
+      client.socket.close()
+      server.close()
+      t.end()
+    }
+  }
+
   cMaster.on('connected', val => {
     if (val) {
       sMaster.set({
@@ -27,15 +36,15 @@ test('network - remove subscriptions', t => {
           's2 cm.fifth.compute() = 5'
         )
 
-        client.socket.close()
-        server.close()
-        t.end()
+        done()
       } else if (cm.get('fourth')) {
         t.equals(
           cm.get('fourth').compute(),
           4,
           's2 cm.fourth.compute() = 4'
         )
+
+        done()
       }
     }
   )
@@ -66,11 +75,7 @@ test('network - remove subscriptions', t => {
           's1 cm.serialize() = { second: 2, third: 3 }'
         )
 
-        setTimeout(() => {
-          sMaster.set({
-            fourth: 4
-          })
-        })
+        sMaster.set({ fourth: 4 })
       }
     }
   )

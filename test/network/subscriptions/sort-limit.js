@@ -2,7 +2,10 @@ const test = require('tape')
 const { create } = require('../../../dist')
 
 test('network - sort & limit', t => {
-  const sState = create()
+  const sState = create({
+    authors: {},
+    books: {}
+  })
   const server = sState.listen(7070)
 
   const cState1 = create()
@@ -12,10 +15,10 @@ test('network - sort & limit', t => {
   const cState5 = create()
 
   let closeCount = 0
-
-  const closeServer = () => {
-    if (++closeCount === 5) {
+  const closed = () => {
+    if (++closeCount >= 5) {
       server.close()
+      t.end()
     }
   }
 
@@ -59,8 +62,14 @@ test('network - sort & limit', t => {
           }
         }
       })
+    } else {
+      closed()
     }
   })
+  cState2.on('connected', val => val || closed())
+  cState3.on('connected', val => val || closed())
+  cState4.on('connected', val => val || closed())
+  cState5.on('connected', val => val || closed())
 
   cState1.get('books', {}).subscribe(
     { sort: { path: ['author', 'name'], type: String }, limit: 3 },
@@ -90,8 +99,8 @@ test('network - sort & limit', t => {
           },
           'cState1.books.serialize() = correct'
         )
+
         client1.socket.close()
-        closeServer()
       }
     }
   )
@@ -124,8 +133,8 @@ test('network - sort & limit', t => {
           },
           'cState2.books.serialize() = correct'
         )
+
         client2.socket.close()
-        closeServer()
       }
     }
   )
@@ -158,8 +167,8 @@ test('network - sort & limit', t => {
           },
           'cState3.books.serialize() = correct'
         )
+
         client3.socket.close()
-        closeServer()
       }
     }
   )
@@ -192,8 +201,8 @@ test('network - sort & limit', t => {
           },
           'cState4.books.serialize() = correct'
         )
+
         client4.socket.close()
-        closeServer()
       }
     }
   )
@@ -226,8 +235,8 @@ test('network - sort & limit', t => {
           },
           'cState5.books.serialize() = correct'
         )
+
         client5.socket.close()
-        closeServer()
       }
     }
   )
@@ -237,6 +246,4 @@ test('network - sort & limit', t => {
   const client3 = cState3.connect('ws://localhost:7070')
   const client4 = cState4.connect('ws://localhost:7070')
   const client5 = cState5.connect('ws://localhost:7070')
-
-  t.plan(5)
 })

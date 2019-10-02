@@ -31,6 +31,12 @@ test('network - persist set', async t => {
         path: ['pointer']
       }
     ]
+
+    toBranch.get('pointer').on((_, __, pointer) => {
+      if (pointer.get('id').compute() === 2) {
+        client.socket.close()
+      }
+    })
   }
 
   const cMaster = create()
@@ -45,8 +51,6 @@ test('network - persist set', async t => {
           sub.unsubscribe()
 
           pointer.set(['@', 'second'])
-
-          setTimeout(() => client.socket.close(), 50)
         }
       })
 

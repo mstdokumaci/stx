@@ -18,6 +18,17 @@ test('network - hybrid', t => {
 
   const cMaster = create()
 
+  let doneCount = 0
+  const done = () => {
+    if (++doneCount >= 2) {
+      client.socket.close()
+      hServer.close()
+      hybrid.socket.close()
+      server.close()
+      t.end()
+    }
+  }
+
   cMaster.subscribe({ keys: ['first'] }, cm => {
     if (cm.get('first')) {
       t.equals(
@@ -26,15 +37,36 @@ test('network - hybrid', t => {
         'cm.first.id.compute() = 1'
       )
 
-      client.socket.close()
-      hServer.close()
-      hybrid.socket.close()
-      server.close()
-      t.end()
+      t.same(
+        cm.serialize(),
+        {
+          first: {
+            id: 1
+          }
+        },
+        'cm.serialize = correct'
+      )
+      done()
     }
   })
 
-  hMaster.subscribe(hm => {})
+  hMaster.subscribe(hm => {
+    if (hm.get('first')) {
+      t.same(
+        hm.serialize(),
+        {
+          first: {
+            id: 1
+          },
+          second: {
+            id: 2
+          }
+        },
+        'hm.serialize = correct'
+      )
+      done()
+    }
+  })
 
   const client = cMaster.connect('ws://localhost:7070')
 })

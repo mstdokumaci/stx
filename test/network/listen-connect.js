@@ -9,14 +9,10 @@ test('network - listen & connect', t => {
   cMaster.on('connected', val => {
     if (val) {
       t.pass('socket connected')
-      setTimeout(() => {
-        client.socket.close()
-      })
+      client.socket.close()
     } else {
       t.pass('socket closed')
-
       server.close()
-      t.pass('server closed')
 
       t.end()
     }
@@ -43,6 +39,7 @@ test('network - listen & reconnect', t => {
   cMaster.on('connected', val => {
     if (val) {
       t.pass('socket connected')
+
       if (++connectCount > 1) {
         client.socket.close()
       } else {
@@ -55,7 +52,6 @@ test('network - listen & reconnect', t => {
       if (connectCount > 1) {
         server2.close()
         t.pass('server closed')
-
         t.end()
       }
     }

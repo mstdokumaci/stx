@@ -42,8 +42,7 @@ const connect = (branch, url, reconnect = 50) => {
     }
   }
 
-  const error = (err) => {
-    console.log(err)
+  const error = () => {
     if (socket.readyState === 1) {
       socket.close()
     }

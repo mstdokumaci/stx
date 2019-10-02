@@ -105,7 +105,6 @@ const sendLeaves = (socket, leaf, options, dataOverride) => {
   serializeLeaf(data, socket, branch, id, keys, depthLimit, 0)
 
   if (!dataOverride) {
-    console.log()
     sendData(socket, branch, data)
   }
 }

@@ -59,6 +59,59 @@ test('browser - client set', async t => {
     return toBranch
   }
 
+  let doneCount = 0
+  const afterAll = async () => {
+    if (++doneCount >= 7) {
+      t.same(
+        hMaster.serialize(),
+        {
+          items:
+          {
+            i1: {
+              title: 'Item 1',
+              favourite: false,
+              favCount: 2
+            },
+            i2: {
+              title: 'Item 2',
+              favourite: false,
+              favCount: 2
+            }
+          }
+        },
+        'hybrid master state is correct'
+      )
+      t.same(
+        master.serialize(),
+        {
+          items:
+          {
+            i1: {
+              title: 'Item 1',
+              favourite: false,
+              favCount: 2
+            },
+            i2: {
+              title: 'Item 2',
+              favourite: false,
+              favCount: 2
+            }
+          }
+        },
+        'master state is correct'
+      )
+
+      await browser.close()
+      await server.close()
+      await hybrid.close()
+      await hClient.socket.close()
+      await httpServer.close()
+      t.end()
+    }
+  }
+
+  master.get(['items', 'i1', 'favCount']).on(() => afterAll())
+
   const httpServer = http.createServer(
     (request, response) => handler(
       request,
@@ -76,6 +129,8 @@ test('browser - client set', async t => {
   const page = await browser.newPage()
   await page.goto('http://localhost:8888')
 
+  page.on('console', msg => console.log(msg.text()))
+
   await page.evaluate(
     window => new Promise(resolve => {
       window.master = window.stx.create()
@@ -84,11 +139,10 @@ test('browser - client set', async t => {
         if (val) {
           window.master.switchBranch('user1')
 
-          window.master.get('items', {}).subscribe(items => {})
+          const items = window.master.get('items', {})
+          items.subscribe(() => {})
 
           window.master.get('id', {}).subscribe(id => {
-            const items = window.master.get('items')
-
             if (id.compute() === 'user1') {
               items.get(['i2', 'favourite']).set(true)
               items.get(['i1', 'favourite']).set(true)
@@ -117,62 +171,16 @@ test('browser - client set', async t => {
               items.get(['i1', 'favourite']).set(false)
               items.get(['i1', 'favourite']).set(true)
 
-              setTimeout(() => {
-                window.client.socket.close()
-                resolve()
-              }, 50)
+              window.client.socket.close()
             }
           })
+        } else {
+          resolve()
         }
       })
       window.client = window.master.connect('ws://localhost:7070')
     }),
     await page.evaluateHandle('window')
   )
-
-  t.same(
-    hMaster.serialize(),
-    {
-      items:
-      {
-        i1: {
-          title: 'Item 1',
-          favourite: false,
-          favCount: 2
-        },
-        i2: {
-          title: 'Item 2',
-          favourite: false,
-          favCount: 2
-        }
-      }
-    },
-    'hybrid master state is correct'
-  )
-  t.same(
-    master.serialize(),
-    {
-      items:
-      {
-        i1: {
-          title: 'Item 1',
-          favourite: false,
-          favCount: 2
-        },
-        i2: {
-          title: 'Item 2',
-          favourite: false,
-          favCount: 2
-        }
-      }
-    },
-    'master state is correct'
-  )
-
-  await browser.close()
-  await server.close()
-  await hybrid.close()
-  await hClient.socket.close()
-  await httpServer.close()
-  t.end()
+  await afterAll()
 })

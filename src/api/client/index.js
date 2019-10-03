@@ -11,11 +11,20 @@ import { bindSocketListeners, WebSocket } from './websocket'
 import { incoming } from './incoming'
 
 const socketClose = WebSocket.prototype.close
-define(WebSocket.prototype, 'close', function (code, data) {
+
+const closeWhenDrained = socket => {
+  if (socket.bufferedAmount) {
+    setTimeout(closeWhenDrained, 50, socket)
+  } else {
+    socketClose.call(socket)
+  }
+}
+
+define(WebSocket.prototype, 'close', function () {
   clearTimeout(this.heartbeat)
   removeAllDataListener(this.branch)
   this.blockReconnect = true
-  socketClose.call(this, code, data)
+  closeWhenDrained(this)
 })
 
 const heartbeat = branch => {

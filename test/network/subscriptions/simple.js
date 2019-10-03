@@ -134,6 +134,23 @@ test('network - subscriptions - on branch', t => {
   const cMaster1 = create({ id: 'client1' })
   const cMaster2 = create({ id: 'client2' })
 
+  let readyForSetCount = 0
+  const readyForSet = () => {
+    if (++readyForSetCount >= 2) {
+      branch.set({
+        i1: {
+          title: 'item 1 override'
+        },
+        i2: {
+          title: 'item 2 override'
+        },
+        i3: {
+          title: 'item 3'
+        }
+      })
+    }
+  }
+
   let closedCount = 0
   const closed = () => {
     if (++closedCount >= 2) {
@@ -156,17 +173,7 @@ test('network - subscriptions - on branch', t => {
             'cm1.serialize() = { id: client1, i1: { title: item 1 } }'
           )
 
-          branch.set({
-            i1: {
-              title: 'item 1 override'
-            },
-            i2: {
-              title: 'item 2 override'
-            },
-            i3: {
-              title: 'item 3'
-            }
-          })
+          readyForSet()
         } else {
           t.same(
             cm.serialize(),
@@ -201,6 +208,8 @@ test('network - subscriptions - on branch', t => {
           'item 2',
           'cm2.i2.title.compute() = item 2'
         )
+
+        readyForSet()
       }
     }
   )

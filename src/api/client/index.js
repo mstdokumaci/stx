@@ -12,10 +12,21 @@ import { incoming } from './incoming'
 
 const socketClose = WebSocket.prototype.close
 define(WebSocket.prototype, 'close', function (code, data) {
+  clearTimeout(this.heartbeat)
   removeAllDataListener(this.branch)
   this.blockReconnect = true
   socketClose.call(this, code, data)
 })
+
+const heartbeat = branch => {
+  const socket = branch.client.socket
+
+  if (socket) {
+    clearTimeout(socket.heartbeat)
+    socket.send(JSON.stringify({ h: 1 }))
+    socket.heartbeat = setTimeout(() => heartbeat(branch), 8000)
+  }
+}
 
 const connect = (branch, url, reconnect = 50) => {
   if (branch.client.reconnect) {
@@ -30,6 +41,7 @@ const connect = (branch, url, reconnect = 50) => {
 
   const close = () => {
     if (branch.client.socket) {
+      clearTimeout(branch.client.socket.heartbeat)
       branch.client.socket = null
       emit(branch, root, 'connected', false, createStamp(branch.stamp))
     }
@@ -52,6 +64,7 @@ const connect = (branch, url, reconnect = 50) => {
     socket.branch = branch
     branch.client.socket = socket
     branch.client.queue = { s: [], l: [], e: [] }
+    heartbeat(branch)
 
     sendAllSubscriptions(branch)
     addAllDataListener(branch)

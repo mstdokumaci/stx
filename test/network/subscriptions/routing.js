@@ -58,6 +58,22 @@ test('network - subscriptions - routing', t => {
   const cMaster1 = create({ id: 'client1' })
   const cMaster2 = create({ id: 'client2' })
 
+  let readyForSwitchCount = 0
+  const readyForSwitch = () => {
+    if (++readyForSwitchCount >= 2) {
+      cMaster1.switchBranch('user2')
+      cMaster2.switchBranch('user1')
+    }
+  }
+
+  let closedCount = 0
+  const closed = () => {
+    if (++closedCount >= 2) {
+      server.close()
+      t.end()
+    }
+  }
+
   cMaster1.on('connected', val => {
     if (val) {
       cMaster1.get('route', {}).subscribe(cm => {
@@ -87,7 +103,7 @@ test('network - subscriptions - routing', t => {
               'cm1.items.i2.title.compute() = Item 2'
             )
 
-            cMaster1.switchBranch('user2')
+            readyForSwitch()
           } else if (cm.get('title').compute() === 'Page 2') {
             t.equals(
               cm.get(['items', 'i1', 'title']).compute(),
@@ -101,14 +117,13 @@ test('network - subscriptions - routing', t => {
             )
 
             client1.socket.close()
-            client2.socket.close()
-            server.close()
-            t.end()
           }
         }
       })
 
       cMaster1.switchBranch('user1')
+    } else {
+      closed()
     }
   })
 
@@ -141,7 +156,7 @@ test('network - subscriptions - routing', t => {
               'cm2.items.i3.title.compute() = Item 3'
             )
 
-            cMaster2.switchBranch('user1')
+            readyForSwitch()
           } else if (cm.get('title').compute() === 'Page 3') {
             t.equals(
               cm.get(['items', 'i1', 'title']).compute(),
@@ -153,11 +168,15 @@ test('network - subscriptions - routing', t => {
               'Item 2',
               'cm2.items.i2.title.compute() = Item 2'
             )
+
+            client2.socket.close()
           }
         }
       })
 
       cMaster2.switchBranch('user2')
+    } else {
+      closed()
     }
   })
 

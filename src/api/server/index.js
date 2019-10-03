@@ -42,6 +42,7 @@ const listen = (branch, port) => {
   }).ws('/*', {
     maxPayloadLength: maxSize,
     idleTimeout: 10,
+    compression: 1,
     open: (socket) => {
       socket.id = uid()
       socket.branch = branch

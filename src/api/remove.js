@@ -126,13 +126,14 @@ const remove = (branch, id, stamp, ignoreParent) => {
 
   const leaf = branch.leaves[id]
   const rT = leaf.rT && leaf.val
+  let geniuneOwnKey = false
 
   if (!ignoreParent && leaf.parent) {
     let pLeaf = branch.leaves[leaf.parent]
     if (!Object.prototype.hasOwnProperty.call(branch.leaves, leaf.parent)) {
       pLeaf = addOverrideLeaf(branch, leaf.parent)
     } else if (Object.prototype.hasOwnProperty.call(pLeaf, 'keys')) {
-      pLeaf.keys.delete(id)
+      geniuneOwnKey = pLeaf.keys.delete(id)
     }
     pLeaf.stamp = stamp
     addDataEvent(undefined, leaf.parent, 'remove-key', pLeaf.depth)
@@ -144,10 +145,18 @@ const remove = (branch, id, stamp, ignoreParent) => {
     )
   }
 
-  branch.leaves[id] = null
+  if (geniuneOwnKey) {
+    delete branch.leaves[id]
+  } else {
+    branch.leaves[id] = null
+  }
 
   if (branch.persist) {
-    branch.persist.store(String(id), null)
+    if (geniuneOwnKey) {
+      branch.persist.remove(String(id))
+    } else {
+      branch.persist.store(String(id), null)
+    }
   }
 
   if (rT) {

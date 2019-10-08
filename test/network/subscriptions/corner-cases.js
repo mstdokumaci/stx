@@ -1,7 +1,7 @@
 const test = require('tape')
 const { create } = require('../../../dist')
 
-test('network - subscriptions - corner cases', t => {
+test('network - subscriptions - non existing key should not fire', t => {
   const sMaster = create({
     existing: 'value'
   })
@@ -17,6 +17,7 @@ test('network - subscriptions - corner cases', t => {
       }
     }
   )
+
   cMaster.get('existing', {}).subscribe(
     existing => {
       if (existing.compute()) {

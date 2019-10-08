@@ -66,7 +66,7 @@ const listen = (branch, port) => {
 
       incoming(server, socket, branch, data)
     },
-    close: (socket, code) => server && removeSocket(server, socket)
+    close: (socket) => server && removeSocket(server, socket)
   }).any('/*', res => {
     res.end('Nothing to see here!')
   }).listen(port, listenSocket => {

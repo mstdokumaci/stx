@@ -42,6 +42,7 @@ const removeSubscriptionToQueue = (branch, id, listenerId) => {
 const drainQueue = client => {
   if (
     client.socket &&
+    client.socket.readyState === 1 &&
     (
       client.queue.b ||
       client.queue.s.length ||

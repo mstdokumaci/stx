@@ -184,7 +184,7 @@ const serializeLeaf = (data, socket, branch, id, keys, depth) => {
   const leaf = branch.leaves[id]
   const isMaster = !Object.prototype.hasOwnProperty.call(branch.leaves, id)
 
-  if (leaf !== null) {
+  if (leaf !== null && !data.visited.has(id)) {
     if (leaf.rT && depth !== -1 && !data.visited.has(leaf.val)) {
       data.rTs.add([leaf.val, depth])
     }

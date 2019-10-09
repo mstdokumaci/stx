@@ -111,33 +111,32 @@ const removeFromBranches = (branches, leaf, id, parent, keys, ownKeys, rT, stamp
     }
   })
 
-const removeChildren = (branch, id, stamp) => {
+const removeChildren = (branch, id, stamp, ownKey) => {
   branch.leaves[id].keys.forEach(key => {
     if (branch.leaves[key] !== null) {
-      remove(branch, key, stamp, true)
+      remove(branch, key, stamp, true, ownKey)
     }
   })
 }
 
-const remove = (branch, id, stamp, ignoreParent) => {
+const remove = (branch, id, stamp, ignoreParent, ownKey = false) => {
   emit(branch, id, 'data', 'remove', stamp)
-
-  removeChildren(branch, id, stamp)
 
   const leaf = branch.leaves[id]
   const rT = leaf.rT && leaf.val
-  let geniuneOwnKey = false
 
   if (!ignoreParent && leaf.parent) {
     let pLeaf = branch.leaves[leaf.parent]
     if (!Object.prototype.hasOwnProperty.call(branch.leaves, leaf.parent)) {
       pLeaf = addOverrideLeaf(branch, leaf.parent)
     } else if (Object.prototype.hasOwnProperty.call(pLeaf, 'keys')) {
-      geniuneOwnKey = pLeaf.keys.delete(id)
+      ownKey = pLeaf.keys.delete(id)
     }
     pLeaf.stamp = stamp
     addDataEvent(undefined, leaf.parent, 'remove-key', pLeaf.depth)
   }
+
+  removeChildren(branch, id, stamp, ownKey)
 
   if (branch.branches.length) {
     removeFromBranches(
@@ -145,14 +144,14 @@ const remove = (branch, id, stamp, ignoreParent) => {
     )
   }
 
-  if (geniuneOwnKey) {
+  if (ownKey) {
     delete branch.leaves[id]
   } else {
     branch.leaves[id] = null
   }
 
   if (branch.persist) {
-    if (geniuneOwnKey) {
+    if (ownKey) {
       branch.persist.remove(String(id))
     } else {
       branch.persist.store(String(id), null)
@@ -162,6 +161,7 @@ const remove = (branch, id, stamp, ignoreParent) => {
   if (rT) {
     removeReferenceFrom(branch, id, rT)
   }
+
   removeListenersSubscriptions(branch, id)
 }
 

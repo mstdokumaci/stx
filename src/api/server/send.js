@@ -98,11 +98,19 @@ const sendLeaves = (socket, leaf, options, dataOverride) => {
 
   serializeParents(data, socket, branch, Number(id))
 
-  keys = keys ? keys.filter(
-    key => serializeWithAllChildren(data, socket, branch, key, depthLimit, 1)
-  ) : serializeAllChildren(data, socket, branch, id, depthLimit, 0, excludeKeys, sort, limit || Infinity)
+  let doNotCache
+  if (keys) {
+    keys = keys.filter(
+      key => serializeWithAllChildren(data, socket, branch, key, depthLimit, 1)
+    )
+    doNotCache = true
+  } else {
+    [keys, doNotCache] = serializeAllChildren(
+      data, socket, branch, id, depthLimit, 0, excludeKeys, sort, limit || Infinity
+    )
+  }
 
-  serializeLeaf(data, socket, branch, id, keys, 0)
+  serializeLeaf(data, socket, branch, id, keys, 0, doNotCache)
 
   while (data.rTs.size) {
     const rTs = data.rTs
@@ -112,6 +120,8 @@ const sendLeaves = (socket, leaf, options, dataOverride) => {
       serializeWithAllChildren(data, socket, branch, rT, depthLimit, depth)
     })
   }
+
+  data.visited = new Set()
 
   if (!dataOverride) {
     sendData(socket, branch, data)
@@ -123,6 +133,7 @@ const serializeAllChildren = (
 ) => {
   const keys = []
   let originalKeys = branch.leaves[id].keys
+  let doNotCache = false
 
   if (sort && sort.path) {
     const sortFunction = sort.type === 'N'
@@ -137,21 +148,23 @@ const serializeAllChildren = (
       (
         excludeKeys &&
         excludeKeys.includes(key)
+      ) || (
+        !serializeWithAllChildren(data, socket, branch, key, depthLimit, depth + 1)
       )
     ) {
+      doNotCache = true
       continue
     }
 
-    if (serializeWithAllChildren(data, socket, branch, key, depthLimit, depth + 1) || depth === 0) {
-      keys.push(key)
-    }
+    keys.push(key)
 
     if (!--limit) {
+      doNotCache = true
       break
     }
   }
 
-  return keys
+  return [keys, doNotCache]
 }
 
 const serializeWithAllChildren = (data, socket, branch, id, depthLimit, depth) => {
@@ -159,8 +172,8 @@ const serializeWithAllChildren = (data, socket, branch, id, depthLimit, depth) =
     return
   }
 
-  const keys = serializeAllChildren(data, socket, branch, id, depthLimit, depth)
-  return serializeLeaf(data, socket, branch, id, keys, depth)
+  const [keys, doNotCache] = serializeAllChildren(data, socket, branch, id, depthLimit, depth)
+  return serializeLeaf(data, socket, branch, id, keys, depth, doNotCache)
 }
 
 const serializeParents = (data, socket, branch, id) => {
@@ -171,7 +184,7 @@ const serializeParents = (data, socket, branch, id) => {
       break
     }
 
-    if (!serializeLeaf(data, socket, branch, parent, [id], -1)) {
+    if (!serializeLeaf(data, socket, branch, parent, [id], -1, true)) {
       break
     }
 
@@ -180,7 +193,7 @@ const serializeParents = (data, socket, branch, id) => {
   }
 }
 
-const serializeLeaf = (data, socket, branch, id, keys, depth) => {
+const serializeLeaf = (data, socket, branch, id, keys, depth, doNotCache) => {
   const leaf = branch.leaves[id]
   const isMaster = !Object.prototype.hasOwnProperty.call(branch.leaves, id)
 
@@ -189,16 +202,16 @@ const serializeLeaf = (data, socket, branch, id, keys, depth) => {
       data.rTs.add([leaf.val, depth])
     }
 
-    if (
-      (depth === 0 && keys.length) ||
-      !isCachedForStamp(socket, isMaster, id, leaf.stamp)
-    ) {
+    if (!isCachedForStamp(socket, isMaster, id, leaf.stamp)) {
       if (id in data.leaves) {
         keys.push(...data.leaves[id][5])
       }
 
       data.leaves[id] = [leaf.key, leaf.parent, leaf.stamp, leaf.val, leaf.rT, keys, leaf.depth]
-      cache(socket, isMaster, id, leaf.stamp)
+
+      if (!doNotCache) {
+        cache(socket, isMaster, id, leaf.stamp)
+      }
 
       if (socket.cleanLeaves[id]) {
         delete socket.cleanLeaves[id]

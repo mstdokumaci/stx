@@ -33,6 +33,8 @@ const bindAllDataListener = (branch, persist) => {
 }
 
 const loadLeaf = (branch, id, leaf) => {
+  id = Number(id)
+
   if (leaf === null) {
     branch.leaves[id] = null
   } else {

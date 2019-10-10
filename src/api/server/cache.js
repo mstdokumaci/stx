@@ -1,6 +1,4 @@
 const cache = (socket, isMaster, id, stamp) => {
-  if (!socket.cache) socket.cache = { master: {}, branch: {}, strings: {} }
-
   if (isMaster) {
     delete socket.cache.branch[id]
     socket.cache.master[id] = stamp

@@ -46,6 +46,7 @@ const listen = (branch, port) => {
     open: (socket) => {
       socket.id = uid()
       socket.branch = branch
+      socket.cache = { master: {}, branch: {}, strings: {} }
       socket.cleanLeaves = {}
       socket.removeLeaves = {}
       socket.incoming = null

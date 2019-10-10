@@ -1,6 +1,6 @@
 # stx
 
-Batteries included data structure / state manager.
+A blazing fast state manager with network sync out of the box.
 
 [![Build Status](https://travis-ci.org/mstdokumaci/stx.svg?branch=master)](https://travis-ci.org/mstdokumaci/stx)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
@@ -17,6 +17,7 @@ Batteries included data structure / state manager.
 
 ### [Here is](https://github.com/mstdokumaci/stx-vue-example) a fully working Vue example
 ### [Here is](https://mstdokumaci.github.io/stx) the complete documentation (WIP)
+### [Here is](https://github.com/mstdokumaci/stx-persist-rocksdb) a persistency plugin for RocksDB
 
 # Qucik Start Guide
 
@@ -70,7 +71,7 @@ subKey.compute() // → subValue
 
 Second parameter of get is a default value for the path.
 
-⚠ It'll be `set` and returned in absence of given path otherwise it'll be ignored.
+⚠ It will be `set` and returned if the relative path is undefined, otherwise it will be ignored.
 
 ```js
 state.get('first', 1).compute() // → 1
@@ -102,7 +103,7 @@ subKey.root().serialize() // → { second: { subKey: 'subValue' }, first: 1 }
 
 ### On
 
-⚠ A listener without a name is by default a data listener. Fires on `set`, `remove`, `add-key`, `remove-key`. 
+⚠ A listener without a name is by default a `data` listener. Fires on `set`, `remove`, `add-key`, `remove-key`. 
 
 ```js
 let fired = []
@@ -235,7 +236,7 @@ branchB.get([ 'watched', 'goodByeLenin' ]).origin().serialize()
 
 ### Data listeners on references
 
-⚠ It's also possible to listen `data` events explicitly.
+⚠ It is also possible to listen `data` events explicitly.
 
 ```js
 fired = []

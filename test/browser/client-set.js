@@ -31,7 +31,7 @@ test('browser - client set', async t => {
   const hMaster = create()
   const hybrid = hMaster.listen(7070)
   const hClient = hMaster.connect('ws://localhost:7171')
-  hMaster.subscribe(hm => {})
+  hMaster.subscribe(() => { })
 
   const updateFavCount = favourite => {
     const favCount = hMaster.get(favourite.parent().path()).get('favCount')
@@ -140,7 +140,7 @@ test('browser - client set', async t => {
           window.master.switchBranch('user1')
 
           const items = window.master.get('items', {})
-          items.subscribe(() => {})
+          items.subscribe(() => { })
 
           window.master.get('id', {}).subscribe(id => {
             if (id.compute() === 'user1') {

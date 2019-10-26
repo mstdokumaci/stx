@@ -46,6 +46,7 @@ const switchBranch = async (socket, master, branchKey, persist) => {
 
 const setLeaves = (branch, socket, leaves) => {
   if (branch.clientCanUpdate) {
+    const afterEvents = []
     leaves.forEach(leaf => {
       const [id, stamp, val, rT] = leaf
 
@@ -88,11 +89,12 @@ const setLeaves = (branch, socket, leaves) => {
         }
 
         if (changed && typeof rule.after === 'function') {
-          rule.after(new Leaf(branch, id))
+          afterEvents.push(rule.after.bind(null, new Leaf(branch, id)))
         }
       }
     })
     emitDataEvents(branch, createStamp(branch.stamp))
+    afterEvents.forEach(event => event())
   }
 }
 

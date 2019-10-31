@@ -65,7 +65,7 @@ const setLeaves = (branch, socket, leaves) => {
         rule &&
         (
           typeof rule.authorize !== 'function' ||
-          rule.authorize(new Leaf(branch, id))
+          rule.authorize(new Leaf(branch, id), val)
         )
       ) {
         let changed

@@ -38,7 +38,7 @@
     "Mustafa Dokumacı <mustafa@foraa.com>"
   ],
   "dependencies": {
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v15.11.0",
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v17.3.0",
     "websocket": "^1.0.30"
   },
   "devDependencies": {

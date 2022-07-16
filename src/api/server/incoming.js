@@ -56,7 +56,7 @@ const setLeaves = (branch, socket, leaves) => {
 
       const setPath = path(branch, id)
       const rule = branch.clientCanUpdate.find(
-        rule => rule.path.length === setPath.length && rule.path.every(
+        rule => rule.path.length <= setPath.length && rule.path.every(
           (key, i) => key === '*' || key === setPath[i]
         )
       )
